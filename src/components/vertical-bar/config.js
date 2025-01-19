@@ -1,7 +1,9 @@
 export default {
   componentName: "vertical-bar",
   componentConfigName: 'vertical-bar-config',
+  name: '纵向柱状图',
   props: {
+    visible: true,
     event: {
       onClick: { // 事件绑定
         type: "JSFunction",
@@ -69,7 +71,7 @@ export default {
           }
         }
       },
-      dataset: {
+      dataset: Object.freeze({
         dimension: ['label', 'num1', 'num2'],
         source: [
           {
@@ -93,26 +95,31 @@ export default {
             num2: 33
           }
         ]
-      },
+      }),
       series: [
         {
           type: 'bar',
           name: '测试1',
           label: {
-            show: true,
+            show: false,
             position: 'top',
             color: '#B9B8CE',
-          }
+            fontSize: 12,
+            fontWeight: 'bold',
+            distance: 5,
+          },
+          barWidth: '10'
         },
-        // {
-        //   type: 'bar',
-        //   name: '测试2',
-        //   label: {
-        //     show: true,
-        //     position: 'top',
-        //     color: '#B9B8CE',
-        //   }
-        // }
+        {
+          type: 'bar',
+          name: '测试2',
+          label: {
+            show: false,
+            position: 'top',
+            color: '#B9B8CE',
+            fontSize: 12
+          }
+        }
       ],
       legend: {
         show: true,

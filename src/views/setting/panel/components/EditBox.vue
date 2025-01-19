@@ -108,7 +108,7 @@ const handleSelect = (value: string) => {
 
 .change-box {
   z-index: 2;
-  cursor: pointer;
+  cursor: grab;
 }
 
 .active {

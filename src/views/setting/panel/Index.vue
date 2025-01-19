@@ -144,6 +144,7 @@ onMounted(() => {
               :width="item.style.width"
               :height="item.style.height"
               class="cursor-pointer"
+              v-if="item.props.visible"
             ></component>
           </EditBox>
           <AxisHelper :line-list="lineList"></AxisHelper>

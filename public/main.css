@@ -1,0 +1,45 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  height: 100vh;
+  background-color: #101014;
+}
+@font-face {
+  font-family: 'almm';
+  src: url('/fonts/AlimamaFangYuanTiVF-Thin-2.ttf');
+}
+
+@font-face {
+  font-family: 'custom';
+  src: url('/fonts/阿里妈妈方圆体.ttf');
+}
+
+body {
+  font-family: 'custom';
+  color: #eee;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+.n-layout-toggle-button {
+  z-index: 9999!important;
+}
+.v-line {
+  width: 1px;
+  background: red;
+  position: absolute;
+  height: 100%;
+}
+.h-line {
+  height: 1px;
+  background: red;
+  position: absolute;
+  width: 100%;
+}

@@ -1,0 +1,106 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+      body{
+          margin: 0;
+          padding: 0;
+      }
+      div{
+          width: 300px;
+          height: 300px;
+          border: 1px solid #000000;
+          margin-top: 20px;
+          margin-left: 30px;
+      }
+  </style>
+  <script>
+
+    //判断鼠标是否按下
+    var isDown = false;
+
+    //实时监听鼠标位置
+    var moveX = 0;
+    var moveY = 0;
+
+    //记录鼠标按下瞬间的位置
+    var x = 0;
+    var y = 0;
+
+    //鼠标按下时移动的偏移量
+    var mouseMoveX = 0;
+    var mouseMoveY = 0;
+
+    //div的位置
+    var div_x = 0;
+    var div_y = 0;
+
+
+    //鼠标按下事件
+    function myDown(event){
+      x = event.clientX;
+      y = event.clientY;
+      isDown = true;
+
+      var mess = document.getElementById("mess");
+
+      var cont = document.getElementById("cont");
+      //获取DIV的位置
+      div_x = cont.offsetLeft;
+      div_y = cont.offsetTop;
+
+      mess.innerHTML = "鼠标按下了，当前鼠标位置：x="+x+",y="+y+"<br>"+
+        "DIV的位置：x="+div_x+",y="+div_y;
+    }
+
+    //鼠标移动事件
+    function myMove(event){
+      moveX = event.clientX;
+      moveY = event.clientY;
+      var cont = document.getElementById("cont");
+      var mess2 = document.getElementById("mess2");
+
+      cont.innerHTML = "x="+moveX+",y="+moveY;
+
+      //计算鼠标移动偏移量
+      mouseMoveX = moveX - x;
+      mouseMoveY = moveY - y;
+
+      //当鼠标按下时才执行
+      if(isDown){
+        var new_div_x = div_x + mouseMoveX;
+        var new_div_y = div_y + mouseMoveY;
+
+        //改变div的位置
+        cont.style.marginTop = new_div_y;
+        cont.style.marginLeft = new_div_x;
+
+        mess2.innerHTML = "鼠标移动的偏移量为：x="+mouseMoveX+",y="+mouseMoveY+"<br>"+
+          "DIV新位置：x="+new_div_x+",y="+new_div_y;
+      }
+
+
+    }
+
+    //鼠标松开事件
+    function myUp(){
+      var mess = document.getElementById("mess");
+      mess.innerHTML = "鼠标松开了";
+      isDown = false;
+      // mouseMoveX = 0;
+      // mouseMoveY = 0;
+    }
+
+  </script>
+</head>
+<body>
+
+<div id="cont" onmouseup="myUp()" onmousedown="myDown(event)"  onmousemove="myMove(event)">
+
+</div>
+<font id="mess"></font><br>
+<font id="mess2"></font>
+
+</body>
+</html>

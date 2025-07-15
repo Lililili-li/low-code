@@ -1,18 +1,8 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
 
-import App from './App.vue'
-import router from './router'
-import "./mock/index.ts"
-import './assets/main.css'
-import ArcoVueIcon from '@arco-design/web-vue/es/icon';
-import '@arco-design/web-vue/dist/arco.css';
-import 'animate.css';
-
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-app.use(ArcoVueIcon);
-
-app.mount('#app')
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(process.env.PORT ?? 3000);
+}
+bootstrap();

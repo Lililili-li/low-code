@@ -1,5 +1,0 @@
-export { default as PageAttribute } from './PageAttribute.vue'
-export { default as Attribute } from './Attribute/index.vue'
-export { default as Style } from './Style/index.vue'
-export { default as Animation } from './Animation/index.vue'
-export { default as Advanced } from './Advanced/index.vue'

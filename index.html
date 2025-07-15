@@ -1,19 +1,27 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="" >
 
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vite App</title>
+  <title>Low Code</title>
   <link rel="stylesheet" href="/main.css">
-  <link rel="stylesheet" href="/sheet/xspreadsheet.css">
 </head>
 
-<body>
+<body arco-theme="dark">
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
-  <script src="/sheet/xspreadsheet.js"></script>
+  <script async src="/sheet/xspreadsheet.js"></script>
+<script>
+  function loadCss(url) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = url;
+    document.head.appendChild(link);
+  }
+  loadCss('/sheet/xspreadsheet.css')
+</script>
 </body>
 
 </html>

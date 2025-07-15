@@ -1,17 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/login',
       name: 'Login',
-      component: () => import('@/views/login/Index.vue'),
+      component: () => import('@/views/login/index.vue'),
     },
     {
       path: '/project',
       name: 'Project',
-      component: () => import('@/views/project/Index.vue'),
+      redirect: '/project/list',
+      component: () => import('@/views/project/index.vue'),
       children: [
         {
           path: 'list',
@@ -28,12 +29,12 @@ const router = createRouter({
     {
       path: '/setting/:id?',
       name: 'Setting',
-      component: () => import('@/views/setting/Index.vue'),
+      component: () => import('@/views/setting/index.vue'),
     },
     {
-      path: '/preview',
+      path: '/preview/:id?',
       name: 'Preview',
-      component: () => import('@/views/preview/Index.vue'),
+      component: () => import('@/views/preview/index.vue'),
     },
     {
       path: '/',

@@ -9,6 +9,10 @@ export default [
     files: ['**/*.{ts,mts,tsx,vue}'],
     rules: {
       'vue/multi-word-component-names': "off",
+      "vue/no-mutating-props": ["error", {
+        "shallowOnly": false
+      }],
+      "@typescript-eslint/no-explicit-any": ["off"]
     }
   },
 

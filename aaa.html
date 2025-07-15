@@ -1,106 +1,446 @@
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title></title>
-  <style>
-      body{
-          margin: 0;
-          padding: 0;
-      }
-      div{
-          width: 300px;
-          height: 300px;
-          border: 1px solid #000000;
-          margin-top: 20px;
-          margin-left: 30px;
-      }
-  </style>
-  <script>
-
-    //判断鼠标是否按下
-    var isDown = false;
-
-    //实时监听鼠标位置
-    var moveX = 0;
-    var moveY = 0;
-
-    //记录鼠标按下瞬间的位置
-    var x = 0;
-    var y = 0;
-
-    //鼠标按下时移动的偏移量
-    var mouseMoveX = 0;
-    var mouseMoveY = 0;
-
-    //div的位置
-    var div_x = 0;
-    var div_y = 0;
-
-
-    //鼠标按下事件
-    function myDown(event){
-      x = event.clientX;
-      y = event.clientY;
-      isDown = true;
-
-      var mess = document.getElementById("mess");
-
-      var cont = document.getElementById("cont");
-      //获取DIV的位置
-      div_x = cont.offsetLeft;
-      div_y = cont.offsetTop;
-
-      mess.innerHTML = "鼠标按下了，当前鼠标位置：x="+x+",y="+y+"<br>"+
-        "DIV的位置：x="+div_x+",y="+div_y;
-    }
-
-    //鼠标移动事件
-    function myMove(event){
-      moveX = event.clientX;
-      moveY = event.clientY;
-      var cont = document.getElementById("cont");
-      var mess2 = document.getElementById("mess2");
-
-      cont.innerHTML = "x="+moveX+",y="+moveY;
-
-      //计算鼠标移动偏移量
-      mouseMoveX = moveX - x;
-      mouseMoveY = moveY - y;
-
-      //当鼠标按下时才执行
-      if(isDown){
-        var new_div_x = div_x + mouseMoveX;
-        var new_div_y = div_y + mouseMoveY;
-
-        //改变div的位置
-        cont.style.marginTop = new_div_y;
-        cont.style.marginLeft = new_div_x;
-
-        mess2.innerHTML = "鼠标移动的偏移量为：x="+mouseMoveX+",y="+mouseMoveY+"<br>"+
-          "DIV新位置：x="+new_div_x+",y="+new_div_y;
-      }
-
-
-    }
-
-    //鼠标松开事件
-    function myUp(){
-      var mess = document.getElementById("mess");
-      mess.innerHTML = "鼠标松开了";
-      isDown = false;
-      // mouseMoveX = 0;
-      // mouseMoveY = 0;
-    }
-
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas标尺示例</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#64748B',
+                        neutral: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-none {
+                scrollbar-width: none;
+            }
+            .scrollbar-none::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 font-inter min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <header class="mb-8 text-center">
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-gray-800 mb-2">Canvas标尺组件</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">跟随滚动条实时显示刻度的标尺实现，支持水平和垂直方向，可自定义刻度精度和样式</p>
+        </header>
 
-<div id="cont" onmouseup="myUp()" onmousedown="myDown(event)"  onmousemove="myMove(event)">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- 控制面板 -->
+                <div class="lg:w-1/4 space-y-4">
+                    <div class="bg-neutral rounded-lg p-4">
+                        <h2 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i class="fa fa-sliders mr-2 text-primary"></i>控制面板
+                        </h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">方向</label>
+                                <div class="flex space-x-2">
+                                    <button id="horizontalBtn" class="px-3 py-1 bg-primary text-white rounded-md text-sm flex-1">水平</button>
+                                    <button id="verticalBtn" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm flex-1">垂直</button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="scalePrecision" class="block text-sm font-medium text-gray-700 mb-1">刻度精度</label>
+                                <input type="range" id="scalePrecision" min="1" max="10" value="5" 
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>小</span>
+                                    <span>大</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="scaleColor" class="block text-sm font-medium text-gray-700 mb-1">刻度颜色</label>
+                                <input type="color" id="scaleColor" value="#3B82F6" 
+                                    class="w-full h-8 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                            
+                            <div>
+                                <label for="bgColor" class="block text-sm font-medium text-gray-700 mb-1">背景颜色</label>
+                                <input type="color" id="bgColor" value="#FFFFFF" 
+                                    class="w-full h-8 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                            
+                            <div>
+                                <label for="fontSize" class="block text-sm font-medium text-gray-700 mb-1">字体大小</label>
+                                <input type="range" id="fontSize" min="8" max="16" value="10" 
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>小</span>
+                                    <span>大</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-neutral rounded-lg p-4">
+                        <h2 class="font-semibold text-gray-800 mb-3 flex items-center">
+                            <i class="fa fa-info-circle mr-2 text-primary"></i>使用说明
+                        </h2>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>拖动滚动条查看标尺变化</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>使用控制面板自定义标尺样式</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                                <span>支持水平和垂直两种方向</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 标尺展示区域 -->
+                <div class="lg:w-3/4">
+                    <div class="relative border border-gray-200 rounded-lg overflow-hidden h-[500px]">
+                        <!-- 水平标尺 -->
+                        <div id="horizontalRuler" class="absolute top-0 left-0 w-full h-8 border-b border-gray-200 bg-white flex items-end">
+                            <canvas id="hRulerCanvas" class="w-full h-full"></canvas>
+                        </div>
+                        
+                        <!-- 垂直标尺 -->
+                        <div id="verticalRuler" class="absolute top-0 left-0 w-8 h-full border-r border-gray-200 bg-white flex items-end">
+                            <canvas id="vRulerCanvas" class="w-full h-full"></canvas>
+                        </div>
+                        
+                        <!-- 内容区域 -->
+                        <div id="contentContainer" class="absolute top-8 left-8 right-0 bottom-0 overflow-auto scrollbar-thin bg-gray-50">
+                            <div id="content" class="w-[2000px] h-[2000px] p-8 relative">
+                                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                                    <div class="text-4xl font-bold text-gray-800 mb-4">Canvas标尺演示</div>
+                                    <p class="text-gray-600 max-w-md mx-auto mb-6">滚动右侧和底部的滚动条，观察标尺变化</p>
+                                    <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
+                                        <div class="bg-primary/10 p-4 rounded-lg">
+                                            <i class="fa fa-arrows-h text-primary text-2xl mb-2"></i>
+                                            <p class="text-sm text-gray-700">水平滚动</p>
+                                        </div>
+                                        <div class="bg-primary/10 p-4 rounded-lg">
+                                            <i class="fa fa-arrows-v text-primary text-2xl mb-2"></i>
+                                            <p class="text-sm text-gray-700">垂直滚动</p>
+                                        </div>
+                                        <div class="bg-primary/10 p-4 rounded-lg">
+                                            <i class="fa fa-sliders text-primary text-2xl mb-2"></i>
+                                            <p class="text-sm text-gray-700">自定义样式</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 网格背景 -->
+                                <div class="absolute inset-0 pointer-events-none opacity-20">
+                                    <div class="w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2Utb3BhY2l0eT0iMC4yIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 坐标指示器 -->
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fa fa-crosshairs text-primary mr-2"></i>
+                            <span id="coordinateDisplay">坐标: X=0, Y=0</span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            <span id="scrollPosition">滚动位置: 水平 0px, 垂直 0px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="text-center text-gray-500 text-sm">
+            <p>© 2025 Canvas标尺组件 | 使用Tailwind CSS和Canvas API构建</p>
+        </footer>
+    </div>
 
-</div>
-<font id="mess"></font><br>
-<font id="mess2"></font>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 获取DOM元素
+            const hRulerCanvas = document.getElementById('hRulerCanvas');
+            const vRulerCanvas = document.getElementById('vRulerCanvas');
+            const contentContainer = document.getElementById('contentContainer');
+            const horizontalBtn = document.getElementById('horizontalBtn');
+            const verticalBtn = document.getElementById('verticalBtn');
+            const scalePrecision = document.getElementById('scalePrecision');
+            const scaleColor = document.getElementById('scaleColor');
+            const bgColor = document.getElementById('bgColor');
+            const fontSize = document.getElementById('fontSize');
+            const coordinateDisplay = document.getElementById('coordinateDisplay');
+            const scrollPosition = document.getElementById('scrollPosition');
+            
+            // 获取Canvas上下文
+            const hCtx = hRulerCanvas.getContext('2d');
+            const vCtx = vRulerCanvas.getContext('2d');
+            
+            // 标尺配置
+            let rulerConfig = {
+                direction: 'horizontal', // 'horizontal' 或 'vertical'
+                scalePrecision: 5,       // 刻度精度 (1-10)
+                scaleColor: '#3B82F6',   // 刻度颜色
+                bgColor: '#FFFFFF',      // 背景颜色
+                fontSize: 10,            // 字体大小
+                scaleSpacing: 10,        // 基础刻度间距(px)
+                majorScaleInterval: 10,  // 主刻度间隔(个)
+                mediumScaleInterval: 5,  // 中刻度间隔(个)
+                scaleHeight: 8,          // 刻度高度(px)
+                mediumScaleHeight: 5,    // 中刻度高度(px)
+                minorScaleHeight: 3,     // 小刻度高度(px)
+                fontOffset: 15           // 文字偏移量(px)
+            };
+            
+            // 初始化
+            function init() {
+                // 设置Canvas尺寸
+                resizeCanvases();
+                
+                // 绘制初始标尺
+                drawRulers();
+                
+                // 绑定事件
+                bindEvents();
+            }
+            
+            // 设置Canvas尺寸
+            function resizeCanvases() {
+                // 设置水平标尺Canvas尺寸
+                hRulerCanvas.width = contentContainer.scrollWidth;
+                hRulerCanvas.height = document.getElementById('horizontalRuler').offsetHeight;
+                
+                // 设置垂直标尺Canvas尺寸
+                vRulerCanvas.width = document.getElementById('verticalRuler').offsetWidth;
+                vRulerCanvas.height = contentContainer.scrollHeight;
+            }
+            
+            // 绘制标尺
+            function drawRulers() {
+                // 绘制水平标尺
+                drawHorizontalRuler();
+                
+                // 绘制垂直标尺
+                drawVerticalRuler();
+            }
+            
+            // 绘制水平标尺
+            function drawHorizontalRuler() {
+                const ctx = hCtx;
+                const width = hRulerCanvas.width;
+                const height = hRulerCanvas.height;
+                const scrollLeft = contentContainer.scrollLeft;
+                
+                // 清除画布
+                ctx.fillStyle = rulerConfig.bgColor;
+                ctx.fillRect(0, 0, width, height);
+                
+                // 设置样式
+                ctx.strokeStyle = rulerConfig.scaleColor;
+                ctx.fillStyle = rulerConfig.scaleColor;
+                ctx.font = `${rulerConfig.fontSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                
+                // 计算实际刻度间距（考虑精度）
+                const spacing = rulerConfig.scaleSpacing * (11 - rulerConfig.scalePrecision) / 5;
+                
+                // 绘制刻度
+                let x = 0;
+                let value = 0;
+                
+                // 计算起始刻度（确保从完整的刻度开始）
+                const remainder = scrollLeft % spacing;
+                x = -remainder;
+                value = Math.floor(scrollLeft / spacing) * spacing;
+                
+                while (x < width) {
+                    const isMajor = value % (rulerConfig.majorScaleInterval * spacing) === 0;
+                    const isMedium = value % (rulerConfig.mediumScaleInterval * spacing) === 0 && !isMajor;
+                    const scaleHeight = isMajor ? rulerConfig.scaleHeight : 
+                                         isMedium ? rulerConfig.mediumScaleHeight : 
+                                         rulerConfig.minorScaleHeight;
+                    
+                    // 绘制刻度线
+                    ctx.beginPath();
+                    ctx.moveTo(x, height - scaleHeight);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                    
+                    // 绘制刻度值（只在主刻度上绘制）
+                    if (isMajor) {
+                        ctx.fillText(value.toString(), x, height - rulerConfig.fontOffset);
+                    }
+                    
+                    // 移动到下一个刻度
+                    x += spacing;
+                    value += spacing;
+                }
+            }
+            
+            // 绘制垂直标尺
+            function drawVerticalRuler() {
+                const ctx = vCtx;
+                const width = vRulerCanvas.width;
+                const height = vRulerCanvas.height;
+                const scrollTop = contentContainer.scrollTop;
+                
+                // 清除画布
+                ctx.fillStyle = rulerConfig.bgColor;
+                ctx.fillRect(0, 0, width, height);
+                
+                // 设置样式
+                ctx.strokeStyle = rulerConfig.scaleColor;
+                ctx.fillStyle = rulerConfig.scaleColor;
+                ctx.font = `${rulerConfig.fontSize}px Arial`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                
+                // 计算实际刻度间距（考虑精度）
+                const spacing = rulerConfig.scaleSpacing * (11 - rulerConfig.scalePrecision) / 5;
+                
+                // 绘制刻度
+                let y = 0;
+                let value = 0;
+                
+                // 计算起始刻度（确保从完整的刻度开始）
+                const remainder = scrollTop % spacing;
+                y = -remainder;
+                value = Math.floor(scrollTop / spacing) * spacing;
+                
+                while (y < height) {
+                    const isMajor = value % (rulerConfig.majorScaleInterval * spacing) === 0;
+                    const isMedium = value % (rulerConfig.mediumScaleInterval * spacing) === 0 && !isMajor;
+                    const scaleWidth = isMajor ? rulerConfig.scaleHeight : 
+                                         isMedium ? rulerConfig.mediumScaleHeight : 
+                                         rulerConfig.minorScaleHeight;
+                    
+                    // 绘制刻度线
+                    ctx.beginPath();
+                    ctx.moveTo(width - scaleWidth, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                    
+                    // 绘制刻度值（只在主刻度上绘制）
+                    if (isMajor) {
+                        ctx.save();
+                        ctx.translate(width - rulerConfig.fontOffset, y);
+                        ctx.rotate(-Math.PI / 2);
+                        ctx.fillText(value.toString(), 0, 0);
+                        ctx.restore();
+                    }
+                    
+                    // 移动到下一个刻度
+                    y += spacing;
+                    value += spacing;
+                }
+            }
+            
+            // 绑定事件
+            function bindEvents() {
+                // 滚动事件
+                contentContainer.addEventListener('scroll', () => {
+                    drawRulers();
+                    updateScrollPosition();
+                });
+                
+                // 窗口大小改变事件
+                window.addEventListener('resize', () => {
+                    resizeCanvases();
+                    drawRulers();
+                });
+                
+                // 方向切换按钮
+                horizontalBtn.addEventListener('click', () => {
+                    rulerConfig.direction = 'horizontal';
+                    horizontalBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                    horizontalBtn.classList.add('bg-primary', 'text-white');
+                    verticalBtn.classList.remove('bg-primary', 'text-white');
+                    verticalBtn.classList.add('bg-gray-200', 'text-gray-700');
+                    drawRulers();
+                });
+                
+                verticalBtn.addEventListener('click', () => {
+                    rulerConfig.direction = 'vertical';
+                    verticalBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                    verticalBtn.classList.add('bg-primary', 'text-white');
+                    horizontalBtn.classList.remove('bg-primary', 'text-white');
+                    horizontalBtn.classList.add('bg-gray-200', 'text-gray-700');
+                    drawRulers();
+                });
+                
+                // 刻度精度滑块
+                scalePrecision.addEventListener('input', () => {
+                    rulerConfig.scalePrecision = parseInt(scalePrecision.value);
+                    drawRulers();
+                });
+                
+                // 刻度颜色选择器
+                scaleColor.addEventListener('input', () => {
+                    rulerConfig.scaleColor = scaleColor.value;
+                    drawRulers();
+                });
+                
+                // 背景颜色选择器
+                bgColor.addEventListener('input', () => {
+                    rulerConfig.bgColor = bgColor.value;
+                    drawRulers();
+                });
+                
+                // 字体大小滑块
+                fontSize.addEventListener('input', () => {
+                    rulerConfig.fontSize = parseInt(fontSize.value);
+                    drawRulers();
+                });
+                
+                // 鼠标移动事件（显示坐标）
+                contentContainer.addEventListener('mousemove', (e) => {
+                    const rect = contentContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left + contentContainer.scrollLeft;
+                    const y = e.clientY - rect.top + contentContainer.scrollTop;
+                    coordinateDisplay.textContent = `坐标: X=${Math.round(x)}, Y=${Math.round(y)}`;
+                });
+                
+                // 鼠标离开内容区域
+                contentContainer.addEventListener('mouseleave', () => {
+                    coordinateDisplay.textContent = '坐标: X=?, Y=?';
+                });
+            }
+            
+            // 更新滚动位置显示
+            function updateScrollPosition() {
+                const hScroll = contentContainer.scrollLeft;
+                const vScroll = contentContainer.scrollTop;
+                scrollPosition.textContent = `滚动位置: 水平 ${hScroll}px, 垂直 ${vScroll}px`;
+            }
+            
+            // 初始化应用
+            init();
+        });
+    </script>
 </body>
 </html>
+    

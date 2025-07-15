@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.arco-btn {
+  line-height: 1 !important;
+}
+:root {
+  --nav-width: 40px
+}
+.arco-scrollbar-track-direction-vertical {
+  width: 10px !important;
+}
+.arco-scrollbar-thumb-bar {
+  width: 5px !important;
+}

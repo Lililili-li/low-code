@@ -28,18 +28,8 @@ body {
   height: 100%;
   overflow: hidden;
 }
-.n-layout-toggle-button {
-  z-index: 9999!important;
-}
-.v-line {
-  width: 1px;
-  background: red;
-  position: absolute;
-  height: 100%;
-}
-.h-line {
-  height: 1px;
-  background: red;
-  position: absolute;
-  width: 100%;
-}
+
+
+/*div[aria-hidden=true] {*/
+/*  display: none !important;*/
+/*}*/

@@ -1,0 +1,18 @@
+[
+  {
+    "key": "name",
+    "type": "string",
+    "value": "value",
+    "id": 1
+  },
+  {
+    "key": "person",
+    "type": "object",
+    "value": {
+      "name": "张三",
+      "age": 18,
+      "gender": "男"
+    },
+    "id": 2
+  }
+]

@@ -1,103 +1,235 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { renderIcon } from '@/utils'
-import { Copy, Cut, Document, Trash, ArrowUpCircle, ArrowDownCircle } from '@vicons/ionicons5'
-import { useComponentSettingStore } from '@/stores/componentSettingStore.ts'
+import { computed, ref } from "vue";
+import { formatNumber } from "@/utils";
+import { useComponentConfigStore } from "@/stores/useComponentConfigStore";
+import type { MoveStateType, DirectionLabelType } from "@/types/panel";
+import AxisHelper from "./AxisHelper.vue";
+import type { IComponentType } from "@/types/component.d";
+import useLayers from "@/hooks/useLayers";
 
-const componentSettingStore = useComponentSettingStore()
-const { style, active, componentId } = defineProps(['style', 'active', 'componentId'])
-const showDropdown = ref(false)
-const dropdownPosition = ref({
-  x: 0,
-  y: 0,
-})
-const dropdownOptions = [
+const { onLayerHover, onLayerLeave } = useLayers();
+const componentConfigStore = useComponentConfigStore();
+const { componentInfo, moveState } = defineProps<{
+  componentInfo: IComponentType;
+  moveState: MoveStateType;
+}>();
+const isActive = computed(
+  () => componentConfigStore.activeComponent?.id === componentInfo.id
+);
+const isSelect = computed(() =>
+  componentConfigStore.selectIds?.includes(componentInfo.id)
+);
+const emits = defineEmits(["onResizeMouseEvent"]);
+
+const directionList = ref<DirectionLabelType[]>([
   {
-    label: '复制',
-    icon: renderIcon(Copy),
-    key: 'copy'
+    style: {
+      top: 0,
+      left: 0,
+      cursor: "nwse-resize",
+      transform: "translate(-50%, -50%)",
+      width: "12px",
+      height: "12px",
+    },
+    direction: 1,
+    name: "西北",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      const moveXDiff = formatNumber(moveX - moveState.moveX);
+      const moveYDiff = formatNumber(moveY - moveState.moveY);
+      (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
+      (componentConfigStore.activeComponent!.style.height as number) -= moveYDiff;
+      (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
+      (componentConfigStore.activeComponent!.style.top as number) += moveYDiff;
+    },
   },
   {
-    label: '粘贴',
-    icon: renderIcon(Document),
-    key: 'paste'
+    style: {
+      top: 0,
+      right: 0,
+      cursor: "nesw-resize",
+      transform: "translate(50%, -50%)",
+      width: "12px",
+      height: "12px",
+    },
+    direction: 2,
+    name: "东北",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      const moveXDiff = formatNumber(moveX - moveState.moveX);
+      const moveYDiff = formatNumber(moveY - moveState.moveY);
+      (componentConfigStore.activeComponent!.style.width as number) += moveXDiff;
+      (componentConfigStore.activeComponent!.style.height as number) -= moveYDiff;
+      (componentConfigStore.activeComponent!.style.top as number) += moveYDiff;
+    },
   },
   {
-    label: '剪切',
-    icon: renderIcon(Cut),
-    key: 'cut'
+    style: {
+      bottom: 0,
+      right: 0,
+      cursor: "nwse-resize",
+      transform: "translate(50%, 50%)",
+      width: "12px",
+      height: "12px",
+    },
+    direction: 3,
+    name: "东南",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      (componentConfigStore.activeComponent!.style.width as number) += formatNumber(
+        moveX - moveState.moveX
+      );
+      (componentConfigStore.activeComponent!.style.height as number) += formatNumber(
+        moveY - moveState.moveY
+      );
+    },
   },
   {
-    label: '置顶',
-    icon: renderIcon(ArrowUpCircle),
-    key: 'up',
-    handle: () => {
-      style.zIndex = 9
-    }
+    style: {
+      bottom: 0,
+      left: 0,
+      cursor: "nesw-resize",
+      transform: "translate(-50%, 50%)",
+      width: "12px",
+      height: "12px",
+    },
+    direction: 4,
+    name: "西南",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      const moveXDiff = formatNumber(moveX - moveState.moveX);
+      const moveYDiff = formatNumber(moveY - moveState.moveY);
+      (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
+      (componentConfigStore.activeComponent!.style.height as number) += moveYDiff;
+      (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
+    },
   },
   {
-    label: '置底',
-    icon: renderIcon(ArrowDownCircle),
-    key: 'down'
+    style: {
+      bottom: 0,
+      left: "50%",
+      cursor: "ns-resize",
+      transform: "translate(-50%,50%)",
+      width: "30px",
+      height: "12px",
+    },
+    direction: 5,
+    name: "南",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      (componentConfigStore.activeComponent!.style.height as number) += formatNumber(
+        moveY - moveState.moveY
+      );
+    },
   },
   {
-    label: '删除',
-    icon: renderIcon(Trash),
-    key: 'delete',
-    handle: () => {
-      console.log(componentId, 'id')
-      componentSettingStore.removeComponent(componentId)
-    }
+    style: {
+      top: 0,
+      left: "50%",
+      cursor: "ns-resize",
+      transform: "translate(-50%,-50%)",
+      width: "30px",
+      height: "12px",
+    },
+    direction: 6,
+    name: "北",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      const moveDiff = formatNumber(moveY - moveState.moveY);
+      (componentConfigStore.activeComponent!.style.height as number) -= moveDiff;
+      (componentConfigStore.activeComponent!.style.top as number) += moveDiff;
+    },
   },
-]
-const handleContextMenu = (e: Event) => {
-  e.preventDefault()
-  showDropdown.value = true
-  dropdownPosition.value.x = e.clientX
-  dropdownPosition.value.y = e.clientY
-}
-const onClickOutside = () => {
-  showDropdown.value = false
-}
-const handleSelect = (value: string) => {
-  dropdownOptions.find(item => item.key === value)!.handle()
-  onClickOutside()
-}
+  {
+    style: {
+      top: "50%",
+      left: 0,
+      cursor: "ew-resize",
+      transform: "translate(-50%, -50%)",
+      width: "12px",
+      height: "30px",
+    },
+    direction: 7,
+    name: "西",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      const moveXDiff = formatNumber(moveX - moveState.moveX);
+      (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
+      (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
+    },
+  },
+  {
+    style: {
+      top: "50%",
+      right: 0,
+      cursor: "ew-resize",
+      transform: "translate(50%, -50%)",
+      width: "12px",
+      height: "30px",
+    },
+    direction: 8,
+    name: "东",
+    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+      (componentConfigStore.activeComponent!.style.width as number) += formatNumber(
+        moveX - moveState.moveX
+      );
+    },
+  },
+]);
+
+const onResizeMousedown = (event: MouseEvent, data: any) => {
+  emits("onResizeMouseEvent", { event, data, isResize: true });
+};
 </script>
 
 <template>
   <div
-    class="component-box absolute"
-    :style="{
-      zIndex: style.zIndex,
-      top: style.top + 'px',
-      left: style.left + 'px',
-      width: typeof style.width !== 'string' ? style.width + 'px' : style.width,
-      height: typeof style.height !== 'string' ? style.height + 'px' : style.height,
-    }"
-    @contextmenu="handleContextMenu"
+    class="edit-box absolute"
     data-type="component"
+    :style="{
+      zIndex: componentInfo.style.zIndex,
+      top: componentInfo.style.top + 'px',
+      left: componentInfo.style.left + 'px',
+      width:
+        typeof componentInfo.style.width !== 'string'
+          ? componentInfo.style.width + 'px'
+          : componentInfo.style.width,
+      height:
+        typeof componentInfo.style.height !== 'string'
+          ? componentInfo.style.height + 'px'
+          : componentInfo.style.height,
+    }"
+    :data-comp-id="componentInfo.id"
+    @mouseenter="() => onLayerHover(componentInfo.id)"
+    @mouseleave="() => onLayerLeave(componentInfo.id)"
   >
-    <div
-      class="box absolute h-full w-full"
-    >
-      <slot></slot>
+    <div class="w-full h-full">
+      <div class="box absolute h-full w-full" :data-comp-id="componentInfo.id">
+        <slot></slot>
+      </div>
+      <div
+        class="mask absolute h-full w-full"
+        :class="componentConfigStore.hoverIds.includes(componentInfo.id) ? 'hover' : ''"
+        :data-comp-id="componentInfo.id"
+        data-type="component"
+      ></div>
+      <div
+        :class="[
+          'change-box absolute h-full w-full',
+          isActive || isSelect ? 'active' : '',
+        ]"
+        v-show="isActive || isSelect"
+        data-type="component"
+        :data-comp-id="componentInfo.id"
+      ></div>
+
+      <!-- 指向标 -->
+      <div
+        class="direction-box absolute"
+        v-for="item in directionList"
+        :key="item.direction"
+        :style="item.style"
+        v-show="isActive && !isSelect"
+        @mousedown.stop.left="onResizeMousedown($event, item)"
+        data-type="component"
+        :data-comp-id="componentInfo.id"
+      ></div>
+      <!-- 轴辅助线 -->
+      <AxisHelper :componentId="componentInfo.id" :moveState="moveState" />
     </div>
-    <div
-      :class="['change-box absolute h-full w-full', active ? 'active' : '']"
-      data-type="component"
-      v-show="active"
-    ></div>
-    <n-dropdown
-      placement="bottom-start"
-      trigger="manual"
-      :x="dropdownPosition.x"
-      :y="dropdownPosition.y"
-      :options="dropdownOptions"
-      :show="showDropdown"
-      :on-clickoutside="onClickOutside"
-      @select="handleSelect"
-    />
   </div>
 </template>
 
@@ -105,14 +237,28 @@ const handleSelect = (value: string) => {
 .box {
   z-index: 1;
 }
+.mask {
+  z-index: 2;
+  cursor: pointer;
+}
+.hover {
+  background-color: rgba(255, 0, 0, 0.05);
+}
 
 .change-box {
-  z-index: 2;
+  z-index: 3;
   cursor: grab;
 }
 
 .active {
+  border: 2px dashed red;
+  background: rgba(255, 0, 0, 0.1);
+}
+.direction-box {
+  z-index: 3;
+  position: absolute;
   border: 2px solid red;
-  background: rgba(255, 0, 0 , .1);
+  border-radius: 4px;
+  background-color: #fff;
 }
 </style>

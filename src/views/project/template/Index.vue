@@ -1,37 +1,20 @@
 <script setup lang="ts">
-import {
-  Search,
-} from '@vicons/ionicons5'
-import { NIcon } from 'naive-ui'
 import { ref } from 'vue'
+import Header from '../components/Header.vue'
 
-const formData = ref({
-  templateName: '',
-})
-
+const onSearch = (name: string) => {
+  console.log(name, 'name');
+}
 </script>
 
 <template>
-  <div class="list-container">
-    <n-layout-header bordered style="height: 60px">
-      <div class="header h-full flex items-center justify-between">
-        <div class="search flex">
-          <n-input
-            v-model:value="formData.templateName"
-            placeholder="请输入模版名称"
-            style="margin-right: 20px; width: 250px"
-          />
-          <n-button type="primary">
-            <template #icon>
-              <n-icon>
-                <Search />
-              </n-icon>
-            </template>
-            搜索
-          </n-button>
-        </div>
-      </div>
-    </n-layout-header>
+  <div class="list-container w-full">
+    <a-layout-header style="height: 50px; border-bottom: 1px solid #333">
+      <Header @onSearch="onSearch" placeholder="请输入模版名称" />
+    </a-layout-header>
+    <a-layout-content>
+      <a-empty description="暂无数据" />
+    </a-layout-content>
   </div>
 </template>
 

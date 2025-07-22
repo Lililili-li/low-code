@@ -48,20 +48,16 @@ function draw() {
  * @return {void}
  */
 const state = {
-  x: 40,
-  y: 100,
-  moveY: 0
+  x: 0,
+  y: 0
 }
-function drawSketchRuler(step = 0) {
+function drawSketchRuler(stepY = 0, stepX = 0) {
   const canvas = canvasRef.value as HTMLCanvasElement;
   if (!canvas) return;
-  // const containerRect = document.querySelector('.horzontal-ruler')?.getBoundingClientRect()!;
   const containerRect = canvas?.getBoundingClientRect()!;
   const dpr = window.devicePixelRatio;
-  // 重新设置 canvas 自身宽高大小和 css 大小。放大 canvas；css 保持不变，因为我们需要那么多的点
   canvas.width = Math.round(containerRect.width * dpr);
   canvas.height = Math.round(containerRect.height * dpr);
-  // 直接用 scale 放大整个坐标系，相对来说就是放大了每个绘制操作
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.scale(dpr, dpr);
@@ -97,12 +93,16 @@ function drawSketchRuler(step = 0) {
 
   const { minSketch, middleSketch, maxSketch } = info;
   if (props.layout === "horizontal") {
-    state.x = cloneDeep(props.left)
-    ctx.translate((state.x - step) * props.scale, 0);
-    const min = - Math.round(props.scrollWidth! * 0.3);
-    const end = Math.round(props.scrollWidth! * 0.7);
+    if(stepX) {
+      state.x += stepX
+    } else {
+      state.x = props.left
+    }
+    ctx.translate(state.x, 0)
+    const min = -10000;
+    const end = 99999;
     for (let i = min; i <= end; i += 1) {
-      const point = i * props.scale;
+      const point = i * scale;
       if (i % maxSketch === 0) {
         ctx.beginPath();
         ctx.moveTo(point, 0);
@@ -122,17 +122,16 @@ function drawSketchRuler(step = 0) {
       }
     }
   } else {
-    // step 每次移动的步长
-    if (step) {
-      // state.y += step
-    }else {
-      state.y = cloneDeep(props.top)
+    if(stepY) {
+      state.y += stepY
+    } else {
+      state.y = props.top
     }
-    ctx.translate(0, state.y);
-    const min = -Math.round(props.scrollHeight! * 0.3) ;
-    const end = Math.round(props.scrollHeight! * 0.7);
+    ctx.translate(0, state.y )
+    const min = -10000;
+    const end = 99999;
     for (let i = min; i <= end; i += minSketch) {
-      const point = i * props.scale;
+      const point = i * scale;
       if (i % maxSketch === 0) {
         ctx.beginPath();
         ctx.moveTo(0, point);
@@ -153,12 +152,11 @@ function drawSketchRuler(step = 0) {
     // 纵向标尺，绘制纵向文本
     ctx.rotate(-Math.PI / 2);
     for (let i = min; i <= end; i += minSketch) {
-      const point = i * props.scale;
+      const point = i * scale;
       if (i % maxSketch === 0) {
         ctx.fillText(String(i), -point - 10, 10);
       }
     }
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.restore();
   }
 }

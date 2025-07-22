@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, withDefaults } from "vue";
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+  withDefaults,
+} from "vue";
 import Ruler from "./Ruler.vue";
 import useMouse from "@/hooks/useMouse";
 
@@ -9,7 +17,9 @@ interface Props {
   width?: number;
   height?: number;
   scale: number;
-  padding?: number
+  padding?: number;
+  maxScale?: number;
+  minScale?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -20,80 +30,162 @@ const props = withDefaults(defineProps<Props>(), {
   scrollWidth: 1920,
   scrollHeight: 1080,
   scale: 1,
-  padding: 20
+  padding: 20,
+  minScale: 0.1,
+  maxScale: 2,
 });
+
+const emits = defineEmits(["update:scale"]);
 
 const refSketchRuleBox = ref(null);
 const $app = ref<HTMLElement | null>(null);
 const $container = ref(null);
 
 const verticalRulerRef = ref<HTMLElement | null>(null);
+const horizontalRulerRef = ref<HTMLElement | null>(null);
 const scrollState = {
-  startY: 3000,
+  startY: 0,
   moveY: 0,
+  startX: 0,
+  moveX: 0,
 };
+
+let initScrollTop = 0;
+let initScrollLeft = 0;
 const handleScroll = (e) => {
   if (!$app.value) return;
   if (!verticalRulerRef.value) return;
   // 是否为向上滑动
-
-  const isTop = e.target.scrollTop < 3000 ? true : false;
-  if (isTop) {
-    scrollState.moveY = (scrollState.startY - e.target.scrollTop) * computedScale.value!;
-    (verticalRulerRef.value as any).drawSketchRuler(
-      Number(scrollState.moveY)
-    );
+  const afterTop = e.target.scrollTop;
+  const afterLeft = e.target.scrollLeft;
+  const deltaX = scrollState.startX - afterLeft;
+  const deltaY = scrollState.startY - afterTop;
+  const isDiagonal = Math.abs(deltaX) > 1 && Math.abs(deltaY) > 1;
+  if (isDiagonal) {
+    console.log("斜向滑动！", `Δx: ${deltaX}, Δy: ${deltaY}`);
+    // 这里可以添加斜向滑动的处理逻辑
+  } else if (Math.abs(deltaX) > 1) {
+    scrollState.moveX = scrollState.startX - e.target.scrollLeft;
+    (horizontalRulerRef.value as any).drawSketchRuler(0, Number(scrollState.moveX));
+    scrollState.startX = e.target.scrollLeft;
+    initScrollLeft = afterLeft;
+  } else if (Math.abs(deltaY) > 1) {
+    scrollState.moveY = scrollState.startY - e.target.scrollTop;
+    (verticalRulerRef.value as any).drawSketchRuler(Number(scrollState.moveY), 0);
     scrollState.startY = e.target.scrollTop;
-    // if (e.target.scrollTop === 0) {
-    //   console.log('到顶了');
-    //   (verticalRulerRef.value as any).drawSketchRuler(-middleTop.value)
-    // }
-  } else {
+    initScrollTop = afterTop;
   }
 };
 const { moveState, setMoveState, calcMouseMoveDistance } = useMouse();
 
+const handleWheel = (e: WheelEvent) => {
+  // e.preventDefault();
+  // e.stopPropagation();
+  // if (
+  //   e.deltaMode === 0 && // 像素单位
+  //   Math.abs(e.deltaX) > 0 && // 水平和垂直方向都有变化
+  //   Math.abs(e.deltaY) > 0 &&
+  //   // 条件1：deltaX和deltaY接近相等（绝对值比例在阈值范围内）
+  //   (Math.min(Math.abs(e.deltaX), Math.abs(e.deltaY)) /
+  //     Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY)) >
+  //     1 - 0.3 ||
+  //     // 条件2：deltaZ非零（某些浏览器用deltaZ表示缩放）
+  //     Math.abs(e.deltaZ) > 0)
+  // ) {
+  //   console.log(e.deltaY);
+  //   e.preventDefault();
+  // }
+  // if (e.deltaY > 0 && props.scale <= props.maxScale) {
+  //   emits("update:scale", props.scale + 0.1);
+  //   console.log(e.deltaZ);
+  //   console.log(e.deltaX);
+  //   console.log(e.deltaY);
+  // } else if (e.deltaY < 0 && props.scale >= props.minScale) {
+  //   emits("update:scale", props.scale - 0.1);
+  // }
+};
+let initialDistance = 0
+const handleTouchstart = (event) => {
+  if (event.touches.length === 2) {
+    // 计算两指间的初始距离
+    initialDistance = getDistance(event.touches[0], event.touches[1]);
+    console.log(initialDistance);
+
+  }
+};
+function getDistance(touch1, touch2) {
+  const dx = touch2.clientX - touch1.clientX;
+  const dy = touch2.clientY - touch1.clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
 const handleMouseDown = (e: MouseEvent) => {
   setMoveState({ startX: e.x, startY: e.y, type: "move" });
-}
+};
 const handleMouseMove = (e: MouseEvent) => {
   const { moveX, moveY } = calcMouseMoveDistance(e, props.scale);
   // 做操作。。。。。
-  if (e.metaKey && moveState.type === 'move') {
+  if (e.metaKey && moveState.type === "move") {
     console.log(moveY - moveState.moveY);
-    (verticalRulerRef.value as any).drawSketchRuler(moveY - moveState.moveY)
+    (verticalRulerRef.value as any).drawSketchRuler(moveY - moveState.moveY);
   }
   setMoveState({ moveX, moveY });
-
-}
+};
 const handleMouseUp = (e: MouseEvent) => {
   setMoveState({ moveX: 0, moveY: 0, type: null });
-}
+};
 const handleMouseLeave = (e: MouseEvent) => {
-  setMoveState
-}
+  setMoveState;
+};
 
 // 计算默认滚动距离，并设置正确的top和left值
 const middleTop = ref(0);
+const middleLeft = ref(0);
 const clacScrollDistance = () => {
   nextTick(() => {
-    ($app.value as any).scrollTop = 3000;
-    ($app.value as any).scrollLeft = 3000;
-    const { height } = $app.value!.getBoundingClientRect();
-    middleTop.value = (height - props.canvasHeight! * computedScale.value!) / 2;
+    const { height, width } = $app.value!.getBoundingClientRect();
+    middleLeft.value = (width - props.canvasWidth! * props.scale) / 2;
+    middleTop.value = (height - props.canvasHeight! * props.scale) / 2;
+    ($app.value as any).scrollTop = 1000 - middleTop.value;
+    scrollState.startY = 1000 - middleTop.value;
+    ($app.value as any).scrollLeft = 1000 - middleLeft.value;
+    scrollState.startX = 1000 - middleLeft.value;
   });
 };
 
 // 计算缩放倍数
-const computedScale = computed(() => {
-  if (!$app.value) return;
+const computedScale = () => {
+  if (!$app.value) return 0;
   const app = $app.value as HTMLDivElement;
   const { width } = app.getBoundingClientRect();
-  return Number(((width - props.padding * 2) / props.canvasWidth!).toFixed(2)) as number;
-});
+  emits(
+    "update:scale",
+    Number(((width - props.padding * 2) / props.canvasWidth!).toFixed(2)) as number
+  );
+};
+
+watch(
+  () => props.scale,
+  () => {
+    clacScrollDistance();
+  }
+);
+
+const handleResize = () => {
+  nextTick(() => {
+    (verticalRulerRef.value as any).drawSketchRuler();
+    (horizontalRulerRef.value as any).drawSketchRuler();
+    computedScale();
+    clacScrollDistance();
+  });
+};
 
 onMounted(() => {
   clacScrollDistance();
+  computedScale();
+  window.addEventListener("resize", handleResize);
+});
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
 });
 </script>
 <template>
@@ -101,15 +193,15 @@ onMounted(() => {
     <div class="horzontal-ruler">
       <Ruler
         layout="horizontal"
-        :scale="computedScale as number"
+        :scale="props.scale as number"
         ref="horizontalRulerRef"
-        :left="40"
+        :left="20"
       />
     </div>
     <div class="vertical-ruler">
       <Ruler
         layout="vertical"
-        :scale="computedScale as number"
+        :scale="props.scale as number"
         ref="verticalRulerRef"
         :top="middleTop"
       />
@@ -133,13 +225,16 @@ onMounted(() => {
         <div
           ref="refSketchRuleBox"
           class="canvas"
+          id="canvas-ruler"
           :style="{
-            transform: `scale(${computedScale}, ${computedScale})`,
+            transform: `scale(${props.scale}, ${props.scale})`,
             width: canvasWidth + 'px',
             height: canvasHeight + 'px',
-            left: `3020px`,
-            top: `${3000 + middleTop}px`,
+            left: `1000px`,
+            top: `1000px`,
           }"
+          @wheel="handleWheel"
+          @touchstart="handleTouchstart"
         >
           <slot></slot>
         </div>

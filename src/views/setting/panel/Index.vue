@@ -12,7 +12,7 @@ import type { IComponentType } from "@/types/component.d";
 import useMouse from "@/hooks/useMouse";
 import type { DirectionLabelType } from "@/types/panel";
 import { EComponentType } from "@/types/component.d";
-import { Dropdown, DropdownItem } from "@/components/Dropdown";
+import { Dropdown, DropdownItem } from "@/components/dropdown";
 import useLayers from "@/hooks/useLayers";
 import { useLayersStore } from "@/stores/useLayersStore";
 import { useWorkStore } from "@/stores/useWorkStore";
@@ -278,7 +278,7 @@ onUnmounted(() => {
         </DropdownItem>
       </template>
       <SketchRuler
-        :scale="1"
+        v-model:scale="panelConfigStore.panelScaleConf.scale"
         :canvasHeight="panelConfigStore.canvasSetting.height"
         :canvasWidth="panelConfigStore.canvasSetting.width"
       >

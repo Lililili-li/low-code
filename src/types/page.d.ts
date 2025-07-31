@@ -10,6 +10,13 @@ export interface IPage {
   dataSource: IDataSource[]
   methods: any,
   props: Record<string, any>
+  style: {
+    width: number
+    height: number
+    useImage: number
+    backgroundUrl: string
+    backgroundColor: string
+  }
 }
 
 

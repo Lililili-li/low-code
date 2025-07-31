@@ -13,3 +13,8 @@
 .arco-scrollbar-thumb-bar {
   width: 5px !important;
 }
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}

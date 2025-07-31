@@ -10,6 +10,9 @@ import {
 } from "vue";
 import Ruler from "./Ruler.vue";
 import useMouse from "@/hooks/useMouse";
+import panzoom from "panzoom";
+import { throttle } from "@/utils";
+import { useThrottleFn } from "@vueuse/core";
 
 interface Props {
   canvasWidth?: number;
@@ -36,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emits = defineEmits(["update:scale"]);
-
+let panzoomInstance = null;
 const refSketchRuleBox = ref(null);
 const $app = ref<HTMLElement | null>(null);
 const $container = ref(null);
@@ -79,45 +82,20 @@ const handleScroll = (e) => {
 const { moveState, setMoveState, calcMouseMoveDistance } = useMouse();
 
 const handleWheel = (e: WheelEvent) => {
-  // e.preventDefault();
-  // e.stopPropagation();
-  // if (
-  //   e.deltaMode === 0 && // 像素单位
-  //   Math.abs(e.deltaX) > 0 && // 水平和垂直方向都有变化
-  //   Math.abs(e.deltaY) > 0 &&
-  //   // 条件1：deltaX和deltaY接近相等（绝对值比例在阈值范围内）
-  //   (Math.min(Math.abs(e.deltaX), Math.abs(e.deltaY)) /
-  //     Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY)) >
-  //     1 - 0.3 ||
-  //     // 条件2：deltaZ非零（某些浏览器用deltaZ表示缩放）
-  //     Math.abs(e.deltaZ) > 0)
-  // ) {
-  //   console.log(e.deltaY);
-  //   e.preventDefault();
-  // }
-  // if (e.deltaY > 0 && props.scale <= props.maxScale) {
-  //   emits("update:scale", props.scale + 0.1);
-  //   console.log(e.deltaZ);
-  //   console.log(e.deltaX);
-  //   console.log(e.deltaY);
-  // } else if (e.deltaY < 0 && props.scale >= props.minScale) {
-  //   emits("update:scale", props.scale - 0.1);
-  // }
+  throttle(() => {
+    if (Math.abs(e.deltaX) !== 0 && Math.abs(e.deltaY) !== 0)
+      return console.log("没有固定方向");
+    if (e.ctrlKey) {
+      if (e.deltaY > 0 && props.scale <= props.maxScale) {
+        emits("update:scale", props.scale + 0.1);
+      }
+      if (e.deltaY < 0 && props.scale >= props.minScale) {
+        emits("update:scale", props.scale - 0.1);
+      }
+    }
+  }, 50);
 };
-let initialDistance = 0
-const handleTouchstart = (event) => {
-  if (event.touches.length === 2) {
-    // 计算两指间的初始距离
-    initialDistance = getDistance(event.touches[0], event.touches[1]);
-    console.log(initialDistance);
 
-  }
-};
-function getDistance(touch1, touch2) {
-  const dx = touch2.clientX - touch1.clientX;
-  const dy = touch2.clientY - touch1.clientY;
-  return Math.sqrt(dx * dx + dy * dy);
-}
 const handleMouseDown = (e: MouseEvent) => {
   setMoveState({ startX: e.x, startY: e.y, type: "move" });
 };
@@ -161,6 +139,11 @@ const computedScale = () => {
     "update:scale",
     Number(((width - props.padding * 2) / props.canvasWidth!).toFixed(2)) as number
   );
+  // if (panzoomInstance) {
+  //   panzoomInstance!.zoom(
+  //     Number(((width - props.padding * 2) / props.canvasWidth!).toFixed(2)) as number
+  //   );
+  // }
 };
 
 watch(
@@ -183,6 +166,8 @@ onMounted(() => {
   clacScrollDistance();
   computedScale();
   window.addEventListener("resize", handleResize);
+  // panzoomInstance = panzoom(document.getElementById("canvas-ruler"));
+  // console.log(panzoomInstance);
 });
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
@@ -216,12 +201,20 @@ onUnmounted(() => {
       @mousemove="handleMouseMove"
       @mouseup="handleMouseUp"
       @mouseleave="handleMouseLeave"
+      @wheel="(e) => handleWheel(e)"
     >
       <div
         ref="$container"
         class="edit-screen-container"
         style="width: 10000px; height: 10000px"
       >
+        <!-- :style="{
+
+            width: canvasWidth + 'px',
+            height: canvasHeight + 'px',
+            left: `1000px`,
+            top: `1000px`,
+          }" -->
         <div
           ref="refSketchRuleBox"
           class="canvas"
@@ -233,8 +226,6 @@ onUnmounted(() => {
             left: `1000px`,
             top: `1000px`,
           }"
-          @wheel="handleWheel"
-          @touchstart="handleTouchstart"
         >
           <slot></slot>
         </div>
@@ -272,6 +263,7 @@ onUnmounted(() => {
   position: absolute;
   left: 0;
   top: 0;
+  transition: all .3s;
 }
 
 .edit-screens {

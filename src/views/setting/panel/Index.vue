@@ -8,7 +8,7 @@ import EditBox from "@/views/setting/panel/components/EditBox.vue";
 import GroupEditBox from "./components/GroupEditBox.vue";
 import { componentMap } from "@/packages";
 import PanelConfig from "./components/PanelConfig.vue";
-import type { IComponentType } from "@/types/component.d";
+import type { IComponentType, IProps } from "@/types/component.d";
 import useMouse from "@/hooks/useMouse";
 import type { DirectionLabelType } from "@/types/panel";
 import { EComponentType } from "@/types/component.d";
@@ -20,7 +20,10 @@ import { useProjectStore } from "@/stores/useProjectStore";
 import bus from "@/utils/bus";
 import dayjs from "dayjs";
 import SketchRuler from "@/components/SketchRuler/index.vue";
+import { getVariableValue } from "../config/components/variable/util";
+import { useVariableStore } from "@/stores/useVariableStore";
 
+const variableConfStore = useVariableStore();
 const { panelDropdownOptions, mousePosition, initHotKeys } = useLayers();
 const { addHistory } = useWorkStore();
 const componentConfigStore = useComponentConfigStore();
@@ -50,6 +53,12 @@ const onComponentDrop = (event: DragEvent) => {
   componentInfo.style.left = (event.offsetX - (width as number) / 2) as number;
   componentInfo.id = generateUUID();
   componentInfo.type = EComponentType.COMPONENT;
+  // 渲染数据
+  if(componentInfo.props.render.type === 'JSExpression') {
+    componentInfo.props.option.dataset.source = getVariableValue(componentInfo.props.render.value, variableConfStore)
+  } else {
+    componentInfo.props.option.dataset.source = componentInfo.props.render.defaultValue
+  }
   componentConfigStore.setActiveComponent(componentInfo);
   componentConfigStore.clearSelectGroupComponent();
   pageConfigStore.addComponent(componentInfo);
@@ -64,6 +73,7 @@ const onComponentDrop = (event: DragEvent) => {
     time: dayjs().format("MM-DD HH:mm"),
   });
   bus.emit("openAttribute", true);
+
 };
 
 // 通过底部操作栏修改画板缩放
@@ -232,6 +242,12 @@ const onDropdownContextmenu = (event: MouseEvent) => {
   mousePosition.y = event.offsetY;
 };
 
+// 计算组件是否显示
+const compVisible = (props: IProps) => {
+  if (props.visible.type === "Normal") return props.visible.value;
+  return getVariableValue(props.visible.value as string, variableConfStore);
+};
+
 onMounted(async () => {
   await projectStore.getProjectData();
   await pageConfigStore.getPageData();
@@ -306,13 +322,15 @@ onUnmounted(() => {
               ref="editBoxRef"
               :moveState="moveState"
             >
+              <!-- v-show="item.props.visible.value" -->
+
               <component
                 :is="componentMap[item?.componentName]"
                 v-bind="item.props"
                 :width="item.style.width"
                 :height="item.style.height"
                 class="cursor-pointer"
-                v-show="item.props.visible.value"
+                v-show="compVisible(item.props)"
               ></component>
             </EditBox>
             <GroupEditBox
@@ -338,7 +356,7 @@ onUnmounted(() => {
                     :width="child.style.width"
                     :height="child.style.height"
                     class="cursor-pointer"
-                    v-show="child.props.visible.value"
+                    v-show="compVisible(child.props)"
                   ></component>
                 </div>
               </template>
@@ -346,111 +364,6 @@ onUnmounted(() => {
           </template>
         </div>
       </SketchRuler>
-      <!-- <SketchRule
-        v-model:scale="panelConfigStore.panelScaleConf.scale"
-        v-bind="panelConfigStore.panelSetting"
-        :canvasWidth="panelConfigStore.canvasSetting.width"
-        :canvasHeight="panelConfigStore.canvasSetting.height"
-        @zoomchange="({ scale }) => panelConfigStore.setPanelScale(scale)"
-        ref="sketchruleRef"
-      >
-        <template #default>
-          <div
-            data-type="page"
-            :style="{
-              width: panelConfigStore.canvasSetting.width + 'px',
-              height: panelConfigStore.canvasSetting.height + 'px',
-              background:
-                panelConfigStore.canvasSetting.useImage === 1
-                  ? `url(${panelConfigStore.canvasSetting.backgroundUrl})`
-                  : `${panelConfigStore.canvasSetting.backgroundColor}`,
-            }"
-            class="canvas"
-          >
-            <div class="edit-canvas-container" style="width: 3600px;">
-              <template
-                v-for="(item, index) in pageConfigStore.currentPage?.componentList as IComponentType[]"
-                :key="index"
-              >
-                <EditBox
-                  v-if="item.type === EComponentType.COMPONENT"
-                  :componentInfo="item"
-                  @mousedown.left="onComponentMousedown($event, item, 'component')"
-                  @onResizeMouseEvent="onResizeMouseEvent"
-                  ref="editBoxRef"
-                  :moveState="moveState"
-                >
-                  <component
-                    :is="componentMap[item?.componentName]"
-                    v-bind="item.props"
-                    :width="item.style.width"
-                    :height="item.style.height"
-                    class="cursor-pointer"
-                    v-show="item.props.visible.value"
-                  ></component>
-                </EditBox>
-                <GroupEditBox
-                  v-if="item.type === EComponentType.GROUP"
-                  :componentInfo="item"
-                  :moveState="moveState"
-                  @mousedown.left="onComponentMousedown($event, item, 'group')"
-                >
-                  <template v-for="child in item.children" :key="child.id">
-                    <div
-                      class="absolute"
-                      :style="{
-                      zIndex: child.style.zIndex,
-                      top: (child.style.top as number) - (item.style.top as number) + 'px',
-                      left: (child.style.left as number) - (item.style.left as number) + 'px',
-                      width: child.style.width + 'px',
-                      height: child.style.height + 'px',
-                    }"
-                    >
-                      <component
-                        :is="componentMap[child?.componentName]"
-                        v-bind="child.props"
-                        :width="child.style.width"
-                        :height="child.style.height"
-                        class="cursor-pointer"
-                        v-show="child.props.visible.value"
-                      ></component>
-                    </div>
-                  </template>
-                </GroupEditBox>
-              </template>
-            </div>
-          </div>
-          <div
-            v-show="moveState.type === 'frameSelect'"
-            :style="{
-              width: frameSelectDomStyle.width + 'px',
-              height: frameSelectDomStyle.height + 'px',
-              left: frameSelectDomStyle.left + 'px',
-              top: frameSelectDomStyle.top + 'px',
-              border: frameSelectDomStyle.border,
-            }"
-            class="absolute cursor-crosshair"
-          ></div>
-        </template>
-      </SketchRule>
-      <div ref="$app" class="edit-screens" style="height: calc(100% - 45px);">
-        <div
-          ref="$container"
-          class="edit-screen-container"
-          :style="{ width: '3600px', height: '2160px' }"
-        >
-          <div
-            ref="refSketchRuleBox"
-            class="canvas"
-            @mousedown="dragCanvas"
-            :style="{ marginLeft: '-' + (canvasBox().width / 2 - 25) + 'px' }"
-          >
-            <div :style="{ pointerEvents: isPressSpace ? 'none' : 'auto' }">
-              <slot></slot>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </Dropdown>
     <div class="footer absolute bottom-0">
       <PanelConfig @on-change-panel-scale="onChangePanelScale" />

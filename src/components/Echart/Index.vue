@@ -29,8 +29,6 @@ const props = defineProps(['option'])
 
 const vChartRef = useTemplateRef('vChartRef')
 watch(() => props.option, (value) => {
-  console.log(value, 'value');
-
   vChartRef.value?.setOption(value, true, true)
 }, {
   immediate: true,

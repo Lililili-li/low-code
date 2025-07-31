@@ -2,15 +2,14 @@
 import { computed, defineAsyncComponent, onMounted, ref, shallowRef, type StyleValue, watch } from 'vue'
 import { usePanelConfigStore } from '@/stores/usePanelConfigStore'
 import { useComponentConfigStore } from '@/stores/useComponentConfigStore'
-import Menu from '@/components/menu/index.vue'
-import { ColorPaletteOutline, SettingsOutline, SparklesOutline } from '@vicons/ionicons5'
+import Menu from '@/components/Menu/index.vue'
+import { ColorPaletteOutline, SettingsOutline } from '@vicons/ionicons5'
 import Empty from '@/components/Empty/index.vue'
 import bus from '@/utils/bus'
 
 const PageAttribute = defineAsyncComponent(() => import('./components/PageAttribute.vue'))
 const Attribute = defineAsyncComponent(() => import('./components/Attribute/index.vue'))
 const Style = defineAsyncComponent(() => import('./components/Style/index.vue'))
-const Animation = defineAsyncComponent(() => import('./components/Animation/index.vue'))
 const Advanced = defineAsyncComponent(() => import('./components/Advanced/index.vue'))
 
 const panelConfigStore = usePanelConfigStore()
@@ -37,16 +36,6 @@ const menuOptions = shallowRef([
     ),
     key: 'style',
     component: Style,
-  },
-  {
-    label: '动画',
-    icon: (
-      <a-icon size={18}>
-        <SparklesOutline />
-      </a-icon>
-    ),
-    key: 'animation',
-    component: Animation,
   },
   {
     label: '高级',

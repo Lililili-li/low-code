@@ -2,25 +2,27 @@
 import { ref, onMounted } from "vue"
 import { Window32Filled, TabDesktopNewPage20Regular } from '@vicons/fluent'
 import { usePageConfigStore } from "@/stores/usePageConfigStore"
-import { usePanelConfigStore } from "@/stores/usePanelConfigStore"
 import { useRoute, useRouter } from "vue-router"
 import { Local } from "@/utils/storage"
 import jsonPack from "jsonpack"
 import UserSetting from "@/components/UserConfig/index.vue"
+import { usePanelConfigStore } from "@/stores/usePanelConfigStore"
+import { useProjectStore } from "@/stores/useProjectStore"
+
+
 const route = useRoute()
 const router = useRouter()
-const panelConfigStore = usePanelConfigStore()
 const pageConfigStore = usePageConfigStore()
+const panelConfigStore = usePanelConfigStore()
+const projectStore = useProjectStore()
 
 const onSavePageSetting = () => {
   const page = pageConfigStore.pageSetting
-  // componentConfigStore.$state.pageSetting['style'] = panelConfigStore.canvasSetting
-  page!["style"] = panelConfigStore.canvasSetting
-  pageConfigStore.setPageConfig(page)
-  // const json = JSON.stringify(page)
+  page['style'] = panelConfigStore.canvasSetting as any
   const pack = jsonPack.pack(page)
-  const unpack = jsonPack.unpack(pack)
-  Local.set("pageConfig", JSON.stringify(page))
+  const globalConfig = jsonPack.pack(projectStore.schema)
+  Local.set("pageConfig", pack)
+  Local.set("globalConfig", globalConfig)
 }
 const currentPage = ref<number>()
 const onChangePage = (value: number) => {

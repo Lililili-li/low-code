@@ -29,12 +29,7 @@ export interface IComponentType {
   name: string,
   props: IProps,
   style: Record<string, string | number>,
-  eventConfig: {
-    // updateParam?: { name: string, value: string, id: string }[],
-    // requestApi?: { name: string, id: string }[],
-    // sendMessage?: { name: string, value: string }[],
-    [key: string]: Record<string, any>[] | Record<string, any>
-  },
+  eventConfig: Record<string, any>[],
   type?: 'component' | 'group',
   children?: IComponentType[],
 }

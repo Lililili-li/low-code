@@ -14,5 +14,11 @@
       "gender": "男"
     },
     "id": 2
+  },
+  {
+    "key": "visible",
+    "type": "boolean",
+    "value": "true",
+    "id": 3
   }
 ]

@@ -8,6 +8,8 @@ enum EParams {
   Normal = "normal",
   JSExpression = "JSExpression",
 }
+
+
 export const interfaceEventMap = {
   handleParams: {
     type: "JSFunction",
@@ -26,45 +28,14 @@ export const interfaceEventMap = {
   },
 };
 
-// 将vo中的数组元素转化为对象元素
-const handleTransformHeaders2Obj = (headers: any) => {
-  if (!headers) return {}
-  return headers.reduce((acc, item) => {
-    acc[item.key] = {
-      type: item.value.type,
-      value: item.value.value,
-    }
-    return acc
-  }, {})
-}
-const handleTransformParams2Arr = (params: any) => {
-  if (!params) return []
-  const result = [] as any
-  for (let key in params) {
-    result.push({
-      key,
-      value: {
-        type: params[key].type,
-        value: params[key].value,
-      }
-    })
-  }
-  return result
-}
-
 
 export const handleTransformParams2Schema = (params: any) => {
   const copyParams = cloneDeep(params)
-  copyParams.base.headers = handleTransformHeaders2Obj(copyParams.base.headers)
-  copyParams.options.headers = handleTransformHeaders2Obj(copyParams.options.headers)
   return copyParams
 }
 
 export const handleTransformSchema2Params = (params: any) => {
   const copyParams = cloneDeep(params)
-  copyParams.base.headers = handleTransformParams2Arr(copyParams.base.headers)
-  copyParams.options.headers = handleTransformParams2Arr(copyParams.options.headers)
-  copyParams.options.params = handleTransformParams2Arr(copyParams.options.params)
   return copyParams
 }
 
@@ -83,21 +54,20 @@ export const handleParamsForSend = (params: any, eventMap: (IEvent & { name: str
     data: undefined
   }
   for (let key in result) {
-    result[key] = copyParams[key]
+    result[key] = copyParams.options[key]
     if (key === 'url') {
-      result[key] = params.base.url.type === EParams.JSExpression ? getVariableValue(params.base.url.value, variableStore) + copyParams.options.url : params.base.url.value + copyParams.options.url
-      console.log(result[key]);
+      result[key] = copyParams.base.url.type === EParams.JSExpression ? getVariableValue(copyParams.base.url.value, variableStore) + copyParams.options.url : params.base.url.value + copyParams.options.url
     }
     if (key === 'headers') {
-      result[key] = handleTransformParams([...toRaw(params.base.headers), ...copyParams.options.headers])
+      result[key] = handleTransformParams([...copyParams.base.headers, ...copyParams.options.headers])
     }
     if (key === 'params') {
       result[key] = handleTransformParams(copyParams.options.params)
     }
   }
-  handleDataType(result, copyParams)
+  handleDataType(result, copyParams.options)
   if (result.method === 'GET') {
-    delete result.data
+    Reflect.deleteProperty(result, 'data')
   }
   const eventData = eventMap.find(item => item.name === 'handleParams')
   if (eventData) {
@@ -134,13 +104,8 @@ const handleTransformParams = (originData) => {
   const variableStore = useVariableStore()
   return originData.reduce((acc, item) => {
     if (item.key) {
-      acc[item.key] = item.value.type === EParams.JSExpression ? variableStore.state[item.value.value] : item.value.value
+      acc[item.key] = item.value.type === EParams.JSExpression ? getVariableValue(item.value.value, variableStore).value : item.value.value
     }
     return acc;
   }, {})
-}
-
-// 提取函数体部分
-export const parseParams = (params: any) => {
-
 }

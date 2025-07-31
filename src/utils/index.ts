@@ -27,7 +27,7 @@ interface IChartData {
 }
 // 图表数据转表格数据
 export const charData2TableData = (chartData: IChartData[]) => {
-  if (chartData.length === 0)  return [];
+  if (chartData.length === 0) return [];
   const tableData = {
     rows: {
       0: {}
@@ -37,17 +37,17 @@ export const charData2TableData = (chartData: IChartData[]) => {
   keyList.unshift('键名')
   tableData.rows[0]['cells'] = {}
   chartData.forEach((item, pIndex) => {
-    const obj:IChartData = {}
-    tableData.rows[pIndex+1] = {}
-    tableData.rows[pIndex+1]['cells'] = {}
+    const obj: IChartData = {}
+    tableData.rows[pIndex + 1] = {}
+    tableData.rows[pIndex + 1]['cells'] = {}
     keyList.forEach((key, index) => {
-      tableData.rows[0]['cells'][index] = {text: key}
+      tableData.rows[0]['cells'][index] = { text: key }
       if (!item[key]) {
         obj[key] = '键值'
-      }else {
+      } else {
         obj[key] = item[key]
       }
-      tableData.rows[pIndex+1]['cells'][index] = {text: obj[key]}
+      tableData.rows[pIndex + 1]['cells'][index] = { text: obj[key] }
     })
     return obj
   })
@@ -98,15 +98,12 @@ export const getType = (value) => {
 // ... existing code ...
 
 // 节流函数
+let last = 0;
 export function throttle<T extends (...args: any[]) => any>(fn: T, delay: number) {
-  let last = 0;
-  return function (this: any, ...args: Parameters<T>) {
-    const now = Date.now();
-
-    if (now - last >= delay) {
-      fn.apply(this, args);
-      last = now;
-    }
+  const now = Date.now();
+  if (now - last >= delay) {
+    fn(arguments);
+    last = now;
   }
 }
 // 防抖函数

@@ -77,7 +77,6 @@ const onKeyChange = (record, value: string) => {
             v-model="record.value.type"
             :checked-value="EParams.JSExpression"
             :unchecked-value="EParams.Normal"
-            @change="(value: string | number | boolean) => record.value.type = ''"
             style="width: 80px"
           >
             <template #checked> 变量 </template>

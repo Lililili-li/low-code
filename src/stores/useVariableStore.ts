@@ -68,7 +68,7 @@ export const useVariableStore = defineStore('variable', () => {
   }
   // 修改变量
   const editVariable = (variable: IVariableType) => {
-    variableList.value = variableList.value.map(item => item.id === variable.id ? variable : item)
+    variableList.value = variableList.value.map(item => item.id === variable.id && item.isGlobal === variable.isGlobal ? variable : item)
     saveVariable()
     Message.success('修改成功')
   }
@@ -97,21 +97,21 @@ export const useVariableStore = defineStore('variable', () => {
     pageConfigStore.setState(result)
     projectStore.setState(globalResult)
   }
-  const traverseObject = (data: Record<string, any>, container: any[]) => {
+  const traverseObject = (data: Record<string, any>, container: any[], parent: string) => {
     for (let key in data) {
       const value = data[key];
       if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         const child = {
           label: key,
-          value: key,
+          value: parent + '.' + key,
           children: []
         };
         container.push(child);
-        traverseObject(value, child.children);
+        traverseObject(value, child.children, child.value);
       } else {
         container.push({
           label: key,
-          value: key,
+          value: parent + '.' + key,
         });
       }
     }
@@ -136,7 +136,7 @@ export const useVariableStore = defineStore('variable', () => {
     variableList.value.forEach(item => {
       const obj = {
         label: item.key,
-        value: item.key,
+        value: (item.isGlobal ? 'global.' : 'state.') + item.key,
       } as {
         label: string
         value: string
@@ -144,7 +144,7 @@ export const useVariableStore = defineStore('variable', () => {
       }
       if (item.type === 'object') {
         obj.children = []
-        traverseObject(JSON.parse(item.value), obj.children)
+        traverseObject(JSON.parse(item.value), obj.children, obj.value)
       }
       item.isGlobal ? result.find(item => item.value === 'global')!['children']!.push(obj) : result.find(item => item.value === 'state')!['children']!.push(obj)
     })

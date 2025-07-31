@@ -15,7 +15,6 @@ import message from "@/utils/message"
 import { useVariableStore } from "@/stores/useVariableStore"
 import { cloneDeep } from "lodash-es"
 import { useDataSourceStore } from "@/stores/useDataSourceStore"
-import { getVariableValue } from "../variable/util"
 import useObject from "@/hooks/useObject"
 
 const variableConfStore = useVariableStore()
@@ -166,6 +165,7 @@ const onSaveData = async () => {
       value: event.value,
     }
   })
+  console.log(dataSource.base.headers, 'dataSource');
   if (props.type !== "edit") {
     dataSourceStore.addDataSourceList(dataSource)
     message.success("保存成功")
@@ -235,7 +235,12 @@ defineExpose({ onOpenVariableDrawer })
         {{ type === "create" ? "添加接口" : type === "edit" ? "修改接口" : "查看接口" }}
       </span>
       <a-space>
-        <a-button type="text" size="small" @click="onTestInterface" :loading="testLoading">
+        <a-button
+          type="text"
+          size="small"
+          @click="onTestInterface"
+          :loading="testLoading"
+        >
           <template #icon>
             <a-tooltip content="测试连接，不会修改变量值">
               <icon-exclamation-circle />
@@ -274,7 +279,9 @@ defineExpose({ onOpenVariableDrawer })
                   v-else
                   path-mode
                   style="min-width: 300px"
-                  :format-label="(options) => options.map((option) => option.label).join('.')"
+                  :format-label="
+                    (options) => options.map((option) => option.label).join('.')
+                  "
                   v-model="apiModel.base.url.value"
                   allow-search
                 />
@@ -319,15 +326,13 @@ defineExpose({ onOpenVariableDrawer })
                   style="max-width: 100px"
                   v-model="apiModel.options.method"
                 />
-                <a-input placeholder="请输入url" v-model="apiModel.options.url" allow-clear>
+                <a-input
+                  placeholder="请输入url"
+                  v-model="apiModel.options.url"
+                  allow-clear
+                >
                   <template #prepend>
-                    {{
-                      apiModel.base.url.value
-                        ? apiModel.base.url.type === EParams.JSExpression
-                          ? getVariableValue(apiModel.base.url.value, variableConfStore)
-                          : apiModel.base.url.value
-                        : "/"
-                    }}
+                    {{ apiModel.base.url.value ? apiModel.base.url.value : "/" }}
                   </template>
                 </a-input>
               </a-input-group>
@@ -363,7 +368,9 @@ defineExpose({ onOpenVariableDrawer })
                       v-else
                       path-mode
                       style="min-width: 200px"
-                      :format-label="(options) => options.map((option) => option.label).join('.')"
+                      :format-label="
+                        (options) => options.map((option) => option.label).join('.')
+                      "
                       v-model="apiModel.options.timeout.value"
                       allow-search
                     />
@@ -398,7 +405,9 @@ defineExpose({ onOpenVariableDrawer })
                       v-else
                       path-mode
                       style="min-width: 200px"
-                      :format-label="(options) => options.map((option) => option.label).join('.')"
+                      :format-label="
+                        (options) => options.map((option) => option.label).join('.')
+                      "
                       v-model="apiModel.options.loopTime.value"
                       allow-search
                     />
@@ -429,12 +438,18 @@ defineExpose({ onOpenVariableDrawer })
                     :variable-tree-list="variableConfStore.getVariableTreeList()"
                   />
                 </a-tab-pane>
-                <a-tab-pane key="2" title="Body" v-if="apiModel.options.method === 'POST'">
+                <a-tab-pane
+                  key="2"
+                  title="Body"
+                  v-if="apiModel.options.method === 'POST'"
+                >
                   <a-space direction="vertical" class="mt-1 w-full">
                     <a-radio-group v-model="apiModel.options.dataType" type="button">
                       <a-radio value="none">none</a-radio>
                       <a-radio value="form-data">form-data</a-radio>
-                      <a-radio value="x-www-form-urlencoded"> x-www-form-urlencoded </a-radio>
+                      <a-radio value="x-www-form-urlencoded">
+                        x-www-form-urlencoded
+                      </a-radio>
                       <a-radio value="json">json</a-radio>
                     </a-radio-group>
                     <div
@@ -497,10 +512,18 @@ defineExpose({ onOpenVariableDrawer })
                   </a-button>
                 </div>
               </template>
-              <MonacoEditor v-model="item.value" language="javascript" ref="monacoEditorRef" />
+              <MonacoEditor
+                v-model="item.value"
+                language="javascript"
+                ref="monacoEditorRef"
+              />
             </a-form-item>
             <a-form-item label="响应数据" v-if="testResponse">
-              <MonacoEditor v-model="testResponse" language="json" ref="monacoEditorRef" />
+              <MonacoEditor
+                v-model="testResponse"
+                language="json"
+                ref="monacoEditorRef"
+              />
             </a-form-item>
           </a-form>
         </div>

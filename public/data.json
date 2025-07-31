@@ -1,18 +1,26 @@
-[
-  {
-    "key": "name",
-    "type": "string",
-    "value": "value",
-    "id": 1
-  },
-  {
-    "key": "person",
-    "type": "object",
-    "value": {
-      "name": "张三",
-      "age": 18,
-      "gender": "男"
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+    {
+      "label": "周一",
+      "num1": 10,
+      "num2": 15
     },
-    "id": 2
-  }
-]
+    {
+      "label": "周二",
+      "num1": 20,
+      "num2": 16
+    },
+    {
+      "label": "周三",
+      "num1": 30,
+      "num2": 22
+    },
+    {
+      "label": "周四",
+      "num1": 40,
+      "num2": 60
+    }
+  ]
+}

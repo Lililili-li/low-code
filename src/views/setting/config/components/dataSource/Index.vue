@@ -30,11 +30,6 @@ const removeInterface = (id: number | string) => {
   message.success('删除成功')
 }
 
-
-onMounted(() => {
-  variableConfStore.getVariableTreeList()
-  dataSourceStore.setDataSourceList(pageConfigStore.getPageDataSource())
-})
 </script>
 <template>
   <div class="search pr-3 pl-3 pb-3">
@@ -89,11 +84,11 @@ onMounted(() => {
             </div>
           </div>
           <div class="description flex justify-between">
-            <span style="max-width: 80%" class="overflow-hidden text-ellipsis whitespace-normal">{{
-              item.base.url.type === "normal"
-                ? (item.base.url.value?item.base.url.value: '/') + item.options.url
-                : getVariableValue(item.base.url.value, variableConfStore) + item.options.url
-            }}</span>
+            <span style="max-width: 80%" class="overflow-hidden text-ellipsis whitespace-normal">
+              {{
+                (item.base.url.value?item.base.url.value: '/') + item.options.url
+              }}
+            </span>
             <span :class="item.options.method">{{ item.options.method }}</span>
           </div>
         </div>

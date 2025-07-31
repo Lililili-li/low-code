@@ -15,7 +15,7 @@ export type IDataType = 'none' | 'form-data' | 'json' | 'x-www-form-urlencoded'
 export interface IDataSource {
   base: {
     url: ParamType<string>
-    headers: Record<string, any>
+    headers: Params
   }
   id: string | number
   name: string
@@ -23,8 +23,9 @@ export interface IDataSource {
   options: {
     url: string,
     method: string,
-    headers: Record<string, any>,
-    timeout: number,
+    headers: Params,
+    loopTime: ParamType,
+    timeout: ParamType,
     params?: Params,
     dataType: IDataType
     body?: {

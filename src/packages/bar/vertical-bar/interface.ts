@@ -15,8 +15,8 @@ export default {
   name: '渐变色柱状图',
   props: {
     visible: {
-      value: true,
-      type: 'Normal',
+      value: 'state.visible',
+      type: ERenderData.JSExpression,
     },
     emptyConfig: {
       imageUrl:
@@ -25,7 +25,7 @@ export default {
     },
     render: {
       type: 'JSExpression', //初始为使用静态数据
-      value: 'state.data3',
+      value: 'state.chartData',
       defaultValue: staticData,
     },
     animationName: '',
@@ -70,7 +70,6 @@ export default {
       yAxis: [
         {
           type: 'value',
-          max: '1200',
           axisLine: {
             show: false,
             lineStyle: {
@@ -90,9 +89,9 @@ export default {
         // 提供一份数据。
         dimensions: ['label', 'num1', 'num2', 'num3'],
         source: [
-          { label: '2015', 'num1': 100, 'num2': 450, 'num3': 450},
-          { label: '2016', 'num1': 300, 'num2': 310, 'num3': 450},
-          { label: '2017', 'num1': 600, 'num2': 430, 'num3': 450},
+          { label: '2015', 'num1': 100, 'num2': 450, 'num3': 450 },
+          { label: '2016', 'num1': 300, 'num2': 310, 'num3': 450 },
+          { label: '2017', 'num1': 600, 'num2': 430, 'num3': 450 },
           { label: '2018', 'num1': 300, 'num2': 330, 'num3': 450 }
         ]
       },
@@ -150,49 +149,15 @@ export default {
       ]
     },
   },
-  eventConfig: {
-    // 修改变量
-    updateParam: [
-      {
-        name: 'state.data4',
-        id: '4',
-        value: true,
-        paramType: 'boolean',
-      },
-    ],
-    // 请求接口
-    requestApi: [
-      {
-        //
-        id: '1',
-        name: 'getDataSource',
-        desc: '这是一个对接口的描述'
-      },
-    ],
-    // 发送消息
-    sendMessage: [
-      {
-        name: '消息名称',
-        value: '消息内容',
-      },
-    ],
-    onClick: {
+  eventConfig: [
+    {
       // 事件绑定
-      type: 'common',
-      name: '单击事件',
-      value: "console.log('onClick')",
+      type: ERenderData.JSFunction,
+      id: 'onClick',
+      name: '点击事件',
+      value: "function onClick(state, global, dataSource, methods) {\n\n}",
     },
-    onMousemove: {
-      type: 'common',
-      name: '鼠标移动事件',
-      value: "console.log('mousemove')",
-    },
-    onChartClick: {
-      type: 'self',
-      name: '图表点击事件',
-      value: 'console.log(event)',
-    },
-  },
+  ],
   method: [
     {
       name: 'getState',

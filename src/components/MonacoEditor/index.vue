@@ -108,6 +108,7 @@ onMounted(() => {
       tabSize: 2,
       suggestOnTriggerCharacters: true, // 默认开启
       tabCompletion: 'on', // 'on', 'off', 'onlySnippets'
+      fontSize: 14,
       ...props.options,
     })
 
@@ -126,7 +127,7 @@ onMounted(() => {
 watch(
   () => props.modelValue,
   (newValue) => {
-    if (editor && newValue !== editor.getValue()) {
+    if (editor && newValue !== editor.getValue() && newValue) {
       editor.setValue(newValue as string)
     }
   },

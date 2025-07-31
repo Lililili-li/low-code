@@ -5,10 +5,13 @@ import { useVariableStore } from './useVariableStore'
 import type { IStateType } from '@/types/variable'
 import type { IPage } from '@/types/page'
 import axios from 'axios'
+import { useDataSourceStore } from './useDataSourceStore'
 
 export const usePageConfigStore = defineStore('pageConfig', {
   state: () => ({
-    pageSetting: {} as IPage,
+    pageSetting: {
+
+    } as IPage,
     pageConf: {
       projectId: '',
       pageId: 1,
@@ -71,11 +74,13 @@ export const usePageConfigStore = defineStore('pageConfig', {
     },
     async getPageData() {
       const variableStore = useVariableStore()
+      const dataSourceStore = useDataSourceStore()
       const { data: res } = await axios.get('/project/1/page/1')
       if (res.code === 200) {
         this.pageSetting = JSON.parse(res.data.schema)
         this.pageConf = {...res.data, schema: JSON.stringify(JSON.parse(res.data.schema), null, 2)}
         variableStore.setVariableList(this.pageSetting.state)
+        dataSourceStore.setDataSourceList(this.getPageDataSource())
       }
     }
   }

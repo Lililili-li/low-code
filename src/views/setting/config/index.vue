@@ -2,21 +2,26 @@
 import {
   computed,
   defineAsyncComponent,
+  onMounted,
   ref,
   shallowRef,
   type StyleValue,
 } from 'vue'
-import Menu, { type MenuItemType } from '@/components/menu/index.vue'
+import Menu, { type MenuItemType } from '@/components/Menu/index.vue'
 import { Material } from './components'
 import { usePanelConfigStore } from '@/stores/usePanelConfigStore'
 import { BracesVariable24Regular, DatabaseLink20Regular } from '@vicons/fluent'
 import { renderIcon } from '@/utils'
+import { useDataSourceStore } from '@/stores/useDataSourceStore'
+import { usePageConfigStore } from '@/stores/usePageConfigStore'
 
 const Layer = defineAsyncComponent(() => import('./components/layers/index.vue'))
 const Variable = defineAsyncComponent(() => import('./components/variable/index.vue'))
 const DataSource = defineAsyncComponent(() => import('./components/dataSource/index.vue'))
 const Schema = defineAsyncComponent(() => import('./components/schema/index.vue'))
 const panelConfigStore = usePanelConfigStore()
+const dataSourceStore = useDataSourceStore()
+const pageConfigStore = usePageConfigStore()
 
 enum MenuTypeEnum {
   MATERIAL = 'material',
@@ -50,12 +55,6 @@ const menuOptions = shallowRef([
     icon: renderIcon(DatabaseLink20Regular),
     key: MenuTypeEnum.DataSource,
     component: DataSource,
-  },
-  {
-    label: 'Schema',
-    icon: <icon-code />,
-    key: MenuTypeEnum.Schema,
-    component: Schema,
   },
 ])
 

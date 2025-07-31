@@ -8,11 +8,17 @@ Mock.mock('/project/1', 'get', {
     name: 'xxx项目',
     schema: JSON.stringify({
       state: {
-        "baseUrl": {
-          "type": "string",
-          "value": "http://localhost:8000",
-          "isGlobal": true,
-          "id": 1
+        baseUrl: {
+          type: "string",
+          value: "http://localhost:8000",
+          isGlobal: true,
+          id: 1
+        },
+        contentType: {
+          type: "string",
+          value: "application/json",
+          isGlobal: true,
+          id: 2
         }
       },
       methods: {}
@@ -30,6 +36,12 @@ Mock.mock('/project/1/page/1', 'get', {
       {
         componentName: 'Page',
         state: {
+          visible: {
+            type: "boolean",
+            value: true,
+            isGlobal: false,
+            id: 111
+          },
           text: {
             type: "string",
             value: "你好啊",
@@ -49,8 +61,18 @@ Mock.mock('/project/1/page/1', 'get', {
                 name: "汪汪",
                 age: 18,
               },
+              house: {
+                name: "汪汪",
+                age: 18,
+              },
             },
           },
+          chartData: {
+            type: "array",
+            value: [],
+            isGlobal: false,
+            id: 123123123
+          }
         },
         props: {
           theme: {
@@ -78,12 +100,15 @@ Mock.mock('/project/1/page/1', 'get', {
                 type: "JSExpression",
                 value: "global.baseUrl",
               },
-              headers: {
-                "Content-Type": {
-                  type: "JSExpression",
-                  value: "global.contentType",
+              headers: [
+                {
+                  key: "Content-Type",
+                  value: {
+                    type: "normal",
+                    value: "application/json",
+                  },
                 },
-              },
+              ],
             },
             id: 1,
             name: "getUserInfo",
@@ -92,31 +117,33 @@ Mock.mock('/project/1/page/1', 'get', {
               url: "/data.json",
               method: "GET",
               dataType: 'none',
-              headers: {
-                "Content-Type": {
-                  type: "normal",
-                  value: "application/json",
+              headers: [
+                {
+                  key: "Content-Type",
+                  value: {
+                    type: "normal",
+                    value: "application/json",
+                  },
                 },
-              },
+              ],
               timeout: {
                 type: 'normal',
                 value: 5000
               },
               // 无论是get请求还是post请求都放到params中
-              params: {
-                name: {
-                  type: "normal",
-                  value: "张三",
+              params: [
+                {
+                  key: "name",
+                  value: {
+                    type: "normal",
+                    value: "张三",
+                  },
                 },
-                age: {
-                  type: "normal",
-                  value: 18,
-                },
-              },
+              ],
             },
             handleParams: {
               type: "JSFunction",
-              value: "function() { \n  console.log('should fetch.....');\n  return true; \n}",
+              value: "function(params) { \n  console.log('should fetch.....');\n  return params; \n}",
             },
           },
         ],

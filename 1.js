@@ -1,23 +1,20 @@
-
-var convert = function (s, numRows) {
-  if (numRows === 1 || numRows >= s.length) return s;
-
-  let result = '';
-  const cycleLen = 2 * numRows - 2; // 一个完整周期的长度
-
-  for (let i = 0; i < numRows; i++) {
-    for (let j = 0; j + i < s.length; j += cycleLen) {
-      // 添加垂直列上的字符
-      result += s[j + i];
-
-      // 添加斜线上的字符（如果存在）
-      if (i !== 0 && i !== numRows - 1 && j + cycleLen - i < s.length) {
-        result += s[j + cycleLen - i];
-      }
+var twoSum = function (numbers, target) {
+  const n = numbers.length
+  let left = 0
+  let right = left + 1
+  while (left < n) {
+    if (numbers[left] + numbers[right] === target) {
+      return [left + 1, right + 1]
     }
-    console.log(result);
+    if (right > n) {
+      left++
+      right = left + 1
+    } else {
+      right++
+    }
   }
-
-  return result;
+  return []
 };
-convert("PAYPALISHIRING", 3)
+console.log(twoSum([-1,0], -1));
+
+

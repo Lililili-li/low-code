@@ -3,7 +3,7 @@ const data = defineModel("data");
 const { columns, variableTreeList } = defineProps(["columns", "variableTreeList"]);
 
 enum EParams {
-  Normal = "normal",
+  Normal = "Normal",
   JSExpression = "JSExpression",
 }
 const onCreateParams = () => {

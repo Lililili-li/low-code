@@ -84,7 +84,10 @@ const onChangeTitleConf = (value) => {
   option.value.title = { ...option.value.title, ...value };
 };
 const onChangeLegendConf = (value) => {
-  option.value.legend = { ...option.value.legend, ...value };
+  option.value.legend = {
+    ...option.value.legend,
+    ...value
+  };
 };
 const onChangeGridConf = (value) => {
   option.value.grid = { ...option.value.grid, ...value };
@@ -105,35 +108,6 @@ const onChangeAxisConf = (type: "x" | "y", value) => {
       expand-icon-position="right"
       :bordered="false"
     >
-      <a-collapse-item header="数据渲染(Source)" key="1">
-        <a-row :gutter="12" align="center">
-          <a-col :span="20">
-            <a-select
-              :options="[
-                {
-                  label: '静态数据',
-                  value: 'Normal',
-                },
-                {
-                  label: '动态数据',
-                  value: 'JSExpression',
-                },
-              ]"
-              placeholder="请选择渲染数据"
-              v-model="componentConfigStore.activeComponent!.props.render.type"
-              size="small"
-            >
-            </a-select>
-          </a-col>
-          <a-col :span="4">
-            <a-button type="text" shape="circle" @click="onOpenRenderDataConfigModal">
-              <template #icon>
-                <icon-settings />
-              </template>
-            </a-button>
-          </a-col>
-        </a-row>
-      </a-collapse-item>
       <a-collapse-item header="系列配置(Series)" key="2">
         <div class="series-list">
           <a-row :gutter="12">
@@ -441,7 +415,7 @@ const onChangeAxisConf = (type: "x" | "y", value) => {
                 class="flex justify-center items-center flex-shrink-0"
               >
                 <a-typography-text style="min-width: 40px">圆角</a-typography-text>
-                <a-input
+                <a-input-number
                   placeholder="圆角大小"
                   v-model="option.series[currentSeries!].itemStyle.borderRadius"
                   style="flex: 1"

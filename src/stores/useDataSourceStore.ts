@@ -12,6 +12,9 @@ export const useDataSourceStore = defineStore('dataSource', () => {
   const setDataSourceList = (schema: IDataSource[]) => {
     dataSourceList.value = JSON.parse(JSON.stringify(schema))
   }
+  const getDataSourceList = () => {
+    return dataSourceList.value
+  }
 
   const addDataSourceList = (dataSource: IDataSource) => {
     dataSource.id = generateUUID()
@@ -38,6 +41,7 @@ export const useDataSourceStore = defineStore('dataSource', () => {
     setDataSourceList,
     addDataSourceList,
     editDataSource,
-    removeDataSource
+    removeDataSource,
+    getDataSourceList
   }
 })

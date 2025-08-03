@@ -1,7 +1,6 @@
 // 处理接口请求
 import { createSchedule } from "@/utils/schedule"
 import axios, { type AxiosRequestConfig } from "axios"
-import { useRequest } from "vue-hooks-plus"
 
 export default function useHandleInterface() {
   const handleInterface = (params: any) => {

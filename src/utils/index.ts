@@ -34,7 +34,6 @@ export const charData2TableData = (chartData: IChartData[]) => {
     }
   }
   const keyList = Object.keys(chartData[0])
-  keyList.unshift('键名')
   tableData.rows[0]['cells'] = {}
   chartData.forEach((item, pIndex) => {
     const obj: IChartData = {}
@@ -42,11 +41,7 @@ export const charData2TableData = (chartData: IChartData[]) => {
     tableData.rows[pIndex + 1]['cells'] = {}
     keyList.forEach((key, index) => {
       tableData.rows[0]['cells'][index] = { text: key }
-      if (!item[key]) {
-        obj[key] = '键值'
-      } else {
-        obj[key] = item[key]
-      }
+      obj[key] = item[key]
       tableData.rows[pIndex + 1]['cells'][index] = { text: obj[key] }
     })
     return obj
@@ -55,7 +50,6 @@ export const charData2TableData = (chartData: IChartData[]) => {
 }
 // 表格数据转图表数据
 export function tableData2ChartData(data: IChartData) {
-  console.log(Object.keys(data), 'data')
   const startTime = performance.now();
   delete data.len
   const result: IChartData[] = [];
@@ -64,7 +58,6 @@ export function tableData2ChartData(data: IChartData) {
   for (let i = 1; i < Object.keys(data).length; i++) {
     const item: IChartData = {};
     const cells = data[i]?.cells;
-    console.log(cells, 'cells')
     for (let j = 0; j < Object.keys(cells).length; j++) {
       const cell = cells[j];
       const headerCell = header[j];
@@ -81,7 +74,6 @@ export function tableData2ChartData(data: IChartData) {
   }
   const endTime = performance.now();
   const executionTime = endTime - startTime;
-  console.log(`方法执行用时: ${executionTime} 毫秒`);
   return {
     source: result,
     dimension

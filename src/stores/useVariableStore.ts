@@ -11,6 +11,15 @@ export const useVariableStore = defineStore('variable', () => {
   // 页面state用于存储变量 供外部使用
   const state = ref({})
   const globalState = ref({})
+
+  // schema数据转换为对象使用
+  const stateSchemaToObject = (data: IStateType, type: 'global' | 'state' = 'state') => {
+    const result = {}
+    for (let key in data) {
+      result[key] = data[key].value
+    }
+    setState(result, type)
+  }
   const setState = (data: Record<string, any>, type: 'global' | 'state' = 'state') => {
     if (type === 'global') {
       globalState.value = {
@@ -29,20 +38,10 @@ export const useVariableStore = defineStore('variable', () => {
     return type === 'state' ? state.value : globalState.value
   }
 
-  watch(state, (n) => {
-    console.log('state变化------', n);
-    // 和之前数据进行比较
-    // 动态更新数结构，列表结构以及page的schema结构
-  }, {
-    deep: true
-  })
-
   const variableList = ref<IVariableType[]>([])
-  // 设置变量列表
+  // 设置变量列表预览时不需要设置，只需要设置state
   const setVariableList = async (stateObject: IStateType, type: 'global' | 'state' = 'state') => {
-    let states = {}
     for (let key in stateObject) {
-      if (!stateObject[key]) return
       variableList.value.push({
         type: stateObject[key].type,
         key: key,
@@ -50,9 +49,8 @@ export const useVariableStore = defineStore('variable', () => {
         id: stateObject[key].id,
         isGlobal: type === 'global',
       })
-      states[key] = stateObject[key].value
     }
-    setState(states, type)
+    stateSchemaToObject(stateObject, type)
   }
   // 添加变量
   const addVariable = (variable: IVariableType) => {
@@ -86,6 +84,8 @@ export const useVariableStore = defineStore('variable', () => {
         type: variable.type as EVariableData,
         value: variable.type === 'object' ? JSON.parse(variable.value) : variable.value,
       }
+
+      // 构造state对象
       if (!variable.isGlobal) {
         result[variable.key] = obj
       } else {
@@ -158,9 +158,8 @@ export const useVariableStore = defineStore('variable', () => {
     removeVariable,
     editVariable,
     saveVariable,
-    state,
-    setState,
     getState,
+    stateSchemaToObject,
     getVariableTreeList
   }
 })

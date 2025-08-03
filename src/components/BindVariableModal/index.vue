@@ -6,7 +6,11 @@
           <div class="title">变量列表</div>
           <div class="list-content flex" style="height: 350px">
             <div class="list-content-left pr-2 pl-2 pt-1 pb-1">
-              <a-radio-group direction="vertical" @change="onVariableChange" v-model="parentValue">
+              <a-radio-group
+                direction="vertical"
+                @change="onVariableChange"
+                v-model="parentValue"
+              >
                 <a-radio
                   :value="item.value"
                   v-for="item in variableStore.getVariableTreeList()"
@@ -24,25 +28,24 @@
                   size="small"
                   placeholder="请输入变量名称"
                 />
-                <a-tree
-                  :data="subTreeData"
-                  :field-names="{
-                    key: 'value',
-                    title: 'label',
-                  }"
-                  @select="onSubVariableListSelect"
-                  show-line
-                  action-on-node-click="expand"
-                  checked-strategy="child"
-                  :virtual-list-props="{
-                    height: 300,
-                  }"
-                  v-model:selected-keys="selectKeys"
-                >
-                  <template #title="nodeData">
-                    {{ nodeData?.label }}
-                  </template>
-                </a-tree>
+                <a-scrollbar style="height: 300px; overflow: auto">
+                  <a-tree
+                    :data="subTreeData"
+                    :field-names="{
+                      key: 'value',
+                      title: 'label',
+                    }"
+                    @select="onSubVariableListSelect"
+                    show-line
+                    action-on-node-click="expand"
+                    checked-strategy="child"
+                    v-model:selected-keys="selectKeys"
+                  >
+                    <template #title="nodeData">
+                      {{ nodeData?.label }}
+                    </template>
+                  </a-tree>
+                </a-scrollbar>
               </div>
               <div v-else>
                 <a-empty description="请选择主变量"></a-empty>
@@ -78,7 +81,7 @@
             type="outline"
             status="danger"
             size="mini"
-            v-if="value"
+            v-if="isValidVariable(value)"
             @click="removeVariableBind"
             >移除绑定</a-button
           >
@@ -106,20 +109,30 @@ const props = defineProps(["value"]);
 const emits = defineEmits(["change"]);
 const variableStore = useVariableStore();
 const visible = ref(false);
-const parentValue = ref('')
-const selectKeys = ref<string[]>([])
+const parentValue = ref("");
+const selectKeys = ref<string[]>([]);
+
+// 检查是否是有效的变量名称
+const isValidVariable = (value: string) => {
+  if (!value || typeof value != 'string') return false
+  return value.split(".")[0] === 'state' || value.split(".")[0] === 'global'
+}
+
 const openModal = () => {
   visible.value = true;
-  initData(props.value)
+  initData(props.value);
 };
 const closeModal = () => {
   visible.value = false;
-}
+};
 defineExpose({ openModal });
 
-watch(() => props.value, (n) => {
-  initData(n)
-})
+watch(
+  () => props.value,
+  (n) => {
+    initData(n);
+  }
+);
 
 const searchKey = ref("");
 
@@ -137,42 +150,38 @@ const onVariableChange = (value: string) => {
     .find((item) => item.value === value)?.children!;
 };
 
-
 const initData = (data: string) => {
-  if (!data) {
-    subTreeData.value = []
-    bindVariable.value = ''
-    parentValue.value = ''
-    selectKeys.value = []
-    return
+  if (!isValidVariable(data)) {
+    subTreeData.value = [];
+    bindVariable.value = "";
+    parentValue.value = "";
+    selectKeys.value = [];
+    return;
   }
-  bindVariable.value = data
-  parentValue.value = data.split('.')[0]
+  bindVariable.value = data;
+  parentValue.value = data.split(".")[0];
   subTreeData.value = variableStore
     .getVariableTreeList()
     .find((item) => item.value === parentValue.value)?.children!;
-  selectKeys.value[0] = props.value
-}
+  selectKeys.value[0] = props.value;
+};
 
-const onSubVariableListSelect = (
-  _,
-  {selectedNodes }
-) => {
+const onSubVariableListSelect = (_, { selectedNodes }) => {
   if (selectedNodes[0] && !selectedNodes[0].children) {
-    bindVariable.value = selectedNodes[0].value
+    bindVariable.value = selectedNodes[0].value;
   }
 };
 
-const bindVariable = ref('')
+const bindVariable = ref("");
 
 const removeVariableBind = () => {
-  emits('change', '')
-  closeModal()
+  emits("change", "");
+  closeModal();
 };
 const onBindVariable = () => {
-  emits('change', bindVariable.value)
-  closeModal()
-}
+  emits("change", bindVariable.value);
+  closeModal();
+};
 </script>
 
 <style lang="less" scoped>

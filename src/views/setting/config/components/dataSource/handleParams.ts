@@ -5,7 +5,7 @@ import { toRaw } from "vue"
 import { useVariableStore } from "@/stores/useVariableStore"
 import { getVariableValue } from "../variable/util"
 enum EParams {
-  Normal = "normal",
+  Normal = "Normal",
   JSExpression = "JSExpression",
 }
 
@@ -62,6 +62,7 @@ export const handleParamsForSend = (params: any, eventMap: (IEvent & { name: str
       result[key] = handleTransformParams([...copyParams.base.headers, ...copyParams.options.headers])
     }
     if (key === 'params') {
+
       result[key] = handleTransformParams(copyParams.options.params)
     }
   }
@@ -104,7 +105,7 @@ const handleTransformParams = (originData) => {
   const variableStore = useVariableStore()
   return originData.reduce((acc, item) => {
     if (item.key) {
-      acc[item.key] = item.value.type === EParams.JSExpression ? getVariableValue(item.value.value, variableStore).value : item.value.value
+      acc[item.key] = item.value.type === EParams.JSExpression ? getVariableValue(item.value.value, variableStore) : (item.value.value ? item.value.value : undefined)
     }
     return acc;
   }, {})

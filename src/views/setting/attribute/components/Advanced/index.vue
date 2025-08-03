@@ -2,16 +2,16 @@
 import { useComponentConfigStore } from "@/stores/useComponentConfigStore.js";
 import { computed, ref } from "vue";
 import { TextGrammarSettings24Regular } from "@vicons/fluent";
-import SelectVariableModal from "@/components/SelectVariableModal/index.vue";
+import BindVariableModal from "@/components/BindVariableModal/index.vue";
 import BindEventModal from "@/components/BindEventModal/index.vue";
 
 const componentConfigStore = useComponentConfigStore();
 
 const compConfig = computed(() => componentConfigStore?.activeComponent!);
 
-const selectVariableModalRef = ref(null);
+const BindVariableModalRef = ref(null);
 const openModal = () => {
-  (selectVariableModalRef.value as any)?.openModal();
+  (BindVariableModalRef.value as any)?.openModal();
 };
 
 const onVariableBindChange = (value: string) => {
@@ -137,8 +137,8 @@ const onBindEvent = ({
       </div>
     </div>
   </a-scrollbar>
-  <SelectVariableModal
-    ref="selectVariableModalRef"
+  <BindVariableModal
+    ref="BindVariableModalRef"
     :value="(compConfig.props.visible.type as string) === 'JSExpression'? compConfig.props.visible.value: ''"
     @change="onVariableBindChange"
   />

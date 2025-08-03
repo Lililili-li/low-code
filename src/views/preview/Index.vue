@@ -51,37 +51,26 @@ const initPageStyle = () => {
     transform: `scale(${scaleWidth}, ${scaleWidth})`,
   }
 }
-const initPageConfig = () => {
-  pageConfigStore.setPageConfig(jsonPack.unpack(Local.get("pageConfig")))
-}
-const initGlobalConfig = () => {
-  const stateObj = jsonPack.unpack(Local.get("globalConfig")).state
-  const states = {}
-  for (let key in stateObj) {
-    if (!stateObj[key]) return
-    states[key] = stateObj[key].value
-  }
-  variableConfStore.setState(states, "global")
-}
-// 初始化变量
-const initPageVariable = (state, type) => {
-  const states = {}
-  for (let key in state) {
-    if (!state[key]) return
-    states[key] = state[key].value
-  }
-  variableConfStore.setState(states, type)
-}
 const initData = async () => {
   pageConfigStore.setPageConfig(jsonPack.unpack(Local.get("pageConfig")))
-  initPageVariable(pageConfigStore.pageSetting.state, "state")
-  initPageVariable(jsonPack.unpack(Local.get("globalConfig")).state, "global")
-  console.log(variableConfStore.getState('global'));
+  projectStore.setState(jsonPack.unpack(Local.get("globalConfig")).state)
 
-  handleInterface(pageConfigStore.pageSetting.dataSource)
-  handleChartData(pageConfigStore.pageSetting.componentList)
+  variableConfStore.stateSchemaToObject(pageConfigStore.pageSetting.state, "state")
+  variableConfStore.stateSchemaToObject(projectStore.schema.state, "global")
+
+
+  await handleInterface(pageConfigStore.pageSetting.dataSource)
   initPageStyle()
 }
+
+// 监听变量数据，进行绘制图表
+watch(() => variableConfStore.getState('state'), (newVal) => {
+  handleChartData(pageConfigStore.pageSetting.componentList)
+}, {
+  deep: true
+})
+
+
 const listenResize = () => {
   const scaleWidth = window.innerWidth / pageConfigStore.pageSetting?.style?.width
   pageStyle.value.transform = `scale(${scaleWidth}, ${scaleWidth})`
@@ -92,25 +81,23 @@ const compVisible = (props: IProps) => {
   if (props.visible.type === "Normal") return props.visible.value
   return getVariableValue(props.visible.value as string, variableConfStore)
 }
+
+
 const handleChartData = (componentList: IComponentType[]) => {
   componentList.forEach((item) => {
     if(item.props.render.type === 'JSExpression') {
-      item.props.option.dataset.source = getVariableValue(item.props.render.value, variableConfStore)
-
+      item.props.option.dataset.source = getVariableValue(item.props.render.value as [], variableConfStore)
     } else {
       item.props.option.dataset.source = item.props.render.defaultValue
     }
   })
 }
-watch(() => variableConfStore.state, (newVal) => {
-  console.log(newVal, 'newVal');
 
-  handleChartData(pageConfigStore.pageSetting.componentList)
-}, {
-  deep: true
-})
+
+
+
 const handleInterface = async (dataSource: IDataSource[]) => {
-  dataSource.forEach(async (item) => {
+  dataSource.map(async (item) => {
     const preAppendEventList: any[] = []
     for (const key in item) {
       if (Object.prototype.hasOwnProperty.call(interfaceEventMap, key)) {
@@ -119,12 +106,10 @@ const handleInterface = async (dataSource: IDataSource[]) => {
     }
     try {
       const params = handleParamsForSend(item, preAppendEventList)
-      console.log(params, 'params');
-
       // 判断是否为轮询接口
-      const isLoop = item.options.loopTime?.type === 'normal' ? item.options.loopTime.value : getVariableValue(item.options.loopTime.value, variableConfStore)
+      const isLoop = item.options.loopTime?.type === 'Normal' ? item.options.loopTime.value : getVariableValue(item.options.loopTime.value, variableConfStore)
       // 获取超时时间
-      const timeout = item.options.timeout?.type === 'normal' ? item.options.timeout.value : getVariableValue(item.options.timeout.value, variableConfStore)
+      const timeout = item.options.timeout?.type === 'Normal' ? item.options.timeout.value : getVariableValue(item.options.timeout.value, variableConfStore)
       let res: any = null
       if (isLoop) {
         res = await handleLoopFetch(params, timeout)
@@ -134,7 +119,7 @@ const handleInterface = async (dataSource: IDataSource[]) => {
       const exitItem = preAppendEventList.find((item) => item.name === "handleSuccess")
       if (exitItem) {
         const handleResult = new Function("res", "state", getFunctionBody(exitItem.value))
-        handleResult(res, variableConfStore.state)
+        handleResult(res, variableConfStore.getState('state'))
       }
     } catch (error) {
       const exitItem = preAppendEventList.find((item) => item.name === "handleError")
@@ -143,7 +128,6 @@ const handleInterface = async (dataSource: IDataSource[]) => {
         const result = handleResult(error, message)
         error = result || error
       }
-    } finally {
     }
   })
 }
@@ -184,6 +168,7 @@ onUnmounted(() => {
           class="cursor-pointer"
           v-if="compVisible(item.props)"
           style="padding: 20px"
+          v-on="useHandleEvent(item.eventConfig)"
         ></component>
       </div>
     </div>

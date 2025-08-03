@@ -3,7 +3,7 @@ import staticData from './data.json'
 import * as echarts from 'echarts'
 
 export enum ERenderData {
-  Normal = 'normal',
+  Normal = 'Normal',
   JSExpression = 'JSExpression',
   JSFunction = "JSFunction"
 }
@@ -12,6 +12,7 @@ export default {
   id: '1',
   componentName: 'vertical-bar',
   componentConfigName: 'vertical-bar-config',
+  componentType: 'chart',
   name: '渐变色柱状图',
   props: {
     visible: {
@@ -24,8 +25,8 @@ export default {
       tip: '暂无数据',
     },
     render: {
-      type: 'JSExpression', //初始为使用静态数据
-      value: 'state.chartData',
+      type: 'Normal', //初始为使用静态数据
+      value: staticData,
       defaultValue: staticData,
     },
     animationName: '',
@@ -122,6 +123,7 @@ export default {
           yAxisIndex: 0,
           encode: {
             x: 'label',
+            y: 'num1'
           }
         },
         {
@@ -144,6 +146,7 @@ export default {
           yAxisIndex: 0, //默认配置
           encode: { //默认配置
             x: 'label',
+            y: 'num2'
           }
         },
       ]

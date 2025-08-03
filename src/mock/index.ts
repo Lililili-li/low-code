@@ -104,7 +104,7 @@ Mock.mock('/project/1/page/1', 'get', {
                 {
                   key: "Content-Type",
                   value: {
-                    type: "normal",
+                    type: "Normal",
                     value: "application/json",
                   },
                 },
@@ -121,13 +121,13 @@ Mock.mock('/project/1/page/1', 'get', {
                 {
                   key: "Content-Type",
                   value: {
-                    type: "normal",
+                    type: "Normal",
                     value: "application/json",
                   },
                 },
               ],
               timeout: {
-                type: 'normal',
+                type: 'Normal',
                 value: 5000
               },
               // 无论是get请求还是post请求都放到params中
@@ -135,7 +135,7 @@ Mock.mock('/project/1/page/1', 'get', {
                 {
                   key: "name",
                   value: {
-                    type: "normal",
+                    type: "Normal",
                     value: "张三",
                   },
                 },

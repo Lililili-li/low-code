@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cloneDeep } from "lodash-es";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
 
 const props = defineProps(["option"]);
 const emits = defineEmits(["change"]);
@@ -53,16 +53,9 @@ const option = ref({
   pageIconColor: "#2f4554",
 });
 
-watch(
-  () => props.option,
-  () => {
-    option.value = { ...option.value, ...cloneDeep(props.option) };
-  },
-  {
-    immediate: true,
-    deep: true,
-  }
-);
+watchEffect(() => {
+  option.value = { ...option.value, ...cloneDeep(props.option) };
+});
 </script>
 
 <template>
@@ -72,7 +65,7 @@ watch(
         <a-typography-text>是否显示</a-typography-text>
       </a-col>
       <a-col :span="16" class="flex justify-end">
-        <a-switch size="small" v-model="option.show" @change="emits('change', option)"/>
+        <a-switch size="small" v-model="option.show" @change="emits('change', option)" />
       </a-col>
     </a-row>
 
@@ -114,15 +107,19 @@ watch(
             size="small"
             :min="12"
             v-model="option.textStyle.fontSize"
-            model-event="input"
-            @input="emits('change', option)"
+            @Change="emits('change', option)"
           />
         </a-space>
       </a-col>
       <a-col :span="12">
         <a-space direction="vertical">
           <a-typography-text>颜色</a-typography-text>
-          <a-color-picker size="small" v-model="option.textStyle.color" showText @change="emits('change', option)"/>
+          <a-color-picker
+            size="small"
+            v-model="option.textStyle.color"
+            showText
+            @change="emits('change', option)"
+          />
         </a-space>
       </a-col>
     </a-row>
@@ -137,13 +134,13 @@ watch(
       <a-col :span="12">
         <a-space direction="vertical">
           <a-typography-text>x轴</a-typography-text>
-          <a-input v-model="option.left" size="small" @input="emits('change', option)"/>
+          <a-input v-model="option.left" size="small" @Change="emits('change', option)" />
         </a-space>
       </a-col>
       <a-col :span="12">
         <a-space direction="vertical">
           <a-typography-text>y轴</a-typography-text>
-          <a-input v-model="option.top" size="small" @input="emits('change', option)"/>
+          <a-input v-model="option.top" size="small" @Change="emits('change', option)" />
         </a-space>
       </a-col>
     </a-row>
@@ -158,13 +155,21 @@ watch(
       <a-col :span="12">
         <a-space direction="vertical">
           <a-typography-text>宽</a-typography-text>
-          <a-input-number v-model="option.itemWidth" size="small" @input="emits('change', option)" model-event="input"/>
+          <a-input-number
+            v-model="option.itemWidth"
+            size="small"
+            @change="emits('change', option)"
+          />
         </a-space>
       </a-col>
       <a-col :span="12">
         <a-space direction="vertical">
           <a-typography-text>高</a-typography-text>
-          <a-input-number v-model="option.itemHeight" size="small" @input="emits('change', option)" model-event="input"/>
+          <a-input-number
+            v-model="option.itemHeight"
+            size="small"
+            @change="emits('change', option)"
+          />
         </a-space>
       </a-col>
     </a-row>
@@ -243,15 +248,19 @@ watch(
               size="small"
               :min="12"
               v-model="option.pageIconSize"
-              model-event="input"
-              @input="emits('change', option)"
+              @Change="emits('change', option)"
             />
           </a-space>
         </a-col>
         <a-col :span="12">
           <a-space direction="vertical" style="width: 100%">
             <a-typography-text>颜色</a-typography-text>
-            <a-color-picker size="small" v-model="option.pageIconColor" showText @change="emits('change', option)"/>
+            <a-color-picker
+              size="small"
+              v-model="option.pageIconColor"
+              showText
+              @change="emits('change', option)"
+            />
           </a-space>
         </a-col>
       </a-row>

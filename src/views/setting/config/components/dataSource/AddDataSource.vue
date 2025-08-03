@@ -21,7 +21,7 @@ const variableConfStore = useVariableStore()
 const dataSourceStore = useDataSourceStore()
 
 enum EParams {
-  Normal = "normal",
+  Normal = "Normal",
   JSExpression = "JSExpression",
 }
 const props = defineProps({
@@ -165,7 +165,6 @@ const onSaveData = async () => {
       value: event.value,
     }
   })
-  console.log(dataSource.base.headers, 'dataSource');
   if (props.type !== "edit") {
     dataSourceStore.addDataSourceList(dataSource)
     message.success("保存成功")
@@ -185,18 +184,19 @@ const onTestInterface = async () => {
   try {
     testLoading.value = true
     const params = handleParamsForSend(apiModel.value, preAppendEventList.value)
+    console.log(params);
+
     const res = await axios(params as unknown as AxiosRequestConfig)
     const exitItem = preAppendEventList.value.find((item) => item.name === "handleSuccess")
     if (exitItem) {
       const handleResult = new Function("res", "state", getFunctionBody(exitItem.value))
-      res.data = handleResult(res.data, cloneDeep(variableConfStore.state)) || res.data
+      res.data = handleResult(res.data, cloneDeep(variableConfStore.getState('state'))) || res.data
     }
     testResponse.value = JSON.stringify(res.data, null, 2);
     nextTick(() => {
       (scrollbarRef.value as any)?.scrollTo({top: 99999, behavior: 'smooth'})
     })
   } catch (error) {
-    console.log(error, "-----res")
     const exitItem = preAppendEventList.value.find((item) => item.name === "handleError")
     if (exitItem) {
       const handleResult = new Function("error", "message", getFunctionBody(exitItem.value))
@@ -490,9 +490,9 @@ defineExpose({ onOpenVariableDrawer })
               <span style="color: var(--color-text-2)">流程处理函数</span>
               <a-dropdown trigger="hover" @select="handleAddFunction">
                 <template #content>
-                  <a-doption value="handleParams">参数处理函数</a-doption>
-                  <a-doption value="handleSuccess">成功结果处理函数</a-doption>
-                  <a-doption value="handleError">失败结果处理函数</a-doption>
+                  <a-doption value="handleParams" :disabled="preAppendEventList.find(item => item.name === 'handleParams')">参数处理函数</a-doption>
+                  <a-doption value="handleSuccess" :disabled="preAppendEventList.find(item => item.name === 'handleSuccess')">成功结果处理函数</a-doption>
+                  <a-doption value="handleError" :disabled="preAppendEventList.find(item => item.name === 'handleError')">失败结果处理函数</a-doption>
                 </template>
                 <a-button type="text" size="mini">
                   <template #icon>
@@ -505,9 +505,9 @@ defineExpose({ onOpenVariableDrawer })
               <template #label>
                 <div class="flex justify-between w-full items-center">
                   <span>{{ item.name }}</span>
-                  <a-button type="text" size="mini" @click="handleRemoveFunc(index)">
+                  <a-button type="text" size="mini">
                     <template #icon>
-                      <icon-close-circle size="18" />
+                      <icon-close-circle size="18" @click="handleRemoveFunc(index)"/>
                     </template>
                   </a-button>
                 </div>

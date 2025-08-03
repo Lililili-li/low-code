@@ -1,11 +1,11 @@
 import type { IStateType } from "@/types/variable";
 import axios from "axios";
 import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { useVariableStore } from "./useVariableStore";
 
 export const useProjectStore = defineStore('project', () => {
-  const projectConf = reactive({
+  const projectConf = ref({
     id: 1,
     name: '',
   })
@@ -24,8 +24,7 @@ export const useProjectStore = defineStore('project', () => {
     const variableStore = useVariableStore()
     const { data: res } = await axios.get("/project/1");
     if (res.code === 200) {
-      projectConf.id = res.data.id
-      projectConf.name = res.data.name
+      projectConf.value = res.data
       schema.value = res.data.schema ? JSON.parse(res.data.schema) : { state: {}, methods: {} }
       variableStore.setVariableList(schema.value.state, 'global')
     }

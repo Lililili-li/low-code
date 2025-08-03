@@ -109,6 +109,8 @@ onMounted(() => {
       suggestOnTriggerCharacters: true, // 默认开启
       tabCompletion: 'on', // 'on', 'off', 'onlySnippets'
       fontSize: 14,
+      lineNumbersMinChars: 4, // 设置行号最小字符数为3（默认是5）
+      lineDecorationsWidth: 5, // 设置行号区域宽度（默认是10）
       ...props.options,
     })
 

@@ -5,7 +5,7 @@ export interface VisibleType {
 
 export interface RenderType {
   type: 'Normal' | 'JSExpression',
-  value: [] | string,
+  value: Record<string, any>[] | string,
   defaultValue: any[]
 }
 
@@ -26,10 +26,11 @@ export interface IComponentType {
   id: string,
   componentName: string,
   componentConfigName: string,
+  componentType: string,
   name: string,
   props: IProps,
   style: Record<string, string | number>,
-  eventConfig: Record<string, any>[],
+  eventConfig: { value: string; name: string; id: string, type: string }[],
   type?: 'component' | 'group',
   children?: IComponentType[],
 }

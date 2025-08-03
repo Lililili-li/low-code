@@ -42,6 +42,6 @@ export interface IDataSource {
 
 
 export enum EParams {
-  Normal = "normal",
+  Normal = "Normal",
   JSExpression = "JSExpression",
 }

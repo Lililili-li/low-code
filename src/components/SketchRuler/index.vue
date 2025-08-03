@@ -259,7 +259,6 @@ onUnmounted(() => {
   background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
   cursor: crosshair;
-  overflow: hidden;
   position: absolute;
   left: 0;
   top: 0;

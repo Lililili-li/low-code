@@ -1,12 +1,16 @@
 <script setup lang="tsx">
-import { reactive, ref } from "vue";
-import MonacoEditor from "@/components/MonacoEditor/index.vue";
+import { defineAsyncComponent, ref } from "vue";
 import { EVariableData } from "@/types/variable.d";
 import type { ExposedMethods } from "@/components/MonacoEditor/index.vue";
 import { useVariableStore } from "@/stores/useVariableStore";
 import { Message, type FormInstance } from "@arco-design/web-vue";
 import type { IVariableType } from "@/types/variable";
 import useObject from "@/hooks/useObject"
+
+const MonacoEditor = defineAsyncComponent({
+  loader: () => import("@/components/MonacoEditor/index.vue"),
+})
+
 
 const { addVariable, editVariable } = useVariableStore();
 const { type } = defineProps({

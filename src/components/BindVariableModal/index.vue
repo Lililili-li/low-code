@@ -100,10 +100,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { defineAsyncComponent, ref, watch } from "vue";
 import Modal from "../Modal/index.vue";
 import { useVariableStore } from "@/stores/useVariableStore";
-import MonacoEditor from "@/components/MonacoEditor/index.vue";
+
+const MonacoEditor = defineAsyncComponent({
+  loader: () => import("@/components/MonacoEditor/index.vue"),
+})
 
 const props = defineProps(["value"]);
 const emits = defineEmits(["change"]);

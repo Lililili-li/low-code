@@ -1,6 +1,5 @@
 <script setup lang="tsx">
-import { nextTick, onMounted, reactive, ref, watch } from "vue"
-import MonacoEditor from "@/components/MonacoEditor/index.vue"
+import { nextTick, ref, defineAsyncComponent } from "vue"
 import axios, { type AxiosRequestConfig } from "axios"
 import { interfaceEventMap } from "./handleParams"
 import Table from "./Table.vue"
@@ -16,6 +15,10 @@ import { useVariableStore } from "@/stores/useVariableStore"
 import { cloneDeep } from "lodash-es"
 import { useDataSourceStore } from "@/stores/useDataSourceStore"
 import useObject from "@/hooks/useObject"
+
+const MonacoEditor = defineAsyncComponent({
+  loader: () => import("@/components/MonacoEditor/index.vue"),
+})
 
 const variableConfStore = useVariableStore()
 const dataSourceStore = useDataSourceStore()

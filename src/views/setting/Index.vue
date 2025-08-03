@@ -1,8 +1,41 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import LayoutHeader from "./sundries/Index.vue";
-import Config from "./config/index.vue";
-import Panel from "./panel/index.vue";
-import Attribute from "./attribute/Index.vue";
+import { defineAsyncComponent } from "vue";
+
+const Config = defineAsyncComponent({
+  loader: () => import("./config/index.vue"),
+  loadingComponent: () => (
+    <div
+      class="flex justify-center items-center"
+      style="width: 350px; height: calc(100vh - 50px)"
+    >
+      <a-spin dot />
+    </div>
+  ),
+});
+
+const Panel = defineAsyncComponent({
+  loader: () => import("./panel/index.vue"),
+  loadingComponent: () => (
+    <div
+      class="flex justify-center items-center"
+      style="height: calc(100vh - 50px)"
+    >
+      <a-spin dot />
+    </div>
+  ),
+});
+const Attribute = defineAsyncComponent({
+  loader: () => import("./attribute/index.vue"),
+  loadingComponent: () => (
+    <div
+      class="flex justify-center items-center"
+      style="width: 350px; height: calc(100vh - 50px)"
+    >
+      <a-spin dot />
+    </div>
+  ),
+});
 </script>
 
 <template>
@@ -11,12 +44,14 @@ import Attribute from "./attribute/Index.vue";
       <LayoutHeader />
     </a-layout-header>
     <a-layout has-sider>
-      <Config />
+      <div>
+        <Config />
+      </div>
       <a-layout has-sider>
         <a-layout-content>
           <Panel></Panel>
         </a-layout-content>
-        <div class="layout-setting h-full">
+        <div>
           <Attribute />
         </div>
       </a-layout>

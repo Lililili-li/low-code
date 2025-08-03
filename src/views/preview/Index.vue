@@ -155,8 +155,8 @@ onUnmounted(() => {
           zIndex: item.style?.zIndex,
           top: item.style?.top + 'px',
           left: item.style?.left + 'px',
-          width: item.style?.scaleWidth + 'px',
-          height: item.style?.scaleHeight + 'px',
+          width: item.style?.width + 'px',
+          height: item.style?.width + 'px',
         }"
         class="relative"
       >

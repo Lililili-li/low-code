@@ -1,6 +1,6 @@
 # low-code
 
-This template should help get you started developing with Vue 3 in Vite.
+预览地址: http://39.106.20.75/#/login (直接登陆即可)
 
 ## Recommended IDE Setup
 

@@ -9,7 +9,8 @@ export class UserService {
   }
 
   findAll() {
-    return `This action returns all user`;
+    console.log('findAll');
+    return `This action returns all user1111`;
   }
 
   findOne(id: number) {

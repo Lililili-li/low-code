@@ -12,7 +12,7 @@ export class TransformInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     const returnType = this.reflector.get<ReturnType>('returnType', context.getHandler());
-    const req = context.getArgByIndex(1).req as Request;
+    // const req = context.getArgByIndex(1).req as Request;
     return next.handle().pipe(
       map((data) => {
         switch (returnType) {
@@ -20,10 +20,10 @@ export class TransformInterceptor implements NestInterceptor {
             return data;
           default:
             return {
-              code: 0,
+              code: 200,
               message: 'OK',
               data,
-              originUrl: req.originalUrl,
+              // originUrl: req.originalUrl,
             };
         }
       }),

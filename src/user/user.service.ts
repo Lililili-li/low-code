@@ -1,16 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { Profile } from './entities/profile.entity';
+import { CreateUserVo } from './dto/create-user.vo';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor( 
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Profile) private readonly profileRepository: Repository<Profile>
+  ) {}
+  async create(createUserDto: CreateUserDto) {
+    const userObj = this.userRepository.create(createUserDto)
+    const res = await this.userRepository.save(userObj)
+    return res
   }
 
-  findAll() {
-    console.log('findAll');
-    return `This action returns all user1111`;
+  async findAll() {
+    const res =  await this.userRepository.find()
+    return res
   }
 
   findOne(id: number) {
@@ -23,5 +34,22 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async findProfile(id: number) {
+    let vo: CreateUserVo | null
+    vo = await this.userRepository.findOne({
+      where: {
+        id
+      },
+    })
+    if (vo) {
+      vo.profile = await this.profileRepository.findOne({
+        where: {
+          userId: vo.id
+        },
+      }) as Record<string, any>
+    }
+    return vo
   }
 }

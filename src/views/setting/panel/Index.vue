@@ -12,7 +12,7 @@ import type { IComponentType, IProps } from "@/types/component.d";
 import useMouse from "@/hooks/useMouse";
 import type { DirectionLabelType } from "@/types/panel";
 import { EComponentType } from "@/types/component.d";
-import { Dropdown, DropdownItem } from "@/components/dropdown";
+import { Dropdown, DropdownItem } from "@/components/Dropdown";
 import useLayers from "@/hooks/useLayers";
 import { useLayersStore } from "@/stores/useLayersStore";
 import { useWorkStore } from "@/stores/useWorkStore";
@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 import SketchRuler from "@/components/SketchRuler/index.vue";
 import { getVariableValue } from "../config/components/variable/util";
 import { useVariableStore } from "@/stores/useVariableStore";
+import CanvasBox from "./components/CanvasBox.vue";
 
 const variableConfStore = useVariableStore();
 const { panelDropdownOptions, mousePosition, initHotKeys } = useLayers();
@@ -32,7 +33,6 @@ const pageConfigStore = usePageConfigStore();
 const layersStore = useLayersStore();
 const projectStore = useProjectStore();
 const controller = new AbortController();
-const sketchruleRef = ref<any>(null);
 const { moveState, setMoveState, calcMouseMoveDistance } = useMouse();
 const editBoxRef = ref<any>(null);
 const frameSelectDomStyle = reactive({
@@ -54,14 +54,16 @@ const onComponentDrop = (event: DragEvent) => {
   componentInfo.id = generateUUID();
   componentInfo.type = EComponentType.COMPONENT;
   // 渲染数据
-  if(componentInfo.props.render.type === 'JSExpression') {
-    componentInfo.props.option.dataset.source = getVariableValue(componentInfo.props.render.value, variableConfStore)
+  if (componentInfo.props.render.type === "JSExpression") {
+    componentInfo.props.option.dataset.source = getVariableValue(
+      componentInfo.props.render.value as string,
+      variableConfStore
+    );
   } else {
-    componentInfo.props.option.dataset.source = componentInfo.props.render.defaultValue
+    componentInfo.props.option.dataset.source = componentInfo.props.render.defaultValue;
   }
   componentConfigStore.setActiveComponent(componentInfo);
-  componentConfigStore.clearSelectGroupComponent();
-  pageConfigStore.addComponent(componentInfo);
+  pageConfigStore.addComponent(componentConfigStore.activeComponent as IComponentType);
   layersStore.setCutCompId(componentInfo.id);
   event.dataTransfer?.clearData();
   addHistory({
@@ -73,16 +75,9 @@ const onComponentDrop = (event: DragEvent) => {
     time: dayjs().format("MM-DD HH:mm"),
   });
   bus.emit("openAttribute", true);
-
 };
 
 // 通过底部操作栏修改画板缩放
-const onChangePanelScale = (value: number) => {
-  if (sketchruleRef.value) {
-    const panzoomInstance = (sketchruleRef.value as any).panzoomInstance;
-    panzoomInstance.zoom(value, { animate: false });
-  }
-};
 
 const onComponentMousedown = (
   event: MouseEvent,
@@ -170,17 +165,20 @@ const handleFrameSelect = (moveX: number, moveY: number) => {
     pageConfigStore.currentPage?.componentList!
   );
 };
+
 // 画板鼠标移动事件
 const onPanelMousemove = (event: MouseEvent) => {
   const { moveX, moveY } = calcMouseMoveDistance(event, panelConfigStore.getPanelScale);
   if (moveState.type === "move") {
+    // 拖拽移动组件
     handleMoveComponent(moveX, moveY);
     setMoveState({ moveX, moveY });
   } else if (moveState.type === "resize") {
+    // 拖拽进行放大缩小组件
     handleResizeComponent(moveX, moveY);
     setMoveState({ moveX, moveY });
   } else if (moveState.type === "frameSelect") {
-    // 框选
+    // 框选组件
     handleFrameSelect(moveX, moveY);
     setMoveState({ moveX, moveY });
   }
@@ -255,7 +253,7 @@ onMounted(async () => {
   window.addEventListener("resize", () => panelConfigStore.updatePanelSetting(), {
     signal: controller.signal,
   });
-  initHotKeys();
+  // initHotKeys();
 });
 onUnmounted(() => {
   controller.abort();
@@ -264,52 +262,38 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="panel relative"
+    class="panel relative flex flex-col"
     style="height: calc(100vh - 50px)"
     @dragover="(e) => e.preventDefault()"
     @drop="onComponentDrop"
     ref="panelRef"
     id="panel"
   >
-    <Dropdown
-      @onContextmenu="onDropdownContextmenu"
-      @mousemove="onPanelMousemove($event)"
-      @mouseup="onPanelMouseup($event)"
-      @mousedown.left="onPanelMousedown($event)"
-    >
-      <template #content>
-        <DropdownItem
-          v-for="item in panelDropdownOptions"
-          :key="item.key"
-          class="flex gap-1 items-center"
-          @click="
-            () => {
-              item.handle?.();
-            }
-          "
-          :class="item['disabled'] ? 'disabled' : ''"
-        >
-          <component :is="item.icon" style="font-size: 12px"></component>
-          {{ item.label }}
-        </DropdownItem>
-      </template>
-      <SketchRuler
-        v-model:scale="panelConfigStore.panelScaleConf.scale"
-        :canvasHeight="panelConfigStore.canvasSetting.height"
-        :canvasWidth="panelConfigStore.canvasSetting.width"
+    <div class="content flex-1">
+      <Dropdown
+        @onContextmenu="onDropdownContextmenu"
+        @mousemove.prevent="onPanelMousemove($event)"
+        @mouseup.prevent="onPanelMouseup($event)"
+        @mousedown.left.prevent="onPanelMousedown($event)"
       >
-        <div
-          data-type="page"
-          :style="{
-            width: panelConfigStore.canvasSetting.width + 'px',
-            height: panelConfigStore.canvasSetting.height + 'px',
-            background:
-              panelConfigStore.canvasSetting.useImage === 1
-                ? `url(${panelConfigStore.canvasSetting.backgroundUrl})`
-                : `${panelConfigStore.canvasSetting.backgroundColor}`,
-          }"
-          class="canvas"
-        >
+        <template #content>
+          <DropdownItem
+            v-for="item in panelDropdownOptions"
+            :key="item.key"
+            class="flex gap-1 items-center"
+            @click="
+              () => {
+                item.handle?.();
+              }
+            "
+            :class="item['disabled'] ? 'disabled' : ''"
+          >
+            <component :is="item.icon" style="font-size: 12px"></component>
+            {{ item.label }}
+          </DropdownItem>
+        </template>
+        <Demo />
+        <CanvasBox>
           <template
             v-for="(item, index) in pageConfigStore.currentPage?.componentList as IComponentType[]"
             :key="index"
@@ -317,13 +301,11 @@ onUnmounted(() => {
             <EditBox
               v-if="item.type === EComponentType.COMPONENT"
               :componentInfo="item"
-              @mousedown.left="onComponentMousedown($event, item, 'component')"
+              @mousedown.left.prevent="onComponentMousedown($event, item, 'component')"
               @onResizeMouseEvent="onResizeMouseEvent"
               ref="editBoxRef"
               :moveState="moveState"
             >
-              <!-- v-show="item.props.visible.value" -->
-
               <component
                 :is="componentMap[item?.componentName]"
                 v-bind="item.props"
@@ -337,7 +319,7 @@ onUnmounted(() => {
               v-if="item.type === EComponentType.GROUP"
               :componentInfo="item"
               :moveState="moveState"
-              @mousedown.left="onComponentMousedown($event, item, 'group')"
+              @mousedown.left.prevent="onComponentMousedown($event, item, 'group')"
             >
               <template v-for="child in item.children" :key="child.id">
                 <div
@@ -362,11 +344,22 @@ onUnmounted(() => {
               </template>
             </GroupEditBox>
           </template>
-        </div>
-      </SketchRuler>
-    </Dropdown>
-    <div class="footer absolute bottom-0">
-      <PanelConfig @on-change-panel-scale="onChangePanelScale" />
+          <div
+            v-show="moveState.type === 'frameSelect'"
+            :style="{
+              width: frameSelectDomStyle.width + 'px',
+              height: frameSelectDomStyle.height + 'px',
+              left: frameSelectDomStyle.left + 'px',
+              top: frameSelectDomStyle.top + 'px',
+              border: frameSelectDomStyle.border,
+            }"
+            class="absolute cursor-crosshair"
+          ></div>
+        </CanvasBox>
+      </Dropdown>
+    </div>
+    <div class="footer">
+      <PanelConfig />
     </div>
   </div>
 </template>
@@ -385,10 +378,10 @@ onUnmounted(() => {
 .footer {
   height: 45px;
   background-color: var(--color-menu-light-bg);
-  z-index: 999;
+  // z-index: 999;
   width: 100%;
-  right: 0;
-  bottom: 0px;
+  // right: 0;
+  // bottom: 0px;
   border: 1px solid #000;
   border-bottom: none;
   border-top: none;

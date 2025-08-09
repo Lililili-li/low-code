@@ -12,27 +12,29 @@ export const usePanelConfigStore = defineStore('panelConfig', {
         showRuler: true,
         gridRatio: 1,
         showShadowText: false,
+        startX: 0,
+        startY: 0,
         palette: {
-          bgColor: "#18181c",
+          bgColor: "transparent",
           longfgColor: "#4d4d4d",
           shortfgColor: "#4d4d4d",
-          fontColor: "#4d4d4d",
+          fontColor: "#999",
           shadowColor: "#18181c",
           borderColor: "#18181c",
           cornerActiveColor: "#18181c",
         },
         isShowReferLine: true,
         panzoomOption: {
+          canvas: true,
           animate: true,
           maxScale: 2,
           minScale: 0.1,
           disableZoom: false,
-          step: 0.05
+          step: 0.05,
         },
       } as PanelSettingType,
       panelScaleConf: {
         scale: 1,
-        disableZoom: false,
       } as panelScaleConfType,
       // 默认配置
       canvasSetting: {
@@ -52,12 +54,12 @@ export const usePanelConfigStore = defineStore('panelConfig', {
   actions: {
     updatePanelSetting(immediately = false) {
       if (immediately) {
-        const { width, height } = document.querySelector('.panel')?.getBoundingClientRect() as DOMRect
+        const { width, height } = document.querySelector('#screens')?.getBoundingClientRect() as DOMRect
         this.panelSetting.width = width
         this.panelSetting.height = height
       } else {
         setTimeout(() => {
-          const { width, height } = document.querySelector('.panel')?.getBoundingClientRect() as DOMRect
+          const { width, height } = document.querySelector('#screens')?.getBoundingClientRect() as DOMRect
           this.panelSetting.width = width
           this.panelSetting.height = height
         }, 500)

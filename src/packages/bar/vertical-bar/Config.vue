@@ -1,40 +1,21 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-// import RenderDataConfigModal from "@/components/render-data-config/index.vue";
 import { useComponentConfigStore } from "@/stores/useComponentConfigStore.ts";
-import { cloneDeep, xor } from "lodash-es";
+import { cloneDeep } from "lodash-es";
 import MessageApi from "@/utils/message.ts";
 import type { EChartsOption } from "echarts";
 import {
-  AxisComponent,
   GridComponent,
   LegendComponent,
   TitleComponent,
 } from "@/components/ChartCommonConfig";
-import { ERenderData } from "./interface.ts";
 import type { SeriesData } from "echarts/types/dist/shared";
 import type { AxisBaseOption } from "echarts/types/src/coord/axisCommonTypes.js";
-import { IconSettings, IconPlusCircle, IconDelete } from "@arco-design/web-vue/es/icon";
+import { IconPlusCircle, IconDelete } from "@arco-design/web-vue/es/icon";
 import CustomConfig from "@/components/ChartCommonConfig/CustomConfig.vue";
 
 const componentConfigStore = useComponentConfigStore();
 const option = computed(() => componentConfigStore.activeComponent!.props.option);
-const componentProps = computed(() => componentConfigStore.activeComponent!.props);
-
-const sheetData = ref({});
-const onOpenRenderDataConfigModal = () => {
-  if (componentConfigStore.activeComponent!.props.render.type === "Normal") {
-    // sheetData.value = charData2TableData(
-    //   componentConfigStore.activeComponent!.props.render.defaultValue,
-    // )
-    // renderDataConfigModalRef.value?.open()
-  } else {
-    // selectParamModalRef.value?.open({
-    //   id: componentProps.value.render.id,
-    //   param: componentProps.value.render.param!,
-    // })
-  }
-};
 
 const currentSeries = ref<number | undefined>(0);
 const seriesConfigList = computed(() => {

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@panzoom/panzoom':
+        specifier: ^4.6.0
+        version: 4.6.0
       '@vueuse/core':
         specifier: ^12.5.0
         version: 12.8.2(typescript@5.6.3)
@@ -66,8 +69,8 @@ importers:
         specifier: ^4.4.5
         version: 4.5.1(vue@3.5.16(typescript@5.6.3))
       vue3-sketch-ruler:
-        specifier: ^2.2.7
-        version: 2.2.10
+        specifier: ^2.2.10
+        version: 2.2.11
     devDependencies:
       '@arco-design/web-vue':
         specifier: ^2.57.0
@@ -412,6 +415,9 @@ packages:
 
   '@oxc-project/types@0.72.1':
     resolution: {integrity: sha512-qlvcDuCjISt4W7Izw0i5+GS3zCKJLXkoNDEc+E4ploage35SlZqxahpdKbHDX8uD70KDVNYWtupsHoNETy5kPQ==}
+
+  '@panzoom/panzoom@4.6.0':
+    resolution: {integrity: sha512-3KxkY1lNKFn98fW5ZFR6vV0YzsXj3I4EQDyFWSXME6/cic86eSS7VjuqIjrA3PEpySo0r5fFtlX8eYCt4JPUFQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -2402,8 +2408,8 @@ packages:
     peerDependencies:
       typescript: '>=5.0.0'
 
-  vue3-sketch-ruler@2.2.10:
-    resolution: {integrity: sha512-4T7FDNFdJ45GXHV/2Be+rMe1PAJzOSpdrTmBqSJfIpO3DUCV+gnRZMlB0V/xn1cbzRnSSuryh3yz3HxEoLLApw==}
+  vue3-sketch-ruler@2.2.11:
+    resolution: {integrity: sha512-kr72xHiY8dy8+Z20oyYOKs2mxyODLOLK7jHPaRkCS95nSVH/nHGvp++TeiJ9YnCrLYHxnPGn17hL72kbYGwEAg==}
 
   vue@3.5.16:
     resolution: {integrity: sha512-rjOV2ecxMd5SiAmof2xzh2WxntRcigkX/He4YFJ6WdRvVUrbt6DxC1Iujh10XLl8xCDRDtGKMeO3D+pRQ1PP9w==}
@@ -2796,6 +2802,8 @@ snapshots:
   '@oxc-project/runtime@0.72.1': {}
 
   '@oxc-project/types@0.72.1': {}
+
+  '@panzoom/panzoom@4.6.0': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -4797,7 +4805,7 @@ snapshots:
       '@vue/language-core': 2.2.10(typescript@5.6.3)
       typescript: 5.6.3
 
-  vue3-sketch-ruler@2.2.10: {}
+  vue3-sketch-ruler@2.2.11: {}
 
   vue@3.5.16(typescript@5.6.3):
     dependencies:

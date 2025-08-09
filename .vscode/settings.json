@@ -6,8 +6,12 @@
     "echarts",
     "ionicons",
     "jsonpack",
+    "longfg",
+    "Pannzoom",
+    "panzoom",
     "pinia",
     "popconfirm",
+    "shortfg",
     "vicons",
     "vueuse"
   ]

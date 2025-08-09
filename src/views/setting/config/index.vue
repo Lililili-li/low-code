@@ -2,7 +2,6 @@
 import {
   computed,
   defineAsyncComponent,
-  onMounted,
   ref,
   shallowRef,
   type StyleValue,
@@ -12,16 +11,11 @@ import { Material } from './components'
 import { usePanelConfigStore } from '@/stores/usePanelConfigStore'
 import { BracesVariable24Regular, DatabaseLink20Regular } from '@vicons/fluent'
 import { renderIcon } from '@/utils'
-import { useDataSourceStore } from '@/stores/useDataSourceStore'
-import { usePageConfigStore } from '@/stores/usePageConfigStore'
 
 const Layer = defineAsyncComponent(() => import('./components/layers/index.vue'))
 const Variable = defineAsyncComponent(() => import('./components/variable/index.vue'))
 const DataSource = defineAsyncComponent(() => import('./components/dataSource/index.vue'))
-const Schema = defineAsyncComponent(() => import('./components/schema/index.vue'))
 const panelConfigStore = usePanelConfigStore()
-const dataSourceStore = useDataSourceStore()
-const pageConfigStore = usePageConfigStore()
 
 enum MenuTypeEnum {
   MATERIAL = 'material',
@@ -45,13 +39,13 @@ const menuOptions = shallowRef([
     component: Layer,
   },
   {
-    label: '变量管理',
+    label: '变量',
     icon: renderIcon(BracesVariable24Regular),
     key: MenuTypeEnum.VARIABLE,
     component: Variable,
   },
   {
-    label: '数据源管理',
+    label: '数据源',
     icon: renderIcon(DatabaseLink20Regular),
     key: MenuTypeEnum.DataSource,
     component: DataSource,

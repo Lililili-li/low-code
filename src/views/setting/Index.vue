@@ -19,7 +19,7 @@ const Panel = defineAsyncComponent({
   loadingComponent: () => (
     <div
       class="flex justify-center items-center"
-      style="height: calc(100vh - 50px)"
+      style="height: calc(100vh - 50px); width: calc(100% - 700px)"
     >
       <a-spin dot />
     </div>
@@ -44,14 +44,14 @@ const Attribute = defineAsyncComponent({
       <LayoutHeader />
     </a-layout-header>
     <a-layout has-sider>
-      <div>
+      <div style="width: 350px;">
         <Config />
       </div>
       <a-layout has-sider>
-        <a-layout-content>
+        <a-layout-content style="width: calc(100% - 350px);">
           <Panel></Panel>
         </a-layout-content>
-        <div>
+        <div style="width: 350px;">
           <Attribute />
         </div>
       </a-layout>

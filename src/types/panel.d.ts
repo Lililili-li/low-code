@@ -7,7 +7,7 @@ export type PanelSettingType = {
   gridRatio: number,
   showShadowText: boolean,
   selfHandle: boolean,
-  palette: PaleteeType,
+  palette: PaletteType,
   isShowReferLine: boolean,
   panzoomOption: PanzoomOptionType,
   autoCenter: boolean,
@@ -15,23 +15,26 @@ export type PanelSettingType = {
   startY: number,
 }
 
-type PanzoomOptionType = {
+export type PanzoomOptionType = {
   animate: boolean,
   disableZoom: boolean,
   maxScale: number,
   minScale: number,
   duration: number,
   step: number,
-  canvas?: boolean
+  canvas?: boolean,
+  startX: number,
+  startY: number,
 }
-type PaleteeType = {
-  bgColor: string,
-  longfgColor: string,
-  shortfgColor: string,
-  fontColor: string,
-  shadowColor: string,
-  borderColor: string,
-  cornerActiveColor: string
+type PaletteType = {
+  bgColor: string;
+  longfgColor: string;
+  shortfgColor: string;
+  fontColor: string;
+  shadowColor: string;
+  lineColor: string;
+  borderColor: string;
+  cornerActiveColor: string;
 }
 export type panelScaleConfType = {
   scale: number,

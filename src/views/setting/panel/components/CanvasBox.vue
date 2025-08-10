@@ -170,14 +170,12 @@ onMounted(() => {
     });
   });
   document.addEventListener("keydown", function (event) {
-    // 检查是否按下了空格键（keyCode 32 或 event.key === ' '）
     if (event.key === " " || event.keyCode === 32) {
       event.preventDefault(); // 阻止默认行为（页面滚动）
       isPressSpace.value = true;
     }
   });
   document.addEventListener("keyup", function (event) {
-    // 检查是否释放了空格键（keyCode 32 或 event.key === ' '）
     if (event.key === " " || event.keyCode === 32) {
       event.preventDefault(); // 阻止默认行为（页面滚动）
       isPressSpace.value = false;

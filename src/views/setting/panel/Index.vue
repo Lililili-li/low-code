@@ -54,13 +54,13 @@ const onComponentDrop = (event: DragEvent) => {
   componentInfo.id = generateUUID();
   componentInfo.type = EComponentType.COMPONENT;
   // 渲染数据
-  if (componentInfo.props.render.type === "JSExpression") {
+  if (componentInfo.props.render?.type === "JSExpression") {
     componentInfo.props.option.dataset.source = getVariableValue(
       componentInfo.props.render.value as string,
       variableConfStore
     );
   } else {
-    componentInfo.props.option.dataset.source = componentInfo.props.render.defaultValue;
+    componentInfo.props.option.dataset.source = componentInfo.props.render?.defaultValue;
   }
   componentConfigStore.setActiveComponent(componentInfo);
   pageConfigStore.addComponent(componentConfigStore.activeComponent as IComponentType);
@@ -107,6 +107,8 @@ const onComponentMousedown = (
 };
 // 画板鼠标按下事件
 const onPanelMousedown = (event: MouseEvent) => {
+  console.log((event?.target as HTMLElement).dataset.type);
+
   if ((event?.target as HTMLElement).dataset.type !== "component") {
     componentConfigStore.removeActiveComponent();
     setMoveState({ startX: event.x, startY: event.y, type: "frameSelect" });
@@ -292,7 +294,6 @@ onUnmounted(() => {
             {{ item.label }}
           </DropdownItem>
         </template>
-        <Demo />
         <CanvasBox>
           <template
             v-for="(item, index) in pageConfigStore.currentPage?.componentList as IComponentType[]"
@@ -325,12 +326,12 @@ onUnmounted(() => {
                 <div
                   class="absolute"
                   :style="{
-                      zIndex: child.style.zIndex,
-                      top: (child.style.top as number) - (item.style.top as number) + 'px',
-                      left: (child.style.left as number) - (item.style.left as number) + 'px',
-                      width: child.style.width + 'px',
-                      height: child.style.height + 'px',
-                    }"
+                    zIndex: child.style.zIndex,
+                    top: (child.style.top as number) - (item.style.top as number) + 'px',
+                    left: (child.style.left as number) - (item.style.left as number) + 'px',
+                    width: child.style.width + 'px',
+                    height: child.style.height + 'px',
+                  }"
                 >
                   <component
                     :is="componentMap[child?.componentName]"
@@ -338,7 +339,7 @@ onUnmounted(() => {
                     :width="child.style.width"
                     :height="child.style.height"
                     class="cursor-pointer"
-                    v-show="compVisible(child.props)"
+                    v-show="compVisible(item.props)"
                   ></component>
                 </div>
               </template>

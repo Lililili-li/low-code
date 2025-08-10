@@ -17,7 +17,7 @@ export enum EComponentType {
 export interface IProps {
   visible: VisibleType,
   // option: Partial<EChartsOption>
-  render: RenderType,
+  render?: RenderType,
   option?: any,
   animationName: string,
 }

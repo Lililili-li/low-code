@@ -145,7 +145,7 @@ onUnmounted(() => {
 <template>
   <div class="preview-container w-full h-dvh overflow-auto" data-type="page" >
     <div
-      class="wrap"
+      class="wrap relative"
       :style="pageStyle"
     >
       <div
@@ -156,9 +156,9 @@ onUnmounted(() => {
           top: item.style?.top + 'px',
           left: item.style?.left + 'px',
           width: item.style?.width + 'px',
-          height: item.style?.width + 'px',
+          height: item.style?.height + 'px',
         }"
-        class="relative"
+        class="absolute"
       >
         <component
           :is="componentsMap[item?.componentName]"

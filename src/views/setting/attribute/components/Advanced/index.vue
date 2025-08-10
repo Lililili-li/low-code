@@ -107,7 +107,7 @@ const onBindEvent = ({
               <template #content>
                 <a-doption
                   @click="onOpenBindEventModal('create', 'onClick')"
-                  :disabled="Boolean(compConfig.eventConfig.find((item) => item.id === 'onClick')?.id)"
+                  :disabled="Boolean(compConfig.eventConfig?.find((item) => item.id === 'onClick')?.id)"
                   >onClick（点击事件）</a-doption
                 >
               </template>
@@ -125,7 +125,7 @@ const onBindEvent = ({
               <a-icon
                 size="18"
                 class="cursor-pointer hover:text-blue-500"
-                @click="onOpenBindEventModal('edit', item.id)"
+                @click="onOpenBindEventModal('edit', item.id as 'onClick' | 'onChange')"
                 ><icon-settings
               /></a-icon>
               <a-icon size="18" class="cursor-pointer hover:text-blue-500" @click="onDeleteEvent(item.id)"

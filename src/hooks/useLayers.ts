@@ -213,14 +213,18 @@ export default function useLayers() {
       name: '区块_' + generateUUID(),
       props: {
         visible: {
-          is: true,
+          value: true,
+          type: 'Normal'
         },
+      animationName: '',
       },
       style,
       children: selectCompList,
       id: generateUUID(),
       type: 'group',
-    }
+      componentType: 'group',
+      eventConfig: []
+    } as IComponentType
     componentList.push(group as any)
     componentConfigStore.clearSelectGroupComponent()
     componentConfigStore.selectIds.push(group.id)

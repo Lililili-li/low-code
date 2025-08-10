@@ -27,12 +27,12 @@ const onVariableBindChange = (value: string) => {
     ?.componentList.find((item) => item.id === compConfig.value.id);
   if (!activeComp) return;
   if (value) {
-    activeComp.props.render.type = "JSExpression";
-    activeComp.props.render.value = value;
+    activeComp.props.render!.type = "JSExpression";
+    activeComp.props.render!.value = value;
     renderType.value = "JSExpression";
   } else {
-    activeComp.props.render.type = "Normal";
-    activeComp.props.render.value = activeComp.props.render.defaultValue as [];
+    activeComp.props.render!.type = "Normal";
+    activeComp.props.render!.value = activeComp.props.render!.defaultValue as [];
     renderType.value = "Normal";
   }
 };
@@ -40,9 +40,11 @@ const onVariableBindChange = (value: string) => {
 const renderType = ref("");
 
 watch(
-  () => compConfig.value.props.render.type,
+  () => compConfig.value.props.render,
   (newVal) => {
-    renderType.value = newVal;
+    if (compConfig.value.type === 'component') {
+      renderType.value = newVal!.type;
+    }
   },
   {
     immediate: true,
@@ -53,6 +55,7 @@ watch(
 
 const onBindStaticData = (value: any) => {
   renderType.value = "Normal";
+  if (!compConfig.value.props.render) return
   compConfig.value.props.render.type = "Normal";
   compConfig.value.props.render.defaultValue = value.source;
   compConfig.value.props.render.value = value.source;
@@ -117,13 +120,13 @@ const onBindStaticData = (value: any) => {
   </a-scrollbar>
   <BindVariableModal
     ref="BindVariableModalRef"
-    :value="compConfig.props.render.value"
+    :value="compConfig.props.render?.value"
     @change="onVariableBindChange"
     v-if="(renderType as string) === 'JSExpression'"
   />
   <StaticTable
     ref="StaticTableRef"
-    :value="compConfig.props.render.defaultValue"
+    :value="compConfig.props.render?.defaultValue"
     @update:value="(value) => onBindStaticData(value)"
   />
 </template>

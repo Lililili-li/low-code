@@ -1,6 +1,7 @@
 import type { IComponentType } from "@/types/component.d";
 import type { IStateType } from "./variable";
 import type { IDataSource } from "./dataSource";
+import type { AdaptationEnum } from "./panel";
 
 export interface IPage {
   componentName: string;
@@ -10,6 +11,7 @@ export interface IPage {
   dataSource: IDataSource[]
   methods: any,
   props: Record<string, any>
+  adaptation: AdaptationEnum
   style: {
     width: number
     height: number

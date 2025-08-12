@@ -19,7 +19,7 @@ export const useComponentConfigStore = defineStore('componentConfig', {
       }
       // 将所有组件的active状态设置为false
       this.activeComponent = componentInfo
-      this.clearSelectGroupComponent()
+      this.selectIds = this.selectIds.filter(id => id === componentInfo.id)
     },
     removeActiveComponent() {
       this.activeComponent = undefined

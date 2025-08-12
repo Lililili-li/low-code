@@ -44,7 +44,8 @@ export const usePanelConfigStore = defineStore('panelConfig', {
         useImage: 2,
         thumbnailUrl: undefined as undefined | string,
         backgroundUrl: undefined as undefined | string
-      }
+      },
+      isMoving: false
     }
   },
   getters: {

@@ -80,18 +80,26 @@ const onCloseAside = () => {
 </script>
 
 <template>
-  <a-layout-sider bordered :width="collapsed ? 40 : activeKey === MenuTypeEnum.Schema? 550: 350">
+  <a-layout-sider bordered :width="collapsed ? 40 : 350">
     <div class="layout-aside">
-      <div class="content flex h-full" style="height: calc(100vh - 50px);">
+      <div class="content flex h-full" style="height: calc(100vh - 50px)">
         <div class="aside-menu h-full flex-col justify-between flex flex-shrink-0">
-          <Menu :options="menuOptions" :active-key="activeKey" @on-change="onChangeMenu"></Menu>
+          <Menu
+            :options="menuOptions"
+            :active-key="activeKey"
+            @on-change="onChangeMenu"
+          ></Menu>
         </div>
         <div class="aside-menu-component h-full" :style="asideMenuStyle">
           <div class="title flex justify-between pb-3 items-center">
             <span style="font-size: 16px">{{
               menuOptions.find((item) => item.key === activeKey)?.label
             }}</span>
-            <icon-menu-fold class="cursor-pointer close" :size="18" @click="onCloseAside" />
+            <icon-menu-fold
+              class="cursor-pointer close"
+              :size="18"
+              @click="onCloseAside"
+            />
           </div>
           <div class="render-box overflow-hidden">
             <component

@@ -114,6 +114,11 @@ const hotkeysList = [
     mac: "command + Y",
     windows: "ctrl + Y",
   },
+  {
+    function: "移动画布",
+    mac: "space + 鼠标左键",
+    windows: "space + 鼠标左键",
+  },
 ];
 
 onMounted(() => {});

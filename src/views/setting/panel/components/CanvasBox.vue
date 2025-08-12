@@ -22,7 +22,7 @@
       :style="{
         left: panelConfigStore.panelSetting.thick + 'px',
         top: panelConfigStore.panelSetting.thick + 'px',
-        cursor: isPressSpace ? 'grabbing' : 'default',
+        cursor: panelConfigStore.isMoving ? 'grabbing' : 'default',
       }"
     >
       <div
@@ -114,12 +114,11 @@ watch(
   }
 );
 
-const isPressSpace = ref(false);
 const { moveState, calcMouseMoveDistance, setMoveState } = useMouse()
 
 const handleMouseDown = (e: MouseEvent) => {
   e.preventDefault();
-  if (!isPressSpace.value) return;
+  if (!panelConfigStore.isMoving) return;
   setMoveState({
     startX: e.x,
     startY: e.y,
@@ -130,7 +129,7 @@ const handleMouseMove = (e: MouseEvent) => {
   e.preventDefault();
 
   if (!moveState.isMoving) return;
-  if (isPressSpace.value) {
+  if (panelConfigStore.isMoving) {
     const { moveX, moveY } = calcMouseMoveDistance(e, 1);
     screensRef.value!.scrollLeft -= moveX - moveState.moveX;
     screensRef.value!.scrollTop -= moveY - moveState.moveY;
@@ -166,19 +165,24 @@ onMounted(() => {
   window.addEventListener("resize", () => {
     panelConfigStore.updatePanelSetting();
     nextTick(() => {
+      const containerRect = containerRef.value!.getBoundingClientRect();
+      const screensRect = document.querySelector("#screens")!.getBoundingClientRect();
+      const canvasRect = document.querySelector("#canvas")!.getBoundingClientRect();
+      screensRef.value!.scrollTop =
+        containerRect.height / 2 - (screensRect.height - canvasRect.height) / 2;
       handleScroll();
     });
   });
   document.addEventListener("keydown", function (event) {
     if (event.key === " " || event.keyCode === 32) {
       event.preventDefault(); // 阻止默认行为（页面滚动）
-      isPressSpace.value = true;
+      panelConfigStore.isMoving = true;
     }
   });
   document.addEventListener("keyup", function (event) {
     if (event.key === " " || event.keyCode === 32) {
       event.preventDefault(); // 阻止默认行为（页面滚动）
-      isPressSpace.value = false;
+      panelConfigStore.isMoving = false;
     }
   });
 });

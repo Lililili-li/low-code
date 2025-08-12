@@ -35,6 +35,7 @@ Mock.mock('/project/1/page/1', 'get', {
     schema: JSON.stringify(
       {
         componentName: 'Page',
+        adaptation: '1',
         state: {
           visible: {
             type: "boolean",

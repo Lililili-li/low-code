@@ -73,12 +73,8 @@ const onCloseAside = () => {
   panelConfigStore.updatePanelSetting()
 }
 onMounted(() => {
-  bus.on('openAttribute', (flag) => {
-    if (flag) {
-      activeKey.value = 'attribute'
-    } else {
-      activeKey.value = 'page'
-    }
+  bus.on('openPage', (flag) => {
+    flag ? activeKey.value = 'page': activeKey.value = 'attribute'
   })
 })
 </script>
@@ -89,24 +85,36 @@ onMounted(() => {
       <div class="config-container" :style="{ width: collapsed ? '0px' : '310px' }">
         <div class="aside-menu-component h-full overflow-hidden" :style="asideMenuStyle">
           <div class="title flex justify-between pb-3 items-center">
-            <icon-menu-fold class="cursor-pointer close" :size="18" @click="onCloseAside" />
+            <icon-menu-fold
+              class="cursor-pointer close"
+              :size="18"
+              @click="onCloseAside"
+            />
             <span style="font-size: 16px">
               {{ menuOptions.find((item) => item.key === activeKey)?.label }}
             </span>
           </div>
           <div class="render-box">
             <div v-if="componentConfigStore.activeComponent?.id || activeKey === 'page'">
-              <component :is="menuOptions.find((item) => item.key === activeKey)?.component" />
+              <component
+                :is="menuOptions.find((item) => item.key === activeKey)?.component"
+              />
             </div>
             <div v-else>
-              <Empty content="请选中组件"/>
+              <Empty content="请选中组件" />
             </div>
           </div>
         </div>
       </div>
       <div class="attribute-list flex-shrink-0">
-        <div class="attribute-menu h-full flex-col justify-between flex flex-shrink-0 w-full">
-          <Menu :options="menuOptions" :active-key="activeKey" @on-change="onChangeMenu"></Menu>
+        <div
+          class="attribute-menu h-full flex-col justify-between flex flex-shrink-0 w-full"
+        >
+          <Menu
+            :options="menuOptions"
+            :active-key="activeKey"
+            @on-change="onChangeMenu"
+          ></Menu>
         </div>
       </div>
     </div>

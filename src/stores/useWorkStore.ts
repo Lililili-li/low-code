@@ -45,25 +45,47 @@ export const useWorkStore = defineStore('workStore', () => {
         if (type === 'redo') {
           return pageConfigStore.getCurrentPage()!.componentList.push(item.props as IComponentType)
         }
-        pageConfigStore.getCurrentPage()!.componentList = componentList.value!.filter(comp => comp.id !== item.componentId)
+        pageConfigStore.getCurrentPage()!.componentList = componentList.value!.filter(comp => comp.id !== item.componentId[0])
         break;
       case 'delete':
         if (type === 'redo') {
-          return pageConfigStore.getCurrentPage()!.componentList = componentList.value!.filter(comp => comp.id !== item.componentId)
+          return pageConfigStore.getCurrentPage()!.componentList = componentList.value!.filter(comp => comp.id !== item.componentId[0])
         }
         pageConfigStore.getCurrentPage()!.componentList.push(item.props as IComponentType)
         break;
-      case 'move':
-        const activeComp = pageConfigStore.getCurrentPage()!.componentList.find(comp => comp.id === item.componentId)
-        if (type === 'redo') {
-          return activeComp!.style = (item.props as any).end
-        }
-        activeComp!.style = {
-          ...activeComp!.style,
-          ...(item.props as any).start
-        }
+      case 'shape':
+        if (item.componentId.length === 0) return;
+        item.componentId.forEach(id => {
+          const activeComp = pageConfigStore.getCurrentPage()!.componentList.find(comp => comp.id === id)
+          if (activeComp?.type === 'group') {
+            activeComp!.children?.forEach(child => {
+              child.style = {
+                ...child.style,
+                ...item.position![activeComp.id]['children'][child.id][type === 'redo' ? 'end' : 'start']
+              }
+            })
+          }
+          if (type === 'redo') {
+            return activeComp!.style = item.position![activeComp?.id!]['end']
+          }
+          activeComp!.style = {
+            ...activeComp!.style,
+            ...item.position![activeComp?.id!]['start']
+          }
+        })
         break;
-      default:
+      case 'group':
+        if (type === 'redo') {
+          pageConfigStore.getCurrentPage()!.componentList.push(item.props as IComponentType)
+          pageConfigStore.getCurrentPage()!.componentList = pageConfigStore.getCurrentPage()!.componentList.filter(comp => !(item.props as IComponentType).children?.find(child => child.id === comp.id))
+          return
+        }
+        // pageConfigStore.getCurrentPage()!.componentList.push(item.props as IComponentType)
+        pageConfigStore.getCurrentPage()!.componentList = [
+          ...pageConfigStore.getCurrentPage()!.componentList,
+          ...(item.props as IComponentType).children!
+        ]
+        pageConfigStore.getCurrentPage()!.componentList = componentList.value!.filter(comp => comp.id !== item.componentId[0])
         break;
     }
   }

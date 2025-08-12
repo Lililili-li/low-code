@@ -5,11 +5,9 @@ import { useComponentConfigStore } from "@/stores/useComponentConfigStore";
 import type { MoveStateType, DirectionLabelType } from "@/types/panel";
 import AxisHelper from "./AxisHelper.vue";
 import type { IComponentType } from "@/types/component.d";
-import useLayers from "@/hooks/useLayers";
 
-const { onLayerHover, onLayerLeave } = useLayers();
 const componentConfigStore = useComponentConfigStore();
-const { componentInfo, moveState } = defineProps<{
+const { componentInfo } = defineProps<{
   componentInfo: IComponentType;
   moveState: MoveStateType;
 }>();
@@ -19,217 +17,193 @@ const isActive = computed(
 const isSelect = computed(() =>
   componentConfigStore.selectIds?.includes(componentInfo.id)
 );
-const emits = defineEmits(["onResizeMouseEvent"]);
+// const emits = defineEmits(["onResizeMouseEvent"]);
 
-const directionList = ref<DirectionLabelType[]>([
-  {
-    style: {
-      top: 0,
-      left: 0,
-      cursor: "nwse-resize",
-      transform: "translate(-50%, -50%)",
-      width: "12px",
-      height: "12px",
-    },
-    direction: 1,
-    name: "西北",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      const moveXDiff = formatNumber(moveX - moveState.moveX);
-      const moveYDiff = formatNumber(moveY - moveState.moveY);
-      (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
-      (componentConfigStore.activeComponent!.style.height as number) -= moveYDiff;
-      (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
-      (componentConfigStore.activeComponent!.style.top as number) += moveYDiff;
-    },
-  },
-  {
-    style: {
-      top: 0,
-      right: 0,
-      cursor: "nesw-resize",
-      transform: "translate(50%, -50%)",
-      width: "12px",
-      height: "12px",
-    },
-    direction: 2,
-    name: "东北",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      const moveXDiff = formatNumber(moveX - moveState.moveX);
-      const moveYDiff = formatNumber(moveY - moveState.moveY);
-      (componentConfigStore.activeComponent!.style.width as number) += moveXDiff;
-      (componentConfigStore.activeComponent!.style.height as number) -= moveYDiff;
-      (componentConfigStore.activeComponent!.style.top as number) += moveYDiff;
-    },
-  },
-  {
-    style: {
-      bottom: 0,
-      right: 0,
-      cursor: "nwse-resize",
-      transform: "translate(50%, 50%)",
-      width: "12px",
-      height: "12px",
-    },
-    direction: 3,
-    name: "东南",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      (componentConfigStore.activeComponent!.style.width as number) += formatNumber(
-        moveX - moveState.moveX
-      );
-      (componentConfigStore.activeComponent!.style.height as number) += formatNumber(
-        moveY - moveState.moveY
-      );
-    },
-  },
-  {
-    style: {
-      bottom: 0,
-      left: 0,
-      cursor: "nesw-resize",
-      transform: "translate(-50%, 50%)",
-      width: "12px",
-      height: "12px",
-    },
-    direction: 4,
-    name: "西南",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      const moveXDiff = formatNumber(moveX - moveState.moveX);
-      const moveYDiff = formatNumber(moveY - moveState.moveY);
-      (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
-      (componentConfigStore.activeComponent!.style.height as number) += moveYDiff;
-      (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
-    },
-  },
-  {
-    style: {
-      bottom: 0,
-      left: "50%",
-      cursor: "ns-resize",
-      transform: "translate(-50%,50%)",
-      width: "30px",
-      height: "12px",
-    },
-    direction: 5,
-    name: "南",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      (componentConfigStore.activeComponent!.style.height as number) += formatNumber(
-        moveY - moveState.moveY
-      );
-    },
-  },
-  {
-    style: {
-      top: 0,
-      left: "50%",
-      cursor: "ns-resize",
-      transform: "translate(-50%,-50%)",
-      width: "30px",
-      height: "12px",
-    },
-    direction: 6,
-    name: "北",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      const moveDiff = formatNumber(moveY - moveState.moveY);
-      (componentConfigStore.activeComponent!.style.height as number) -= moveDiff;
-      (componentConfigStore.activeComponent!.style.top as number) += moveDiff;
-    },
-  },
-  {
-    style: {
-      top: "50%",
-      left: 0,
-      cursor: "ew-resize",
-      transform: "translate(-50%, -50%)",
-      width: "12px",
-      height: "30px",
-    },
-    direction: 7,
-    name: "西",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      const moveXDiff = formatNumber(moveX - moveState.moveX);
-      (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
-      (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
-    },
-  },
-  {
-    style: {
-      top: "50%",
-      right: 0,
-      cursor: "ew-resize",
-      transform: "translate(50%, -50%)",
-      width: "12px",
-      height: "30px",
-    },
-    direction: 8,
-    name: "东",
-    moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
-      (componentConfigStore.activeComponent!.style.width as number) += formatNumber(
-        moveX - moveState.moveX
-      );
-    },
-  },
-]);
+// const directionList = ref<DirectionLabelType[]>([
+//   {
+//     style: {
+//       top: 0,
+//       left: 0,
+//       cursor: "nwse-resize",
+//       transform: "translate(-50%, -50%)",
+//       width: "12px",
+//       height: "12px",
+//     },
+//     direction: 1,
+//     name: "西北",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       const moveXDiff = formatNumber(moveX - moveState.moveX);
+//       const moveYDiff = formatNumber(moveY - moveState.moveY);
+//       (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
+//       (componentConfigStore.activeComponent!.style.height as number) -= moveYDiff;
+//       (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
+//       (componentConfigStore.activeComponent!.style.top as number) += moveYDiff;
+//     },
+//   },
+//   {
+//     style: {
+//       top: 0,
+//       right: 0,
+//       cursor: "nesw-resize",
+//       transform: "translate(50%, -50%)",
+//       width: "12px",
+//       height: "12px",
+//     },
+//     direction: 2,
+//     name: "东北",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       const moveXDiff = formatNumber(moveX - moveState.moveX);
+//       const moveYDiff = formatNumber(moveY - moveState.moveY);
+//       (componentConfigStore.activeComponent!.style.width as number) += moveXDiff;
+//       (componentConfigStore.activeComponent!.style.height as number) -= moveYDiff;
+//       (componentConfigStore.activeComponent!.style.top as number) += moveYDiff;
+//     },
+//   },
+//   {
+//     style: {
+//       bottom: 0,
+//       right: 0,
+//       cursor: "nwse-resize",
+//       transform: "translate(50%, 50%)",
+//       width: "12px",
+//       height: "12px",
+//     },
+//     direction: 3,
+//     name: "东南",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       (componentConfigStore.activeComponent!.style.width as number) += formatNumber(
+//         moveX - moveState.moveX
+//       );
+//       (componentConfigStore.activeComponent!.style.height as number) += formatNumber(
+//         moveY - moveState.moveY
+//       );
+//     },
+//   },
+//   {
+//     style: {
+//       bottom: 0,
+//       left: 0,
+//       cursor: "nesw-resize",
+//       transform: "translate(-50%, 50%)",
+//       width: "12px",
+//       height: "12px",
+//     },
+//     direction: 4,
+//     name: "西南",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       const moveXDiff = formatNumber(moveX - moveState.moveX);
+//       const moveYDiff = formatNumber(moveY - moveState.moveY);
+//       (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
+//       (componentConfigStore.activeComponent!.style.height as number) += moveYDiff;
+//       (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
+//     },
+//   },
+//   {
+//     style: {
+//       bottom: 0,
+//       left: "50%",
+//       cursor: "ns-resize",
+//       transform: "translate(-50%,50%)",
+//       width: "30px",
+//       height: "12px",
+//     },
+//     direction: 5,
+//     name: "南",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       (componentConfigStore.activeComponent!.style.height as number) += formatNumber(
+//         moveY - moveState.moveY
+//       );
+//     },
+//   },
+//   {
+//     style: {
+//       top: 0,
+//       left: "50%",
+//       cursor: "ns-resize",
+//       transform: "translate(-50%,-50%)",
+//       width: "30px",
+//       height: "12px",
+//     },
+//     direction: 6,
+//     name: "北",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       const moveDiff = formatNumber(moveY - moveState.moveY);
+//       (componentConfigStore.activeComponent!.style.height as number) -= moveDiff;
+//       (componentConfigStore.activeComponent!.style.top as number) += moveDiff;
+//     },
+//   },
+//   {
+//     style: {
+//       top: "50%",
+//       left: 0,
+//       cursor: "ew-resize",
+//       transform: "translate(-50%, -50%)",
+//       width: "12px",
+//       height: "30px",
+//     },
+//     direction: 7,
+//     name: "西",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       const moveXDiff = formatNumber(moveX - moveState.moveX);
+//       (componentConfigStore.activeComponent!.style.width as number) -= moveXDiff;
+//       (componentConfigStore.activeComponent!.style.left as number) += moveXDiff;
+//     },
+//   },
+//   {
+//     style: {
+//       top: "50%",
+//       right: 0,
+//       cursor: "ew-resize",
+//       transform: "translate(50%, -50%)",
+//       width: "12px",
+//       height: "30px",
+//     },
+//     direction: 8,
+//     name: "东",
+//     moveFunc: (moveX: number, moveY: number, moveState: MoveStateType) => {
+//       (componentConfigStore.activeComponent!.style.width as number) += formatNumber(
+//         moveX - moveState.moveX
+//       );
+//     },
+//   },
+// ]);
 
-const onResizeMousedown = (event: MouseEvent, data: any) => {
-  emits("onResizeMouseEvent", { event, data, isResize: true });
-};
+// const onResizeMousedown = (event: MouseEvent, data: any) => {
+//   emits("onResizeMouseEvent", { event, data, isResize: true });
+// };
 </script>
 
 <template>
-  <div
-    class="edit-box absolute"
-    data-type="component"
-    :style="{
-      zIndex: componentInfo.style.zIndex,
-      top: componentInfo.style.top + 'px',
-      left: componentInfo.style.left + 'px',
-      width:
-        typeof componentInfo.style.width !== 'string'
-          ? componentInfo.style.width + 'px'
-          : componentInfo.style.width,
-      height:
-        typeof componentInfo.style.height !== 'string'
-          ? componentInfo.style.height + 'px'
-          : componentInfo.style.height,
-    }"
-    :data-comp-id="componentInfo.id"
-    @mouseenter="() => onLayerHover(componentInfo.id)"
-    @mouseleave="() => onLayerLeave(componentInfo.id)"
-  >
-    <div class="w-full h-full">
-      <div class="box absolute h-full w-full" :data-comp-id="componentInfo.id">
-        <slot></slot>
-      </div>
-      <div
-        class="mask absolute h-full w-full"
-        :class="componentConfigStore.hoverIds.includes(componentInfo.id) ? 'hover' : ''"
-        :data-comp-id="componentInfo.id"
-        data-type="component"
-      ></div>
-      <div
-        :class="[
-          'change-box absolute h-full w-full',
-          isActive || isSelect ? 'active' : '',
-        ]"
-        v-show="isActive || isSelect"
-        data-type="component"
-        :data-comp-id="componentInfo.id"
-      ></div>
-
-      <!-- 指向标 -->
-      <div
-        class="direction-box absolute"
-        v-for="item in directionList"
-        :key="item.direction"
-        :style="item.style"
-        v-show="isActive && !isSelect"
-        @mousedown.stop.left="onResizeMousedown($event, item)"
-        data-type="component"
-        :data-comp-id="componentInfo.id"
-      ></div>
-      <!-- 轴辅助线 -->
-      <AxisHelper :componentId="componentInfo.id" :moveState="moveState" />
+  <div class="w-full h-full">
+    <div class="box absolute h-full w-full" :data-comp-id="componentInfo.id">
+      <slot></slot>
     </div>
+    <div
+      class="mask absolute h-full w-full"
+      :class="componentConfigStore.hoverIds.includes(componentInfo.id) ? 'hover' : ''"
+      :data-comp-id="componentInfo.id"
+      data-type="component"
+    ></div>
+    <div
+      :class="['change-box absolute h-full w-full', isActive || isSelect ? 'active' : '']"
+      v-show="isActive || isSelect"
+      data-type="component"
+      :data-comp-id="componentInfo.id"
+    ></div>
+
+    <!-- 指向标 -->
+    <!-- <div
+      class="direction-box absolute"
+      v-for="item in directionList"
+      :key="item.direction"
+      :style="item.style"
+      v-show="isActive && !isSelect"
+      @mousedown.stop.left="onResizeMousedown($event, item)"
+      data-type="component"
+      :data-comp-id="componentInfo.id"
+    ></div> -->
+    <!-- 轴辅助线 -->
+    <!-- <AxisHelper :componentId="componentInfo.id" :moveState="moveState" /> -->
   </div>
 </template>
 

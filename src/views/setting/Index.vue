@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import LayoutHeader from "./sundries/Index.vue";
 import { defineAsyncComponent } from "vue";
+// import Config from "./config/index.vue";
 
 const Config = defineAsyncComponent({
   loader: () => import("./config/index.vue"),
@@ -44,14 +45,14 @@ const Attribute = defineAsyncComponent({
       <LayoutHeader />
     </a-layout-header>
     <a-layout has-sider>
-      <div style="width: 350px;">
+      <div>
         <Config />
       </div>
       <a-layout has-sider>
         <a-layout-content style="width: calc(100% - 350px);">
           <Panel></Panel>
         </a-layout-content>
-        <div style="width: 350px;">
+        <div>
           <Attribute />
         </div>
       </a-layout>

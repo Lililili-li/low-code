@@ -68,3 +68,11 @@ export type AttributeType = {
   label: string,
   key: string,
 }
+
+
+export enum AdaptationEnum {
+  CENTER = '1',
+  STRETCH = '2',
+  WIDTH = '3',
+  HEIGHT = '4',
+}

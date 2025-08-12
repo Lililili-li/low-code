@@ -85,10 +85,10 @@ const compVisible = (props: IProps) => {
 
 const handleChartData = (componentList: IComponentType[]) => {
   componentList.forEach((item) => {
-    if(item.props.render.type === 'JSExpression') {
+    if(item.props.render?.type === 'JSExpression') {
       item.props.option.dataset.source = getVariableValue(item.props.render.value as [], variableConfStore)
     } else {
-      item.props.option.dataset.source = item.props.render.defaultValue
+      item.props.option.dataset.source = item.props.render?.defaultValue
     }
   })
 }
@@ -143,7 +143,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="preview-container w-full h-dvh overflow-auto" data-type="page" >
+  <div class="preview-container w-full h-dvh overflow-y-auto overflow-x-hidden" data-type="page" >
     <div
       class="wrap relative"
       :style="pageStyle"

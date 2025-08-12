@@ -27,6 +27,7 @@ export interface IComponentType {
   componentName: string,
   componentConfigName: string,
   componentType: string,
+  groupId?: string
   name: string,
   props: IProps,
   style: Record<string, string | number>,

@@ -25,7 +25,7 @@ import dayjs from "dayjs";
 
 export default function useLayers() {
   const pageConfigStore = usePageConfigStore();
-  const componentConfigStore = useComponentConfigStore()
+  const compConfigStore = useComponentConfigStore()
   const panelConfigStore = usePanelConfigStore()
   const layersStore = useLayersStore()
   const { addHistory, undo, redo } = useWorkStore()
@@ -69,7 +69,7 @@ export default function useLayers() {
       label: "创建区块",
       icon: renderIcon(Box24Regular),
       key: "createGroup",
-      handle: () => createGroup(componentConfigStore.selectIds),
+      handle: () => createGroup(compConfigStore.selectIds),
     },
     {
       label: "解除区块",
@@ -145,7 +145,7 @@ export default function useLayers() {
     }
 
     // 多选，允许分组和删除
-    if (componentConfigStore.selectIds.includes(curCompId.value) && componentConfigStore.selectIds.length > 1) {
+    if (compConfigStore.selectIds.includes(curCompId.value) && compConfigStore.selectIds.length > 1) {
       return getOptions({ onlyKeys: ['createGroup', 'delete'], disableAll: false });
     }
 
@@ -197,20 +197,22 @@ export default function useLayers() {
     }
     let width = 0
     let height = 0
+    const groupId = generateUUID();
     // 遍历选中的组件，计算分组的宽度和高度
     selectCompList?.forEach(item => {
       style.left = Math.min(style.left, item.style.left as number)
       style.top = Math.min(style.top, item.style.top as number)
       width = Math.max(width, (item.style.left as number) + (item.style.width as number))
       height = Math.max(height, (item.style.top as number) + (item.style.height as number))
+      item.groupId = groupId; // 设置分组id
     })
     style.width = width - style.left
     style.height = height - style.top
     componentList = componentList.filter(item => !ids.includes(item.id))!
     const group = {
-      componentName: '区块_' + generateUUID(),
+      componentName: '区块_' + groupId,
       componentConfigName: '区块',
-      name: '区块_' + generateUUID(),
+      name: '区块_' + groupId,
       props: {
         visible: {
           value: true,
@@ -220,29 +222,37 @@ export default function useLayers() {
       },
       style,
       children: selectCompList,
-      id: generateUUID(),
+      id: groupId,
       type: 'group',
       componentType: 'group',
       eventConfig: []
     } as IComponentType
     componentList.push(group as any)
-    componentConfigStore.clearSelectGroupComponent()
-    componentConfigStore.selectIds.push(group.id)
+    compConfigStore.clearSelectGroupComponent()
+    compConfigStore.selectIds.push(group.id)
     pageConfigStore.getCurrentPage()!.componentList = componentList
     layersStore.clearCurCompId()
-    componentConfigStore.setActiveComponent(group as any);
+    compConfigStore.setActiveComponent(group)
+    addHistory({
+      type: 'group',
+      id: generateUUID(),
+      label: '创建区块-' + groupId,
+      componentId: [groupId],
+      time: dayjs().format('MM-DD HH:mm'),
+      props: group
+    })
   }
   // 取消分组
   const unGroup = (componentInfo?: IComponentType) => {
     const component = pageConfigStore.getCurrentPage()?.componentList.find(item => item.id === curCompId.value)! || componentInfo
-    const componentConfigStore = useComponentConfigStore()
-    componentConfigStore.selectIds = componentConfigStore.selectIds.filter(item => item !== component.id)
+    const compConfigStore = useComponentConfigStore()
+    compConfigStore.selectIds = compConfigStore.selectIds.filter(item => item !== component.id)
     component.children?.forEach(item => {
       pageConfigStore.addComponent(item)
-      componentConfigStore.selectIds.push(item.id)
+      compConfigStore.selectIds.push(item.id)
     })
     pageConfigStore.removeComponent(component.id)
-    componentConfigStore.removeActiveComponent()
+    compConfigStore.removeActiveComponent()
   }
   // 删除图层
   const removeLayer = (ids?: string) => {
@@ -254,7 +264,7 @@ export default function useLayers() {
           type: 'delete',
           id: generateUUID(),
           label: '删除-' + comp.name,
-          componentId: comp.id,
+          componentId: [comp.id],
           time: dayjs().format('MM-DD HH:mm'),
           props: comp
         })
@@ -265,7 +275,7 @@ export default function useLayers() {
         type: 'delete',
         id: generateUUID(),
         label: '删除-' + comp.name,
-        componentId: comp.id,
+        componentId: [comp.id],
         time: dayjs().format('MM-DD HH:mm'),
         props: comp
       })
@@ -274,6 +284,7 @@ export default function useLayers() {
   }
   // 改变图层的可见性
   const changeVisible = (item: IComponentType, isVisible: boolean, isGroup: boolean = false) => {
+    if (item.props.visible.type === 'JSExpression') return message.warning('JS表达式不可见性无法修改，请在代码编辑器中修改');
     if (isGroup) {
       item.children?.forEach((child: IComponentType) => {
         child.props.visible.value = isVisible;
@@ -360,10 +371,10 @@ export default function useLayers() {
             top: mousePosition.y ? (child.style.top as number) + ((mousePosition.y - (height as number) / 2) as number - (top as number)) : (child.style.top as number) + 20,
           }
         }));
-        componentConfigStore.clearSelectGroupComponent();
-        componentConfigStore.selectIds.push(newComponent.id);
+        compConfigStore.clearSelectGroupComponent();
+        compConfigStore.selectIds.push(newComponent.id);
       } else {
-        componentConfigStore.setActiveComponent(newComponent);
+        compConfigStore.setActiveComponent(newComponent);
       }
       // 添加到当前页面
       pageConfigStore.addComponent(newComponent);
@@ -385,7 +396,7 @@ export default function useLayers() {
           }
         }));
       } else {
-        componentConfigStore.setActiveComponent(componentInfo);
+        compConfigStore.setActiveComponent(componentInfo);
       }
       layersStore.layerState.cutCompId = null
     }
@@ -408,14 +419,14 @@ export default function useLayers() {
 
   const hotkeysMap = shallowRef([
     {
-      window: 'ctrl+c',
-      mac: 'command+c',
+      window: 'ctrl+shift+c',
+      mac: 'command+shift+c',
       action: copyComp,
       name: '复制'
     },
     {
-      window: 'ctrl+v',
-      mac: 'command+v',
+      window: 'ctrl+shift+v',
+      mac: 'command+shift+v',
       action: pasteComp,
       name: '粘贴'
     },
@@ -430,6 +441,18 @@ export default function useLayers() {
       mac: 'backspace',
       action: removeLayer,
       name: '删除'
+    },
+    {
+      window: 'ctrl+g',
+      mac: 'command+g',
+      action: () => {
+        if (compConfigStore.activeComponent && compConfigStore.selectIds.includes(compConfigStore.activeComponent.id)) {
+          unGroup(compConfigStore.activeComponent)
+        } else {
+          createGroup(compConfigStore.selectIds)
+        }
+      },
+      name: '解除/创建 分组'
     },
     {
       window: 'l',
@@ -458,7 +481,7 @@ export default function useLayers() {
     hotkeysMap.value.forEach(item => {
       hotkeys(isMac.value ? item.mac : item.window, function (event) {
         event.preventDefault(); // Prevent default behavior
-        const componentInfo = componentConfigStore.activeComponent || pageConfigStore.getCurrentPage()?.componentList.find(item => item.id === curCompId.value)
+        const componentInfo = compConfigStore.activeComponent || pageConfigStore.getCurrentPage()?.componentList.find(item => item.id === curCompId.value)
         if (item.name === '删除') {
           item.action(componentInfo!.id as any)
         } else {
@@ -470,11 +493,11 @@ export default function useLayers() {
   }
   // 鼠标移入高亮
   const onLayerHover = (id: string) => {
-    componentConfigStore.hoverIds.includes(id) ? '' : componentConfigStore.hoverIds.push(id)
+    compConfigStore.hoverIds.includes(id) ? '' : compConfigStore.hoverIds.push(id)
   }
   // 鼠标移出取消高亮
   const onLayerLeave = (id: string) => {
-    componentConfigStore.hoverIds.includes(id) ? componentConfigStore.hoverIds.splice(componentConfigStore.hoverIds.indexOf(id), 1) : ''
+    compConfigStore.hoverIds.includes(id) ? compConfigStore.hoverIds.splice(compConfigStore.hoverIds.indexOf(id), 1) : ''
   }
   return {
     removeLayer,

@@ -3,8 +3,15 @@ import { usePanelConfigStore } from "@/stores/usePanelConfigStore";
 import { usePageConfigStore } from "@/stores/usePageConfigStore";
 import noImage from "@/assets/images/upload/noImage.png";
 import Title from "@/components/Title/index.vue";
+import Modal from '@/components/Modal/index.vue';
 import { ref } from "vue";
 
+enum AdaptationEnum {
+  CENTER = "1",
+  STRETCH = "2",
+  WIDTH = "3",
+  HEIGHT = "4",
+}
 const panelConfigStore = usePanelConfigStore();
 const pageConfigStore = usePageConfigStore();
 
@@ -28,131 +35,133 @@ const onBackgroundChange = (value: number) => {
       panelConfigStore.canvasSetting.thumbnailUrl;
   }
 };
-const themeList = ref([
-  {
-    name: "宁静蓝",
-    id: 1,
-    colors: [
-      "#4992ff",
-      "#7cffb2",
-      "#fddd60",
-      "#ff6e76",
-      "#58d9f9",
-      "#05c091",
-      "#ff8a45",
-      "#8d48e3",
-      "#dd79ff",
-    ],
-  },
-  {
-    name: "清新绿",
-    id: 2,
-    colors: [
-      "#00FF7F",
-      "#32CD32",
-      "#008000",
-      "#00FF00",
-      "#7FFF00",
-      "#ADFF2F",
-      "#F0FFF0",
-      "#90EE90",
-      "#8FBC8F",
-    ],
-  },
-  {
-    name: "梦幻紫",
-    id: 3,
-    colors: [
-      "#8A2BE2",
-      "#9400D3",
-      "#4B0082",
-      "#6A5ACD",
-      "#800080",
-      "#BA55D3",
-      "#D8BFD8",
-      "#EE82EE",
-      "#FF00FF",
-    ],
-  },
-  {
-    name: "优雅蓝",
-    id: 4,
-    colors: [
-      "#0000FF",
-      "#00BFFF",
-      "#1E90FF",
-      "#6495ED",
-      "#7B68EE",
-      "#B0C4DE",
-      "#D3D3D3",
-      "#C0C0C0",
-      "#808080",
-    ],
-  },
-  {
-    name: "复古棕",
-    id: 5,
-    colors: [
-      "#8B4513",
-      "#B8860B",
-      "#A0522D",
-      "#DEB887",
-      "#D2B48C",
-      "#BC8F8F",
-      "#CD853F",
-      "#F4A460",
-      "#FFE4C4",
-    ],
-  },
-  {
-    name: "甜美粉",
-    id: 6,
-    colors: [
-      "#FFC0CB",
-      "#FF69B4",
-      "#FFB6C1",
-      "#FF1493",
-      "#C71585",
-      "#DB7093",
-      "#F08080",
-      "#FA8072",
-      "#FFA07A",
-    ],
-  },
-  {
-    name: "自然绿",
-    id: 7,
-    colors: [
-      "#228B22",
-      "#3CB371",
-      "#66CDAA",
-      "#8FBC8F",
-      "#A52A2A",
-      "#B8860B",
-      "#CD853F",
-      "#D2B48C",
-      "#DEB887",
-    ],
-  },
-  {
-    name: "宁静蓝",
-    id: 8,
-    colors: [
-      "#FF5733",
-      "#FF7F00",
-      "#FFA500",
-      "#FFC300",
-      "#FFD700",
-      "#FFF8DC",
-      "#FAEBD7",
-      "#FFE4B5",
-      "#FFEBCD",
-    ],
-  },
-]);
-const changeTheme = (item) => {
-  pageConfigStore.setPageTheme(item);
-};
+const envConfigModalVisible = ref(false)
+
+// const themeList = ref([
+//   {
+//     name: "宁静蓝",
+//     id: 1,
+//     colors: [
+//       "#4992ff",
+//       "#7cffb2",
+//       "#fddd60",
+//       "#ff6e76",
+//       "#58d9f9",
+//       "#05c091",
+//       "#ff8a45",
+//       "#8d48e3",
+//       "#dd79ff",
+//     ],
+//   },
+//   {
+//     name: "清新绿",
+//     id: 2,
+//     colors: [
+//       "#00FF7F",
+//       "#32CD32",
+//       "#008000",
+//       "#00FF00",
+//       "#7FFF00",
+//       "#ADFF2F",
+//       "#F0FFF0",
+//       "#90EE90",
+//       "#8FBC8F",
+//     ],
+//   },
+//   {
+//     name: "梦幻紫",
+//     id: 3,
+//     colors: [
+//       "#8A2BE2",
+//       "#9400D3",
+//       "#4B0082",
+//       "#6A5ACD",
+//       "#800080",
+//       "#BA55D3",
+//       "#D8BFD8",
+//       "#EE82EE",
+//       "#FF00FF",
+//     ],
+//   },
+//   {
+//     name: "优雅蓝",
+//     id: 4,
+//     colors: [
+//       "#0000FF",
+//       "#00BFFF",
+//       "#1E90FF",
+//       "#6495ED",
+//       "#7B68EE",
+//       "#B0C4DE",
+//       "#D3D3D3",
+//       "#C0C0C0",
+//       "#808080",
+//     ],
+//   },
+//   {
+//     name: "复古棕",
+//     id: 5,
+//     colors: [
+//       "#8B4513",
+//       "#B8860B",
+//       "#A0522D",
+//       "#DEB887",
+//       "#D2B48C",
+//       "#BC8F8F",
+//       "#CD853F",
+//       "#F4A460",
+//       "#FFE4C4",
+//     ],
+//   },
+//   {
+//     name: "甜美粉",
+//     id: 6,
+//     colors: [
+//       "#FFC0CB",
+//       "#FF69B4",
+//       "#FFB6C1",
+//       "#FF1493",
+//       "#C71585",
+//       "#DB7093",
+//       "#F08080",
+//       "#FA8072",
+//       "#FFA07A",
+//     ],
+//   },
+//   {
+//     name: "自然绿",
+//     id: 7,
+//     colors: [
+//       "#228B22",
+//       "#3CB371",
+//       "#66CDAA",
+//       "#8FBC8F",
+//       "#A52A2A",
+//       "#B8860B",
+//       "#CD853F",
+//       "#D2B48C",
+//       "#DEB887",
+//     ],
+//   },
+//   {
+//     name: "宁静蓝",
+//     id: 8,
+//     colors: [
+//       "#FF5733",
+//       "#FF7F00",
+//       "#FFA500",
+//       "#FFC300",
+//       "#FFD700",
+//       "#FFF8DC",
+//       "#FAEBD7",
+//       "#FFE4B5",
+//       "#FFEBCD",
+//     ],
+//   },
+// ]);
+// const changeTheme = (item) => {
+//   pageConfigStore.setPageTheme(item);
+// };
 </script>
 
 <template>
@@ -184,7 +193,7 @@ const changeTheme = (item) => {
           <a-upload :custom-request="customRequest" draggable :show-file-list="false">
             <template #upload-button>
               <div
-                style="margin-bottom: 8px; border: 1px dashed #444"
+                style="margin-bottom: 15px; border: 1px dashed #444"
                 class="flex flex-col items-center justify-center w-full; p-3"
               >
                 <img
@@ -228,7 +237,7 @@ const changeTheme = (item) => {
               </a-color-picker>
             </div>
           </a-col>
-          <a-col :span="24" style="margin-top: 8px">
+          <a-col :span="24" style="margin-top: 15px">
             <div class="flex justify-between items-center">
               <span style="width: 80px">应用类型</span>
               <a-select
@@ -250,9 +259,89 @@ const changeTheme = (item) => {
               ></a-select>
             </div>
           </a-col>
+          <a-col :span="24" style="margin-top: 15px">
+            <div class="flex justify-between items-center">
+              <span style="width: 80px">适配方式</span>
+              <a-select
+                :options="[
+                  {
+                    label: '居中自适应',
+                    value: AdaptationEnum.CENTER,
+                  },
+                  {
+                    label: '强行拉伸',
+                    value: AdaptationEnum.STRETCH,
+                  },
+                  {
+                    label: '宽度自适应',
+                    value: AdaptationEnum.WIDTH,
+                  },
+                  {
+                    label: '高度自适应',
+                    value: AdaptationEnum.HEIGHT,
+                  },
+                ]"
+                v-model="pageConfigStore.currentPage.adaptation"
+                size="small"
+                style="flex: 1"
+              ></a-select>
+            </div>
+          </a-col>
+          <a-col :span="24" style="margin-top: 15px">
+            <div class="flex items-center">
+              <span style="width: 80px">设置封面</span>
+              <a-button type="secondary" size="small">截取屏幕</a-button>
+            </div>
+          </a-col>
+          <a-col :span="24" style="margin-top: 15px">
+            <a-row>
+              <a-upload :custom-request="customRequest" draggable :show-file-list="false">
+                <template #upload-button>
+                  <div
+                    style="margin-bottom: 15px; border: 1px dashed #444"
+                    class="flex flex-col items-center justify-center w-full; p-3"
+                  >
+                    <img
+                      :src="
+                        panelConfigStore.canvasSetting.thumbnailUrl
+                          ? panelConfigStore.canvasSetting.thumbnailUrl
+                          : noImage
+                      "
+                      alt=""
+                      style="height: 150px"
+                      fetchpriority="low"
+                    />
+                    <a-typography-text type="info">
+                      图片格式为png/gif/jpg/jpeg格式
+                    </a-typography-text>
+                  </div>
+                </template>
+              </a-upload>
+            </a-row>
+          </a-col>
+          <!-- <a-col :span="24" style="margin-top: 15px">
+            <div class="flex items-center">
+              <span style="width: 80px">自定义css</span>
+              <a-button type="secondary" size="small">打开编辑器</a-button>
+            </div>
+          </a-col> -->
+          <!-- <a-col :span="24" style="margin-top: 15px">
+            <div class="flex justify-between items-center">
+              <span style="width: 80px">环境配置</span>
+              <a-input placeholder="请输入环境配置" class="flex-1" @focus="envConfigModalVisible = true"></a-input>
+            </div>
+          </a-col> -->
         </a-row>
       </a-space>
-      <Title title="主题颜色" style="margin: 8px 0 16px 0" />
+      <!-- <Modal title="环境配置" v-model:visible="envConfigModalVisible">
+        <a-form>
+          <a-form-item label="域名配置:">
+            <a-input placeholder="请输入域名配置" class="flex-1"></a-input>
+          </a-form-item>
+        </a-form>
+
+      </Modal> -->
+      <!-- <Title title="主题颜色" style="margin: 8px 0 16px 0" />
       <div class="flex flex-col gap-4">
         <a-card
           :style="{
@@ -282,13 +371,12 @@ const changeTheme = (item) => {
             </div>
           </div>
         </a-card>
-      </div>
+      </div> -->
     </div>
   </a-scrollbar>
 </template>
 
 <style scoped lang="less">
-
 .color-item {
   width: 22px;
   height: 20px;

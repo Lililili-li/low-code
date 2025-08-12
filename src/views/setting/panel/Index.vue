@@ -19,15 +19,15 @@ import { useWorkStore } from "@/stores/useWorkStore";
 import { useProjectStore } from "@/stores/useProjectStore";
 import bus from "@/utils/bus";
 import dayjs from "dayjs";
-import SketchRuler from "@/components/SketchRuler/index.vue";
 import { getVariableValue } from "../config/components/variable/util";
 import { useVariableStore } from "@/stores/useVariableStore";
 import CanvasBox from "./components/CanvasBox.vue";
+import { cloneDeep } from "lodash-es";
 
 const variableConfStore = useVariableStore();
 const { panelDropdownOptions, mousePosition, initHotKeys } = useLayers();
 const { addHistory } = useWorkStore();
-const componentConfigStore = useComponentConfigStore();
+const compConfigStore = useComponentConfigStore();
 const panelConfigStore = usePanelConfigStore();
 const pageConfigStore = usePageConfigStore();
 const layersStore = useLayersStore();
@@ -62,89 +62,115 @@ const onComponentDrop = (event: DragEvent) => {
   } else {
     componentInfo.props.option.dataset.source = componentInfo.props.render?.defaultValue;
   }
-  componentConfigStore.setActiveComponent(componentInfo);
-  pageConfigStore.addComponent(componentConfigStore.activeComponent as IComponentType);
+  compConfigStore.setActiveComponent(componentInfo);
+  pageConfigStore.addComponent(compConfigStore.activeComponent as IComponentType);
   layersStore.setCutCompId(componentInfo.id);
   event.dataTransfer?.clearData();
+  startPosition[componentInfo.id] = cloneDeep(componentInfo.style);
   addHistory({
     label: "新增-" + componentInfo.name,
     id: generateUUID(),
     type: "create",
-    componentId: componentInfo.id,
+    componentId: [componentInfo.id],
     props: componentInfo,
     time: dayjs().format("MM-DD HH:mm"),
   });
-  bus.emit("openAttribute", true);
+  bus.emit("openPage", false);
 };
 
 // 通过底部操作栏修改画板缩放
-
+let startPosition = {};
 const onComponentMousedown = (
   event: MouseEvent,
   item: IComponentType,
   type: "component" | "group"
 ) => {
   if (event.shiftKey) {
-    componentConfigStore.removeActiveComponent();
-    componentConfigStore.selectIds.push(item.id);
-  } else {
-    if (type === "group") {
-      componentConfigStore.removeActiveComponent();
-      componentConfigStore.clearSelectGroupComponent();
-      componentConfigStore.selectIds.push(item.id);
-      componentConfigStore.setActiveComponent(item);
-      layersStore.setCutCompId(item.id);
-    } else {
-      if (!componentConfigStore.selectIds?.includes(item.id)) {
-        componentConfigStore.clearSelectGroupComponent();
-        componentConfigStore.setActiveComponent(item);
-        layersStore.setCutCompId(item.id);
-      }
+    // 如果点击是自己的话直接返回不做处理
+    if (item.id === compConfigStore.activeComponent?.id) return;
+    // 先将激活的组件放到选中状态中
+    if (
+      compConfigStore.activeComponent?.id &&
+      !compConfigStore.selectIds.includes(compConfigStore.activeComponent?.id)
+    ) {
+      compConfigStore.selectIds.push(compConfigStore.activeComponent?.id);
     }
+    // 然后移除激活状态
+    compConfigStore.removeActiveComponent();
+    // 将点击的组件放到选中状态中
+    if (!compConfigStore.selectIds.includes(item.id))
+      compConfigStore.selectIds.push(item.id);
+    compConfigStore.selectIds.forEach((item) => {
+      startPosition[item] = cloneDeep(
+        pageConfigStore.currentPage?.componentList?.find((i) => i.id === item)?.style
+      );
+    });
+    return;
   }
-  bus.emit("openAttribute", true);
+  if (type === "group") {
+    if (!compConfigStore.selectIds?.includes(item.id)) {
+      compConfigStore.removeActiveComponent();
+      compConfigStore.clearSelectGroupComponent();
+      compConfigStore.selectIds.push(item.id);
+      layersStore.setCutCompId(item.id);
+      compConfigStore.setActiveComponent(item);
+    }
+    startPosition[item.id] = cloneDeep(item.style);
+    startPosition[item.id]["children"] = {};
+    item.children?.forEach((child) => {
+      startPosition[item.id]["children"][child.id] = cloneDeep(child.style);
+    });
+  } else {
+    if (!compConfigStore.selectIds?.includes(item.id)) {
+      compConfigStore.clearSelectGroupComponent();
+      compConfigStore.setActiveComponent(item);
+      layersStore.setCutCompId(item.id);
+    }
+    startPosition[item.id] = cloneDeep(item.style);
+  }
   setMoveState({ startX: event.x, startY: event.y, type: "move", componentType: type });
+  bus.emit("openPage", false);
 };
 // 画板鼠标按下事件
 const onPanelMousedown = (event: MouseEvent) => {
-  console.log((event?.target as HTMLElement).dataset.type);
-
+  // 如果正在拖拽画板直接返回
+  if (panelConfigStore.isMoving) return;
   if ((event?.target as HTMLElement).dataset.type !== "component") {
-    componentConfigStore.removeActiveComponent();
+    compConfigStore.removeActiveComponent();
     setMoveState({ startX: event.x, startY: event.y, type: "frameSelect" });
     frameSelectDomStyle.left = event.offsetX;
     frameSelectDomStyle.top = event.offsetY;
     setTimeout(() => {
-      componentConfigStore.clearSelectGroupComponent();
+      compConfigStore.clearSelectGroupComponent();
     }, 50);
+    bus.emit("openPage", true);
   }
 };
 // 移动组件或者圈选的组件
 const handleMoveComponent = (moveX: number, moveY: number) => {
-  if (
-    componentConfigStore.activeComponent &&
-    componentConfigStore.activeComponent.type === EComponentType.COMPONENT
-  ) {
-    (componentConfigStore.activeComponent!.style!.left as number) += formatNumber(
+  if (compConfigStore.selectIds.length === 0 && compConfigStore.activeComponent) {
+    // 1. 单个激活状态组件移动
+    (compConfigStore.activeComponent!.style!.left as number) += formatNumber(
       moveX - moveState.moveX
     );
-    (componentConfigStore.activeComponent!.style!.top as number) += formatNumber(
+    (compConfigStore.activeComponent!.style!.top as number) += formatNumber(
       moveY - moveState.moveY
     );
   } else {
-    pageConfigStore.currentPage?.componentList?.forEach((item) => {
-      if (!componentConfigStore.selectIds?.includes(item.id)) return;
-      if (moveState.componentType === "group") {
-        item.children?.forEach((child) => {
-          child.style.left =
-            (child.style.left as number) + formatNumber(moveX - moveState.moveX);
-          child.style.top =
-            (child.style.top as number) + formatNumber(moveY - moveState.moveY);
-        });
+    compConfigStore.selectIds.forEach((id) => {
+      const item = pageConfigStore.currentPage?.componentList?.find(
+        (item) => item.id === id
+      );
+      if (item) {
+        if (item?.type === "group") {
+          item.children?.forEach((child) => {
+            (child.style.left as number) += formatNumber(moveX - moveState.moveX);
+            (child.style.top as number) += formatNumber(moveY - moveState.moveY);
+          });
+        }
+        (item.style.left as number) += formatNumber(moveX - moveState.moveX);
+        (item.style.top as number) += formatNumber(moveY - moveState.moveY);
       }
-      item.style.left =
-        (item.style.left as number) + formatNumber(moveX - moveState.moveX);
-      item.style.top = (item.style.top as number) + formatNumber(moveY - moveState.moveY);
     });
   }
 };
@@ -157,7 +183,7 @@ const handleResizeComponent = (moveX: number, moveY: number) => {
 const handleFrameSelect = (moveX: number, moveY: number) => {
   frameSelectDomStyle.width += formatNumber(moveX - moveState.moveX);
   frameSelectDomStyle.height += formatNumber(moveY - moveState.moveY);
-  componentConfigStore.handleSelectGroupComponent(
+  compConfigStore.handleSelectGroupComponent(
     {
       width: frameSelectDomStyle.width,
       height: frameSelectDomStyle.height,
@@ -167,9 +193,9 @@ const handleFrameSelect = (moveX: number, moveY: number) => {
     pageConfigStore.currentPage?.componentList!
   );
 };
-
 // 画板鼠标移动事件
 const onPanelMousemove = (event: MouseEvent) => {
+  if (panelConfigStore.isMoving) return;
   const { moveX, moveY } = calcMouseMoveDistance(event, panelConfigStore.getPanelScale);
   if (moveState.type === "move") {
     // 拖拽移动组件
@@ -185,29 +211,82 @@ const onPanelMousemove = (event: MouseEvent) => {
     setMoveState({ moveX, moveY });
   }
 };
+
 // 画板鼠标抬起事件
-const onPanelMouseup = (event: MouseEvent) => {
+const onPanelMouseup = () => {
+  if (panelConfigStore.isMoving) return;
   if (moveState.type === "frameSelect") {
     frameSelectDomStyle.width = 0;
     frameSelectDomStyle.height = 0;
     frameSelectDomStyle.left = 0;
     frameSelectDomStyle.top = 0;
   }
-  if (moveState.type === "move" || moveState.type === "resize") {
+
+  if (moveState.type === "move") {
+    const position = {};
+    Object.keys(startPosition).forEach((key) => {
+      const children = {};
+      if (startPosition[key].children) {
+        Object.keys(startPosition[key].children).forEach((childKey) => {
+          children[childKey] = {
+            start: cloneDeep(startPosition[key].children[childKey]),
+            end: cloneDeep(
+              pageConfigStore
+                .getCurrentPage()
+                .componentList.find((item) => item.id === key)
+                ?.children?.find((child) => child.id === childKey)?.style
+            ),
+          };
+        });
+      }
+      position[key] = {
+        start: startPosition[key],
+        end: cloneDeep(
+          pageConfigStore.getCurrentPage().componentList.find((item) => item.id === key)
+            ?.style
+        ),
+        children,
+      };
+    });
+    if (compConfigStore.selectIds.length === 0 && compConfigStore.activeComponent) {
+      addHistory({
+        type: "shape",
+        id: generateUUID(),
+        componentId: [compConfigStore.activeComponent?.id!],
+        position,
+        label: "移动-" + compConfigStore.activeComponent?.name,
+        time: dayjs().format("MM-DD HH:mm"),
+      });
+    } else {
+      addHistory({
+        type: "shape",
+        id: generateUUID(),
+        componentId: compConfigStore.selectIds,
+        position,
+        label: "移动-多个组件",
+        time: dayjs().format("MM-DD HH:mm"),
+      });
+    }
+  }
+  if (moveState.type === "resize") {
+    const position = {};
+    Object.keys(startPosition).forEach((key) => {
+      position[key] = {
+        start: startPosition[key],
+        end: cloneDeep(
+          pageConfigStore.getCurrentPage().componentList.find((item) => item.id === key)?.style
+        ),
+      }
+    });
     addHistory({
-      type: "move",
+      type: "shape",
       id: generateUUID(),
-      componentId: componentConfigStore.activeComponent?.id!,
-      props: {
-        start: componentConfigStore.activeComponent?.style,
-        end: componentConfigStore.activeComponent?.style,
-      },
-      label: "移动-" + componentConfigStore.activeComponent?.name,
+      componentId: [compConfigStore.activeComponent?.id!],
+      position,
+      label: "缩放-" + compConfigStore.activeComponent?.name,
       time: dayjs().format("MM-DD HH:mm"),
     });
-    componentConfigStore.activeComponent!.style = JSON.parse(
-      JSON.stringify(componentConfigStore.activeComponent?.style!)
-    );
+    console.log(position,2);
   }
   setMoveState({ moveX: 0, moveY: 0, type: null });
 };
@@ -221,6 +300,7 @@ const onResizeMouseEvent = ({
   data: DirectionLabelType;
   isResize: boolean;
 }) => {
+  startPosition[compConfigStore.activeComponent!.id] = cloneDeep(compConfigStore.activeComponent!.style);
   setMoveState({ startX: event.x, startY: event.y, type: "resize" });
   currentDirectionLabel.value = data;
 };
@@ -231,8 +311,8 @@ const onDropdownContextmenu = (event: MouseEvent) => {
   if (id) {
     layersStore.setCurCompId(id);
     layersStore.setCutCompId(id);
-    if (componentConfigStore.selectIds.includes(id)) return;
-    componentConfigStore.setActiveComponent(
+    if (compConfigStore.selectIds.includes(id)) return;
+    compConfigStore.setActiveComponent(
       pageConfigStore.getCurrentPage()?.componentList.find((item) => item.id === id)!
     );
   } else {
@@ -255,7 +335,7 @@ onMounted(async () => {
   window.addEventListener("resize", () => panelConfigStore.updatePanelSetting(), {
     signal: controller.signal,
   });
-  // initHotKeys();
+  initHotKeys();
 });
 onUnmounted(() => {
   controller.abort();
@@ -275,7 +355,7 @@ onUnmounted(() => {
       <Dropdown
         @onContextmenu="onDropdownContextmenu"
         @mousemove.prevent="onPanelMousemove($event)"
-        @mouseup.prevent="onPanelMouseup($event)"
+        @mouseup.prevent="onPanelMouseup()"
         @mousedown.left.prevent="onPanelMousedown($event)"
       >
         <template #content>
@@ -296,33 +376,30 @@ onUnmounted(() => {
         </template>
         <CanvasBox>
           <template
-            v-for="(item, index) in pageConfigStore.currentPage?.componentList as IComponentType[]"
-            :key="index"
+            v-for="item in pageConfigStore.currentPage?.componentList as IComponentType[]"
+            :key="item.id"
           >
-            <EditBox
-              v-if="item.type === EComponentType.COMPONENT"
-              :componentInfo="item"
-              @mousedown.left.prevent="onComponentMousedown($event, item, 'component')"
-              @onResizeMouseEvent="onResizeMouseEvent"
-              ref="editBoxRef"
-              :moveState="moveState"
-            >
-              <component
-                :is="componentMap[item?.componentName]"
-                v-bind="item.props"
-                :width="item.style.width"
-                :height="item.style.height"
-                class="cursor-pointer"
-                v-show="compVisible(item.props)"
-              ></component>
-            </EditBox>
             <GroupEditBox
-              v-if="item.type === EComponentType.GROUP"
               :componentInfo="item"
               :moveState="moveState"
-              @mousedown.left.prevent="onComponentMousedown($event, item, 'group')"
+              @mousedown.left.prevent="onComponentMousedown($event, item, item.type!)"
+              @onResizeMouseEvent="onResizeMouseEvent"
             >
-              <template v-for="child in item.children" :key="child.id">
+              <template v-if="item.type === 'component'">
+                <component
+                  :is="componentMap[item?.componentName]"
+                  v-bind="item.props"
+                  :width="item.style.width"
+                  :height="item.style.height"
+                  class="cursor-pointer"
+                  v-show="compVisible(item.props)"
+                ></component>
+              </template>
+              <template
+                v-for="child in item.children"
+                :key="child.id"
+                v-if="item.type === 'group'"
+              >
                 <div
                   class="absolute"
                   :style="{
@@ -333,14 +410,16 @@ onUnmounted(() => {
                     height: child.style.height + 'px',
                   }"
                 >
-                  <component
-                    :is="componentMap[child?.componentName]"
-                    v-bind="child.props"
-                    :width="child.style.width"
-                    :height="child.style.height"
-                    class="cursor-pointer"
-                    v-show="compVisible(item.props)"
-                  ></component>
+                  <EditBox :componentInfo="child" :moveState="moveState">
+                    <component
+                      :is="componentMap[child?.componentName]"
+                      v-bind="child.props"
+                      :width="child.style.width"
+                      :height="child.style.height"
+                      class="cursor-pointer"
+                      v-show="compVisible(item.props)"
+                    ></component>
+                  </EditBox>
                 </div>
               </template>
             </GroupEditBox>

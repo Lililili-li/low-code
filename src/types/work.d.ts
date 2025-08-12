@@ -2,8 +2,9 @@ export type WorkType = {
   label: string,
   label: string,
   type: string,
-  componentId: string,
+  componentId: string[],
   time: string,
   id: number | string,
-  props: {}
+  props?: {},
+  position?: Record<string, any>
 }

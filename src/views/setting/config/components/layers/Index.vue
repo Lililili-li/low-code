@@ -1,58 +1,72 @@
 <script setup lang="tsx">
-import { usePageConfigStore } from "@/stores/usePageConfigStore"
-import { useComponentConfigStore } from "@/stores/useComponentConfigStore"
-import { storeToRefs } from "pinia"
-import { computed, onMounted, ref } from "vue"
-import CompList from "./CompList.vue"
-import { Folder, FolderOpen } from "@vicons/ionicons5"
-import useLayers from "@/hooks/useLayers"
-import type { IComponentType } from "@/types/component.d"
-import bus from "@/utils/bus"
+import { usePageConfigStore } from "@/stores/usePageConfigStore";
+import { useComponentConfigStore } from "@/stores/useComponentConfigStore";
+import { storeToRefs } from "pinia";
+import { computed, onMounted, ref } from "vue";
+import CompList from "./CompList.vue";
+import { Folder, FolderOpen } from "@vicons/ionicons5";
+import useLayers from "@/hooks/useLayers";
+import type { IComponentType } from "@/types/component.d";
+import bus from "@/utils/bus";
 
-const { removeLayer, changeVisible, onLayerHover, onLayerLeave, dropdownOptions } = useLayers()
+const {
+  removeLayer,
+  changeVisible,
+  onLayerHover,
+  onLayerLeave,
+  dropdownOptions,
+} = useLayers();
 
-const { currentPage } = storeToRefs(usePageConfigStore())
-const { setActiveComponent, clearSelectGroupComponent, removeActiveComponent } =
-  useComponentConfigStore()
-const { activeComponent, selectIds, hoverIds } = storeToRefs(useComponentConfigStore())
+const { currentPage } = storeToRefs(usePageConfigStore());
+const {
+  setActiveComponent,
+  clearSelectGroupComponent,
+  removeActiveComponent,
+} = useComponentConfigStore();
+const { activeComponent, selectIds, hoverIds } = storeToRefs(useComponentConfigStore());
 
 const componentsList = computed(() => {
-  return currentPage.value?.componentList
-})
+  return currentPage.value?.componentList;
+});
 
-const expendIds = ref<string[]>([])
+const expendIds = ref<string[]>([]);
 const onSelectComponent = (data: IComponentType, event: MouseEvent) => {
-  event.preventDefault()
+  event.preventDefault();
   if (event.shiftKey) {
-    removeActiveComponent()
-    selectIds.value.push(data.id)
+    removeActiveComponent();
+    if(!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
   } else {
     if (data.type === "group") {
-      removeActiveComponent()
-      setActiveComponent(data)
-      selectIds.value.push(data.id)
+      removeActiveComponent();
+      setActiveComponent(data);
+      if(!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
     } else {
-      clearSelectGroupComponent()
-      setActiveComponent(data)
+      clearSelectGroupComponent();
+      removeActiveComponent();
+      setActiveComponent(data);
+      if (data.groupId) {
+        if(!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
+      }
     }
   }
-  bus.emit("openAttribute", true)
-}
-onMounted(() => {})
+  bus.emit("openPage", false);
+};
+onMounted(() => {});
 </script>
 <template>
   <div class="layers">
     <div class="operate-list pr-3 pl-3 flex justify-between pb-3">
       <div
         class="operate-item flex gap-2 items-center cursor-pointer"
-        v-for="(item, index) in dropdownOptions.filter(item => item.key !== 'delete')"
+        v-for="(item, index) in dropdownOptions.filter((item) => item.key !== 'delete')"
         @click="
           item.handle
             ? item.handle(componentsList.find((item) => item.id === activeComponent?.id))
             : null
         "
         v-show="
-          componentsList.find((item) => item.id === activeComponent?.id)?.type === 'component'
+          componentsList.find((item) => item.id === activeComponent?.id)?.type ===
+          'component'
             ? item?.key !== 'removeGroup'
             : true
         "
@@ -119,7 +133,9 @@ onMounted(() => {})
                   </span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <button v-if="item.children?.some((child) => child.props.visible.value)">
+                  <button
+                    v-if="item.children?.some((child) => child.props.visible.value)"
+                  >
                     <IconEye size="16" @click.stop="changeVisible(item, false, true)" />
                   </button>
                   <button v-else>
@@ -134,33 +150,21 @@ onMounted(() => {})
                   </button>
                 </div>
               </div>
-              <div class="children mt-2 flex flex-col gap-2" v-show="!expendIds.includes(item.id)">
+              <div
+                class="children mt-2 flex flex-col gap-2"
+                v-show="!expendIds.includes(item.id)"
+              >
                 <div
                   class="children-item p-1 pl-2 pr-2"
                   v-for="child in item.children"
                   :key="child.id"
                   @click.left.stop="onSelectComponent(child, $event)"
+                  :class="child.id === activeComponent?.id ? 'active' : ''"
                 >
                   <CompList :component="child" type="group" />
                 </div>
               </div>
             </div>
-            <!-- <Dropdown>
-
-              <template #content>
-                <DropdownItem
-                  v-for="option in layerDropdownOptions"
-                  :key="option.key"
-                  @click="option.handle ? option.handle(item) : null"
-                  v-show="item.type === 'component' ? option.key !== 'removeGroup' : true"
-                >
-                  <div class="flex items-center gap-1">
-                    <component :is="option.icon"></component>
-                    <span>{{ option.label }}</span>
-                  </div>
-                </DropdownItem>
-              </template>
-            </Dropdown> -->
           </div>
         </template>
         <template v-else>

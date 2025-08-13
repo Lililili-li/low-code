@@ -1,7 +1,6 @@
 <script setup lang="tsx">
 import LayoutHeader from "./sundries/Index.vue";
 import { defineAsyncComponent } from "vue";
-// import Config from "./config/index.vue";
 
 const Config = defineAsyncComponent({
   loader: () => import("./config/index.vue"),

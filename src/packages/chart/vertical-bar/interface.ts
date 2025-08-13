@@ -1,12 +1,7 @@
 import type { IComponentType } from '@/types/component'
 import staticData from './data.json'
 import * as echarts from 'echarts'
-
-export enum ERenderData {
-  Normal = 'Normal',
-  JSExpression = 'JSExpression',
-  JSFunction = "JSFunction"
-}
+import { ERenderData } from '../../shared/index'
 
 export default {
   id: '1',

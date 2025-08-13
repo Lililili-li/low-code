@@ -3,11 +3,12 @@ import { usePanelConfigStore } from "@/stores/usePanelConfigStore";
 import { usePageConfigStore } from "@/stores/usePageConfigStore";
 import noImage from "@/assets/images/upload/noImage.png";
 import Title from "@/components/Title/index.vue";
-import Modal from '@/components/Modal/index.vue';
+import Modal from "@/components/Modal/index.vue";
 import { ref } from "vue";
 
 enum AdaptationEnum {
-  CENTER = "1",
+  CENTER = "0",
+  ORIGIN = "1",
   STRETCH = "2",
   WIDTH = "3",
   HEIGHT = "4",
@@ -35,7 +36,7 @@ const onBackgroundChange = (value: number) => {
       panelConfigStore.canvasSetting.thumbnailUrl;
   }
 };
-const envConfigModalVisible = ref(false)
+const envConfigModalVisible = ref(false);
 
 // const themeList = ref([
 //   {
@@ -269,6 +270,10 @@ const envConfigModalVisible = ref(false)
                     value: AdaptationEnum.CENTER,
                   },
                   {
+                    label: '原始宽高',
+                    value: AdaptationEnum.ORIGIN,
+                  },
+                  {
                     label: '强行拉伸',
                     value: AdaptationEnum.STRETCH,
                   },
@@ -290,7 +295,7 @@ const envConfigModalVisible = ref(false)
           <a-col :span="24" style="margin-top: 15px">
             <div class="flex items-center">
               <span style="width: 80px">设置封面</span>
-              <a-button type="secondary" size="small">截取屏幕</a-button>
+              <a-button type="secondary" size="small">截取画板</a-button>
             </div>
           </a-col>
           <a-col :span="24" style="margin-top: 15px">

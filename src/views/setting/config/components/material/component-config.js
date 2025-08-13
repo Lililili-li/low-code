@@ -16,5 +16,20 @@ export default [
       }
     ]
   },
-
+  {
+    name: '媒体',
+    type: 'Media',
+    children: [
+      {
+        name: '图片',
+        logo: logoList.image,
+        config: componentList['image-config']
+      },
+      {
+        name: '视频',
+        logo: logoList.video,
+        config: componentList['video-config']
+      }
+    ]
+  },
 ]

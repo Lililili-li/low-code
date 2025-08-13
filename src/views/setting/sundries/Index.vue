@@ -19,6 +19,7 @@ const projectStore = useProjectStore()
 const onSavePageSetting = () => {
   const page = pageConfigStore.pageSetting
   page['style'] = panelConfigStore.canvasSetting as any
+  console.log(page)
   const pack = jsonPack.pack(page)
   const globalConfig = jsonPack.pack(projectStore.schema)
   Local.set("pageConfig", pack)

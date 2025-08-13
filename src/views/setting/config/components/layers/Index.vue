@@ -15,6 +15,7 @@ const {
   onLayerHover,
   onLayerLeave,
   dropdownOptions,
+  layerDropdownOptions,
 } = useLayers();
 
 const { currentPage } = storeToRefs(usePageConfigStore());
@@ -34,18 +35,18 @@ const onSelectComponent = (data: IComponentType, event: MouseEvent) => {
   event.preventDefault();
   if (event.shiftKey) {
     removeActiveComponent();
-    if(!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
+    if (!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
   } else {
     if (data.type === "group") {
       removeActiveComponent();
       setActiveComponent(data);
-      if(!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
+      if (!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
     } else {
       clearSelectGroupComponent();
       removeActiveComponent();
       setActiveComponent(data);
       if (data.groupId) {
-        if(!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
+        if (!selectIds.value.includes(data.id)) selectIds.value.push(data.id);
       }
     }
   }
@@ -55,10 +56,13 @@ onMounted(() => {});
 </script>
 <template>
   <div class="layers">
-    <div class="operate-list pr-3 pl-3 flex justify-between pb-3">
+    <div
+      class="operate-list pr-3 pl-3 flex justify-between pb-3 relative"
+      :class="{'disabled':componentsList.length === 0}"
+    >
       <div
         class="operate-item flex gap-2 items-center cursor-pointer"
-        v-for="(item, index) in dropdownOptions.filter((item) => item.key !== 'delete')"
+        v-for="(item, index) in layerDropdownOptions"
         @click="
           item.handle
             ? item.handle(componentsList.find((item) => item.id === activeComponent?.id))
@@ -74,7 +78,7 @@ onMounted(() => {});
         <a-tooltip :content="item.label">
           <component :is="item.icon" style="font-size: 18px"></component>
         </a-tooltip>
-        <span class="line" v-if="index !== dropdownOptions.length - 2"></span>
+        <span class="line" v-if="index !== layerDropdownOptions.length - 2"></span>
       </div>
     </div>
     <div class="layers-container">
@@ -181,6 +185,7 @@ onMounted(() => {});
   .operate-item {
     transition: all 0.3s;
     justify-content: center;
+
     &:hover {
       color: rgba(var(--primary-6));
     }
@@ -189,6 +194,22 @@ onMounted(() => {});
       height: 15px;
       display: block;
       background-color: #666;
+    }
+  }
+  .disabled {
+    .operate-item {
+      color: #666;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+  }
+}
+.layers {
+  height: calc(100% - 30px);
+  .layers-item {
+    transition: all 0.3s;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
     }
   }
 }

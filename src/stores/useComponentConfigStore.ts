@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { IComponentType } from '@/types/component.d'
+import type { ChartIProps, IComponentType } from '@/types/component.d'
 import { usePageConfigStore } from './usePageConfigStore';
 
 export const useComponentConfigStore = defineStore('componentConfig', {
@@ -14,8 +14,10 @@ export const useComponentConfigStore = defineStore('componentConfig', {
   actions: {
     setActiveComponent(componentInfo: IComponentType) {
       const pageConfigStore = usePageConfigStore()
-      if (componentInfo.type === 'component') {
-        componentInfo.props.option.color = pageConfigStore.currentPage?.props.theme.colors
+      if (componentInfo.componentType === 'chart') {
+        if (componentInfo.type === 'component') {
+          (componentInfo.props as ChartIProps).option.color = pageConfigStore.currentPage?.props.theme.colors
+        }
       }
       // 将所有组件的active状态设置为false
       this.activeComponent = componentInfo

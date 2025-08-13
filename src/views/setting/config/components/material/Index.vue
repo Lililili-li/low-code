@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ChartList from './ChartList.vue'
+import MediaList from './MediaList.vue'
 
 </script>
 <template>
@@ -21,7 +22,9 @@ import ChartList from './ChartList.vue'
         <ChartList />
       </a-tab-pane>
       <a-tab-pane key="1" title="列表组件"> Content of Tab Panel 1 </a-tab-pane>
-      <a-tab-pane key="2" title="图片组件"> Content of Tab Panel 1 </a-tab-pane>
+      <a-tab-pane key="2" title="媒体组件">
+        <MediaList />
+      </a-tab-pane>
       <a-tab-pane key="3" title="内置组件"> Content of Tab Panel 1 </a-tab-pane>
     </a-tabs>
   </div>

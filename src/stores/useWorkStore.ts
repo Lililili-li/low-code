@@ -22,21 +22,11 @@ export const useWorkStore = defineStore('workStore', () => {
     historyList.value.unshift(item);
   }
   // 撤销
-  const undo = (id?: string | number) => {
-    if (id) {
-      const index = historyList.value.findIndex(item => item.id === id)
-      if (index !== -1) {
-        const item = historyList.value[index]
-        historyList.value.splice(index, 1)
-        redoList.value.push(item)
-        handleCompChange(item, 'undo')
-      }
-    } else {
-      const item = historyList.value.shift()
-      if (item) {
-        redoList.value.push(item)
-        handleCompChange(item!, 'undo')
-      }
+  const undo = () => {
+    const item = historyList.value.shift()
+    if (item) {
+      redoList.value.push(item)
+      handleCompChange(item!, 'undo')
     }
   }
   const handleCompChange = (item: WorkType, type: 'undo' | 'redo') => {

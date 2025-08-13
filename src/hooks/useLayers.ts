@@ -17,8 +17,6 @@ import {
   Delete24Regular
 } from '@vicons/fluent'
 import { useLayersStore } from "@/stores/useLayersStore";
-import hotkeys from 'hotkeys-js';
-import { useDevice } from "./useDevice";
 import { usePanelConfigStore } from "@/stores/usePanelConfigStore";
 import { useWorkStore } from "@/stores/useWorkStore";
 import dayjs from "dayjs";
@@ -26,10 +24,9 @@ import dayjs from "dayjs";
 export default function useLayers() {
   const pageConfigStore = usePageConfigStore();
   const compConfigStore = useComponentConfigStore()
-  const panelConfigStore = usePanelConfigStore()
   const layersStore = useLayersStore()
-  const { addHistory, undo, redo } = useWorkStore()
-  const { isMac } = useDevice()
+  const { addHistory } = useWorkStore()
+
   const { text: clipboardText, isSupported, copy } = useClipboard()
   const mousePosition = reactive({
     x: 0,
@@ -127,7 +124,17 @@ export default function useLayers() {
     },
   ]);
 
-  const layerDropdownOptions = computed(() => dropdownOptions.value.filter(item => item.key !== 'createGroup' && item.key !== 'paste'));
+  const layerDropdownOptions = computed(() => {
+    if (compConfigStore.selectIds.length > 1) {
+      // 如果有多个组件被选中，则显示“创建区块”选项
+      return dropdownOptions.value.filter(item => item.key !== 'removeGroup' && item.key !== 'paste')
+    } else if (compConfigStore.activeComponent?.type === 'group' && compConfigStore.selectIds.length === 1) {
+      // 如果当前组件是分组，则显示“解除区块”选项
+      return dropdownOptions.value.filter(item => item.key !== 'createGroup' && item.key !== 'paste')
+    } else {
+      return dropdownOptions.value.filter(item => item.key !== 'createGroup' && item.key !== 'removeGroup' && item.key !== 'paste')
+    }
+  });
 
   const panelDropdownOptions = computed(() => {
     // 没有选中组件或分组
@@ -346,7 +353,10 @@ export default function useLayers() {
     message.success('复制成功')
   }
   // 粘贴
-  const pasteComp = () => {
+  const pasteComp = (mouseInfo?: any) => {
+    if (mouseInfo) {
+      Object.assign(mousePosition, mouseInfo)
+    }
     // 如果没有剪切内容直接返回
     if (!layersStore.getClipboardContent()) return
     if (layersStore.layerState.pasteType === 'copy') {
@@ -417,80 +427,7 @@ export default function useLayers() {
     layersStore.setClipboardContent(n);
   })
 
-  const hotkeysMap = shallowRef([
-    {
-      window: 'ctrl+shift+c',
-      mac: 'command+shift+c',
-      action: copyComp,
-      name: '复制'
-    },
-    {
-      window: 'ctrl+shift+v',
-      mac: 'command+shift+v',
-      action: pasteComp,
-      name: '粘贴'
-    },
-    {
-      window: 'ctrl+x',
-      mac: 'command+x',
-      action: cutComp,
-      name: '剪切'
-    },
-    {
-      window: 'backspace',
-      mac: 'backspace',
-      action: removeLayer,
-      name: '删除'
-    },
-    {
-      window: 'ctrl+g',
-      mac: 'command+g',
-      action: () => {
-        if (compConfigStore.activeComponent && compConfigStore.selectIds.includes(compConfigStore.activeComponent.id)) {
-          unGroup(compConfigStore.activeComponent)
-        } else {
-          createGroup(compConfigStore.selectIds)
-        }
-      },
-      name: '解除/创建 分组'
-    },
-    {
-      window: 'l',
-      mac: 'l',
-      action: () => {
-        panelConfigStore.panelSetting.panzoomOption.disableZoom = !panelConfigStore
-          .panelSetting.panzoomOption.disableZoom;
-      },
-      name: '锁定'
-    },
-    {
-      window: 'ctrl+z',
-      mac: 'command+z',
-      action: undo,
-      name: '撤销'
-    },
-    {
-      window: 'ctrl+Y',
-      mac: 'command+Y',
-      action: redo,
-      name: '恢复'
-    },
-  ])
 
-  const initHotKeys = () => {
-    hotkeysMap.value.forEach(item => {
-      hotkeys(isMac.value ? item.mac : item.window, function (event) {
-        event.preventDefault(); // Prevent default behavior
-        const componentInfo = compConfigStore.activeComponent || pageConfigStore.getCurrentPage()?.componentList.find(item => item.id === curCompId.value)
-        if (item.name === '删除') {
-          item.action(componentInfo!.id as any)
-        } else {
-          item.action(componentInfo as any)
-        }
-        // Add your custom logic here
-      });
-    })
-  }
   // 鼠标移入高亮
   const onLayerHover = (id: string) => {
     compConfigStore.hoverIds.includes(id) ? '' : compConfigStore.hoverIds.push(id)
@@ -516,7 +453,6 @@ export default function useLayers() {
     panelDropdownOptions,
     curCompId,
     mousePosition,
-    initHotKeys,
     onLayerHover,
     onLayerLeave
   }

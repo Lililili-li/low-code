@@ -5,6 +5,7 @@ import { usePageConfigStore } from "@/stores/usePageConfigStore";
 import { computed, ref, watch } from "vue";
 import BindVariableModal from "@/components/BindVariableModal/index.vue";
 import StaticTable from "@/components/StaticTable/index.vue";
+import type { ChartIProps } from "@/types/component";
 
 const pageConfigStore = usePageConfigStore();
 const componentConfigStore = useComponentConfigStore();
@@ -27,12 +28,12 @@ const onVariableBindChange = (value: string) => {
     ?.componentList.find((item) => item.id === compConfig.value.id);
   if (!activeComp) return;
   if (value) {
-    activeComp.props.render!.type = "JSExpression";
-    activeComp.props.render!.value = value;
+    (activeComp.props as ChartIProps).render!.type = "JSExpression";
+    (activeComp.props as ChartIProps).render!.value = value;
     renderType.value = "JSExpression";
   } else {
-    activeComp.props.render!.type = "Normal";
-    activeComp.props.render!.value = activeComp.props.render!.defaultValue as [];
+    (activeComp.props as ChartIProps).render!.type = "Normal";
+    (activeComp.props as ChartIProps).render!.value = (activeComp.props as ChartIProps).render!.defaultValue as [];
     renderType.value = "Normal";
   }
 };
@@ -40,9 +41,9 @@ const onVariableBindChange = (value: string) => {
 const renderType = ref("");
 
 watch(
-  () => compConfig.value.props.render,
+  () => (compConfig.value.props as ChartIProps).render,
   (newVal) => {
-    if (compConfig.value.type === 'component') {
+    if (compConfig.value.type === 'component' && compConfig.value.componentType === 'chart') {
       renderType.value = newVal!.type;
     }
   },
@@ -55,11 +56,11 @@ watch(
 
 const onBindStaticData = (value: any) => {
   renderType.value = "Normal";
-  if (!compConfig.value.props.render) return
-  compConfig.value.props.render.type = "Normal";
-  compConfig.value.props.render.defaultValue = value.source;
-  compConfig.value.props.render.value = value.source;
-  compConfig.value.props.option.dataset.dimensions = value.dimension;
+  if (!(compConfig.value.props as ChartIProps).render) return
+  (compConfig.value.props as ChartIProps).render!.type = "Normal";
+  (compConfig.value.props as ChartIProps).render!.defaultValue = value.source;
+  (compConfig.value.props as ChartIProps).render!.value = value.source;
+  (compConfig.value.props as ChartIProps).option.dataset.dimensions = value.dimension;
 };
 </script>
 
@@ -114,19 +115,19 @@ const onBindStaticData = (value: any) => {
         </a-collapse-item>
       </a-collapse>
       <div class="component-config">
-        <Component :is="componentConfigMap[compConfig!.componentConfigName!]" />
+        <Component :is="componentConfigMap[compConfig!.componentConfigName!]" :option="compConfig.props"/>
       </div>
     </div>
   </a-scrollbar>
   <BindVariableModal
     ref="BindVariableModalRef"
-    :value="compConfig.props.render?.value"
+    :value="(compConfig.props as ChartIProps).render?.value"
     @change="onVariableBindChange"
     v-if="(renderType as string) === 'JSExpression'"
   />
   <StaticTable
     ref="StaticTableRef"
-    :value="compConfig.props.render?.defaultValue"
+    :value="(compConfig.props as ChartIProps).render?.defaultValue"
     @update:value="(value) => onBindStaticData(value)"
   />
 </template>

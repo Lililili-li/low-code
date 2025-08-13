@@ -7,19 +7,14 @@ export default [
     name: '纵向柱状图',
   },
   {
-    componentName: 'horizontal-bar',
-    logo: logoList.barY,
-    name: '横向柱状图',
+    componentName: 'image',
+    logo: logoList.image,
+    name: '图片',
   },
   {
-    componentName: 'line-bar',
-    logo: logoList.barLine,
-    name: '折线柱状图',
-  },
-  {
-    componentName: 'capsule-bar',
-    logo: logoList.capsule,
-    name: '胶囊柱状图',
+    componentName: 'video',
+    logo: logoList.video,
+    name: '视频',
   },
 
 ]

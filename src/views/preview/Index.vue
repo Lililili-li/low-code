@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VerticalBar from "@/packages/bar/vertical-bar/Index.vue"
+import { componentMap } from "@/packages"
 import useHandleEvent from "@/hooks/useHandleEvent.ts"
 import {
   type Component,
@@ -34,7 +34,9 @@ interface IComponentsMap {
 }
 
 const componentsMap: IComponentsMap = {
-  "vertical-bar": VerticalBar,
+  "vertical-bar": componentMap["vertical-bar"],
+  "image": componentMap["image"],
+  "video": componentMap["video"],
 }
 const pageStyle = ref<any>({})
 
@@ -48,7 +50,7 @@ const initPageStyle = () => {
       pageConfigStore.pageSetting?.style?.useImage === 1
         ? `url(${pageConfigStore.pageSetting?.style?.backgroundUrl})`
         : `${pageConfigStore.pageSetting?.style?.backgroundColor}`,
-    transform: `scale(${scaleWidth}, ${scaleWidth})`,
+    // transform: `scale(${scaleWidth}, ${scaleWidth})`,
   }
 }
 const initData = async () => {
@@ -143,7 +145,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="preview-container w-full h-dvh overflow-y-auto overflow-x-hidden" data-type="page" >
+  <div class="preview-container w-full h-dvh overflow-auto" data-type="page" >
     <div
       class="wrap relative"
       :style="pageStyle"
@@ -167,8 +169,8 @@ onUnmounted(() => {
           :height="item.style.height"
           class="cursor-pointer"
           v-if="compVisible(item.props)"
-          style="padding: 20px"
           v-on="useHandleEvent(item.eventConfig)"
+          :props="item.props"
         ></component>
       </div>
     </div>

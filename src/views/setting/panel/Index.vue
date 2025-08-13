@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref, shallowRef } from "vue";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { useComponentConfigStore } from "@/stores/useComponentConfigStore";
 import { usePanelConfigStore } from "@/stores/usePanelConfigStore";
 import { usePageConfigStore } from "@/stores/usePageConfigStore";
@@ -8,7 +8,7 @@ import EditBox from "@/views/setting/panel/components/EditBox.vue";
 import GroupEditBox from "./components/GroupEditBox.vue";
 import { componentMap } from "@/packages";
 import PanelConfig from "./components/PanelConfig.vue";
-import type { IComponentType, IProps } from "@/types/component.d";
+import type { ChartIProps, IComponentType, IProps } from "@/types/component.d";
 import useMouse from "@/hooks/useMouse";
 import type { DirectionLabelType } from "@/types/panel";
 import { EComponentType } from "@/types/component.d";
@@ -23,9 +23,11 @@ import { getVariableValue } from "../config/components/variable/util";
 import { useVariableStore } from "@/stores/useVariableStore";
 import CanvasBox from "./components/CanvasBox.vue";
 import { cloneDeep } from "lodash-es";
+import useHotKeys from "@/hooks/useHotKeys";
 
 const variableConfStore = useVariableStore();
-const { panelDropdownOptions, mousePosition, initHotKeys } = useLayers();
+const { panelDropdownOptions, mousePosition } = useLayers();
+const { initHotKeys } = useHotKeys();
 const { addHistory } = useWorkStore();
 const compConfigStore = useComponentConfigStore();
 const panelConfigStore = usePanelConfigStore();
@@ -34,7 +36,6 @@ const layersStore = useLayersStore();
 const projectStore = useProjectStore();
 const controller = new AbortController();
 const { moveState, setMoveState, calcMouseMoveDistance } = useMouse();
-const editBoxRef = ref<any>(null);
 const frameSelectDomStyle = reactive({
   width: 0,
   height: 0,
@@ -54,13 +55,16 @@ const onComponentDrop = (event: DragEvent) => {
   componentInfo.id = generateUUID();
   componentInfo.type = EComponentType.COMPONENT;
   // 渲染数据
-  if (componentInfo.props.render?.type === "JSExpression") {
-    componentInfo.props.option.dataset.source = getVariableValue(
-      componentInfo.props.render.value as string,
-      variableConfStore
-    );
-  } else {
-    componentInfo.props.option.dataset.source = componentInfo.props.render?.defaultValue;
+  if (componentInfo.componentType === "chart") {
+    if ((componentInfo.props as ChartIProps).render?.type === "JSExpression") {
+      (componentInfo.props as ChartIProps).option.dataset.source = getVariableValue(
+        (componentInfo.props as ChartIProps).render!.value as string,
+        variableConfStore
+      );
+    } else {
+      (componentInfo.props as ChartIProps).option.dataset.source =
+        (componentInfo.props as ChartIProps).render?.defaultValue;
+    }
   }
   compConfigStore.setActiveComponent(componentInfo);
   pageConfigStore.addComponent(compConfigStore.activeComponent as IComponentType);
@@ -274,9 +278,10 @@ const onPanelMouseup = () => {
       position[key] = {
         start: startPosition[key],
         end: cloneDeep(
-          pageConfigStore.getCurrentPage().componentList.find((item) => item.id === key)?.style
+          pageConfigStore.getCurrentPage().componentList.find((item) => item.id === key)
+            ?.style
         ),
-      }
+      };
     });
     addHistory({
       type: "shape",
@@ -286,7 +291,6 @@ const onPanelMouseup = () => {
       label: "缩放-" + compConfigStore.activeComponent?.name,
       time: dayjs().format("MM-DD HH:mm"),
     });
-    console.log(position,2);
   }
   setMoveState({ moveX: 0, moveY: 0, type: null });
 };
@@ -300,7 +304,9 @@ const onResizeMouseEvent = ({
   data: DirectionLabelType;
   isResize: boolean;
 }) => {
-  startPosition[compConfigStore.activeComponent!.id] = cloneDeep(compConfigStore.activeComponent!.style);
+  startPosition[compConfigStore.activeComponent!.id] = cloneDeep(
+    compConfigStore.activeComponent!.style
+  );
   setMoveState({ startX: event.x, startY: event.y, type: "resize" });
   currentDirectionLabel.value = data;
 };
@@ -393,6 +399,7 @@ onUnmounted(() => {
                   :height="item.style.height"
                   class="cursor-pointer"
                   v-show="compVisible(item.props)"
+                  :props="item.props"
                 ></component>
               </template>
               <template
@@ -418,6 +425,7 @@ onUnmounted(() => {
                       :height="child.style.height"
                       class="cursor-pointer"
                       v-show="compVisible(item.props)"
+                      :props="item.props"
                     ></component>
                   </EditBox>
                 </div>

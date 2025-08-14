@@ -205,6 +205,7 @@ const onPanelMousemove = (event: MouseEvent) => {
     // 拖拽移动组件
     handleMoveComponent(moveX, moveY);
     setMoveState({ moveX, moveY });
+    bus.emit('compMove')
   } else if (moveState.type === "resize") {
     // 拖拽进行放大缩小组件
     handleResizeComponent(moveX, moveY);
@@ -338,6 +339,7 @@ onMounted(async () => {
   await projectStore.getProjectData();
   await pageConfigStore.getPageData();
   panelConfigStore.updatePanelSetting(true);
+  panelConfigStore.canvasSetting = {...panelConfigStore.canvasSetting, ...pageConfigStore.currentPage?.style};
   window.addEventListener("resize", () => panelConfigStore.updatePanelSetting(), {
     signal: controller.signal,
   });

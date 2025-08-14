@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { VideoIProps } from "@/types/component";
 import { computed } from "vue";
+import noImage from "@/assets/images/upload/noImage.png";
 
 const { option } = defineProps({
   option: {
@@ -46,20 +47,18 @@ const customRequest2 = (data) => {
     <a-row :gutter="[12, 12]" style="width: 100%">
       <a-col :span="24">
         <a-row :gutter="8">
-          <a-col :span="6">
-            <a-typography-text>视频地址</a-typography-text>
+          <a-col>
+            <a-typography-text :heading="2">视频地址：</a-typography-text>
           </a-col>
-          <a-col :span="18">
+        </a-row>
+        <a-row class="mt-2">
+          <a-col :span="24">
             <div class="upload">
               <a-upload :custom-request="customRequest" draggable :show-file-list="false">
               </a-upload>
             </div>
             <div class="flex justify-end mt-2">
-              <a-input
-                v-model="options.url"
-                placeholder="请输入图片地址"
-                allow-clear
-              />
+              <a-input v-model="options.url" placeholder="请输入图片地址" allow-clear />
             </div>
           </a-col>
         </a-row>
@@ -120,19 +119,25 @@ const customRequest2 = (data) => {
       </a-col>
       <a-col :span="24">
         <a-row :gutter="8">
-          <a-col :span="6">
-            <a-typography-text>视频封面</a-typography-text>
+          <a-col>
+            <a-typography-text>视频封面：</a-typography-text>
           </a-col>
-          <a-col :span="18">
+        </a-row>
+        <a-row class="mt-2">
+          <a-col :span="24">
             <div class="upload">
-              <a-upload :custom-request="customRequest2" draggable :show-file-list="false">
+              <a-upload
+                :custom-request="customRequest2"
+                draggable
+                :show-file-list="false"
+              >
                 <template #upload-button>
                   <div
                     style="margin-bottom: 15px; border: 1px dashed #444"
-                    class="flex flex-col items-center justify-center w-full; p-3"
+                    class="flex flex-col items-center justify-center w-full; p-3 pl-1 pr-1"
                   >
                     <img
-                      :src="options.poster"
+                      :src="options.poster?options.poster:noImage"
                       alt=""
                       style="height: 150px; object-fit: cover"
                       fetchpriority="low"

@@ -460,7 +460,7 @@ Mock.mock('/project/1/page/1', 'get', {
               "url": "http://qbi-resource.oss-cn-hangzhou.aliyuncs.com/%E8%A7%86%E9%A2%91%E7%B4%A0%E6%9D%90/10%E6%89%80%E5%A4%A7%E5%B1%8F%E8%83%8C%E6%99%AF%E8%A7%86%E9%A2%91.mp4",
               "animationName": "",
               "fit": "cover",
-              "poster": "blob:http://localhost:8000/434b3e86-562a-467d-a201-0b968441dabb",
+              "poster": "",
               "autoPlay": true,
               "loop": true,
               "muted": true,
@@ -475,10 +475,10 @@ Mock.mock('/project/1/page/1', 'get', {
               }
             ],
             "style": {
-              "left": 766,
-              "top": 500,
-              "width": 300,
-              "height": 200,
+              "left": 532,
+              "top": 126,
+              "width": 859,
+              "height": 601,
               "scaleWidth": 300,
               "scaleHeight": 200,
               "zIndex": 1
@@ -544,7 +544,9 @@ Mock.mock('/project/1/page/1', 'get', {
           "width": 1920,
           "height": 1080,
           "backgroundColor": "#232324",
-          "useImage": 2
+          "useImage": 1,
+          "thumbnailUrl": "http://39.106.20.75/background.jpg",
+          "backgroundUrl": "http://39.106.20.75/background.jpg"
         }
       }
     )

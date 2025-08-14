@@ -15,7 +15,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       height: "1px",
       left: "-100px",
     },
-    direction: AxisHelperDirectionEnum.VERTICAL,
+    direction: AxisHelperDirectionEnum.HORIZONTAL,
     visible: false,
     label: 1
   },
@@ -28,7 +28,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       height: "1px",
       left: "-100px",
     },
-    direction: AxisHelperDirectionEnum.VERTICAL,
+    direction: AxisHelperDirectionEnum.HORIZONTAL,
     visible: false,
     label: 2
   },
@@ -41,7 +41,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       height: "1px",
       left: "-100px",
     },
-    direction: AxisHelperDirectionEnum.VERTICAL,
+    direction: AxisHelperDirectionEnum.HORIZONTAL,
     visible: false,
     label: 3
   },
@@ -55,7 +55,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       height: "1px",
       right: "-100px",
     },
-    direction: AxisHelperDirectionEnum.VERTICAL,
+    direction: AxisHelperDirectionEnum.HORIZONTAL,
     visible: false,
     label: 4
   },
@@ -68,7 +68,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       height: "1px",
       right: "-100px",
     },
-    direction: AxisHelperDirectionEnum.VERTICAL,
+    direction: AxisHelperDirectionEnum.HORIZONTAL,
     visible: false,
     label: 5
   },
@@ -81,7 +81,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       height: "1px",
       right: "-100px",
     },
-    direction: AxisHelperDirectionEnum.VERTICAL,
+    direction: AxisHelperDirectionEnum.HORIZONTAL,
     visible: false,
     label: 6
   },
@@ -95,7 +95,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       width: "1px",
       top: "-100px",
     },
-    direction: AxisHelperDirectionEnum.HORIZONTAL,
+    direction: AxisHelperDirectionEnum.VERTICAL,
     visible: false,
     label: 7
   },
@@ -103,12 +103,12 @@ export const axisHelperConfigList: AxisHelperType[] = [
     name: "上左",
     distance: 200,
     style: {
-      left: "0",
+      left: "0%",
       height: "200px",
       width: "1px",
       top: "-200px",
     },
-    direction: AxisHelperDirectionEnum.HORIZONTAL,
+    direction: AxisHelperDirectionEnum.VERTICAL,
     visible: false,
     label: 8
   },
@@ -121,7 +121,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       width: "1px",
       top: "-100px",
     },
-    direction: AxisHelperDirectionEnum.HORIZONTAL,
+    direction: AxisHelperDirectionEnum.VERTICAL,
     visible: false,
     label: 9
   },
@@ -135,7 +135,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       width: "1px",
       bottom: "-100px",
     },
-    direction: AxisHelperDirectionEnum.HORIZONTAL,
+    direction: AxisHelperDirectionEnum.VERTICAL,
     visible: false,
     label: 10
   },
@@ -148,7 +148,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       width: "1px",
       bottom: "-100px",
     },
-    direction: AxisHelperDirectionEnum.HORIZONTAL,
+    direction: AxisHelperDirectionEnum.VERTICAL,
     visible: false,
     label: 11
   },
@@ -161,7 +161,7 @@ export const axisHelperConfigList: AxisHelperType[] = [
       width: "1px",
       bottom: "-100px",
     },
-    direction: AxisHelperDirectionEnum.HORIZONTAL,
+    direction: AxisHelperDirectionEnum.VERTICAL,
     visible: false,
     label: 12
   },

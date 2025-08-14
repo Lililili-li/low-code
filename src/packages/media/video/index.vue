@@ -28,6 +28,7 @@ const imgUrl = computed(() => {
       :muted="props.muted as boolean"
       :loop="props.loop as boolean"
       :style="{objectFit: props.fit} as StyleValue"
+      :poster="props.poster as string"
     ></video>
   </div>
 </template>

@@ -229,6 +229,7 @@ const onResizeMousedown = (event: MouseEvent, data: any) => {
         :data-comp-id="componentInfo.id"
       ></div>
     </div>
+    <AxisHelper :componentId="componentInfo.id"/>
   </div>
 </template>
 

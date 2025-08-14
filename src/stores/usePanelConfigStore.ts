@@ -59,11 +59,14 @@ export const usePanelConfigStore = defineStore('panelConfig', {
         this.panelSetting.width = width
         this.panelSetting.height = height
       } else {
-        setTimeout(() => {
-          const { width, height } = document.querySelector('#screens')?.getBoundingClientRect() as DOMRect
-          this.panelSetting.width = width
-          this.panelSetting.height = height
-        }, 500)
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const { width, height } = document.querySelector('#screens')?.getBoundingClientRect() as DOMRect
+            this.panelSetting.width = width
+            this.panelSetting.height = height
+            resolve(true)
+          }, 500)
+        })
       }
     },
     // 在后端获取到配置然后

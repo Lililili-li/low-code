@@ -2,6 +2,7 @@
 import type { ImageIProps } from "@/types/component";
 import { ref } from "vue";
 import { computed } from "vue";
+import noImage from "@/assets/images/upload/noImage.png";
 
 const { option } = defineProps({
   option: {
@@ -38,21 +39,23 @@ const customRequest = (data) => {
     <a-row :gutter="[12, 12]" style="width: 100%">
       <a-col :span="24">
         <a-row :gutter="8">
-          <a-col :span="6">
-            <a-typography-text>图片地址</a-typography-text>
+          <a-col>
+            <a-typography-text :heading="2">图片地址：</a-typography-text>
           </a-col>
-          <a-col :span="18">
+        </a-row>
+        <a-row>
+          <a-col :span="24" class="mt-2">
             <div class="upload">
               <a-upload :custom-request="customRequest" draggable :show-file-list="false">
                 <template #upload-button>
                   <div
                     style="margin-bottom: 15px; border: 1px dashed #444"
-                    class="flex flex-col items-center justify-center w-full; p-3"
+                    class="flex flex-col items-center justify-center w-full; p-3 pl-1 pr-1"
                   >
                     <img
-                      :src="options.url"
+                      :src="options.url ? options.url : noImage"
                       alt=""
-                      style="height: 150px; object-fit: cover"
+                      style="height: 150px; object-fit: fill"
                       fetchpriority="low"
                       class="mb-2"
                     />

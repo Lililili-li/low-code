@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { IComponentType } from '@/types/component.d'
+import type { ChartIProps, IComponentType } from '@/types/component.d'
 import type { IDataSource } from '@/types/dataSource'
 import { useVariableStore } from './useVariableStore'
 import type { IStateType } from '@/types/variable'
@@ -48,8 +48,8 @@ export const usePageConfigStore = defineStore('pageConfig', {
       let originConfig = this.getCurrentPage()
       originConfig!.props.theme = theme
       originConfig!.componentList = originConfig!.componentList.map(item => {
-        if (item.props.option) {
-          item.props.option.color = theme.colors
+        if ((item.props as ChartIProps).option) {
+          (item.props as ChartIProps).option.color = theme.colors
         }
         return item
       })

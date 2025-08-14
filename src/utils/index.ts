@@ -91,7 +91,9 @@ export const getType = (value) => {
 
 // 节流函数
 let last = 0;
-export function throttle<T extends (...args: any[]) => any>(fn: T, delay: number) {
+export function throttle(fn: Function, delay) {
+  console.log(fn);
+
   const now = Date.now();
   if (now - last >= delay) {
     fn(arguments);

@@ -101,6 +101,7 @@ watch(
   () => {
     nextTick(() => {
       updateScale();
+      autoCenter()
     });
   }
 );
@@ -149,29 +150,27 @@ const handleMouseUp = (e: MouseEvent) => {
   })
 }
 
-onMounted(() => {
-  panelConfigStore.updatePanelSetting(true);
+const autoCenter = () => {
+  const containerRect = containerRef.value!.getBoundingClientRect();
+  const screensRect = document.querySelector("#screens")!.getBoundingClientRect();
+  const canvasRect = document.querySelector("#canvas")!.getBoundingClientRect();
+  screensRef.value!.scrollLeft =
+    containerRect.width / 2 -
+    panelConfigStore.panelSetting.thick;
+  screensRef.value!.scrollTop =
+    containerRect.height / 2 - (screensRect.height - canvasRect.height) / 2;
+}
+
+onMounted(async () => {
+  await panelConfigStore.updatePanelSetting(true);
   nextTick(() => {
     updateScale();
-    const containerRect = containerRef.value!.getBoundingClientRect();
-    const screensRect = document.querySelector("#screens")!.getBoundingClientRect();
-    const canvasRect = document.querySelector("#canvas")!.getBoundingClientRect();
-    screensRef.value!.scrollLeft =
-      containerRect.width / 2 -
-      panelConfigStore.panelSetting.thick;
-    screensRef.value!.scrollTop =
-      containerRect.height / 2 - (screensRect.height - canvasRect.height) / 2;
+    autoCenter()
   });
-  window.addEventListener("resize", () => {
-    panelConfigStore.updatePanelSetting();
-    nextTick(() => {
-      const containerRect = containerRef.value!.getBoundingClientRect();
-      const screensRect = document.querySelector("#screens")!.getBoundingClientRect();
-      const canvasRect = document.querySelector("#canvas")!.getBoundingClientRect();
-      screensRef.value!.scrollTop =
-        containerRect.height / 2 - (screensRect.height - canvasRect.height) / 2;
-      handleScroll();
-    });
+  window.addEventListener("resize", async () => {
+    await panelConfigStore.updatePanelSetting();
+    autoCenter()
+    handleScroll();
   });
   document.addEventListener("keydown", function (event) {
     if (event.key === " " || event.keyCode === 32) {
@@ -190,6 +189,7 @@ onUnmounted(() => {
   window.removeEventListener("resize", () => {
     panelConfigStore.updatePanelSetting();
     handleScroll();
+    autoCenter()
   });
 });
 </script>

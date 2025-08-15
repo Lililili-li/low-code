@@ -92,11 +92,11 @@ export const getType = (value) => {
 // 节流函数
 let last = 0;
 export function throttle(fn: Function, delay) {
-  console.log(fn);
-
   const now = Date.now();
   if (now - last >= delay) {
     fn(arguments);
+    console.log(12312312);
+
     last = now;
   }
 }

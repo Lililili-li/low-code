@@ -134,6 +134,7 @@ const onComponentMousedown = (
   }
   setMoveState({ startX: event.x, startY: event.y, type: "move", componentType: type });
   bus.emit("openPage", false);
+  bus.emit("clearAxis");
 };
 // 画板鼠标按下事件
 const onPanelMousedown = (event: MouseEvent) => {

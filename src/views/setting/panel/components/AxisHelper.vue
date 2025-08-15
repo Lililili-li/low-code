@@ -6,6 +6,7 @@ import { useComponentConfigStore } from "@/stores/useComponentConfigStore";
 import { usePageConfigStore } from "@/stores/usePageConfigStore";
 import type { IComponentType } from "@/types/component";
 import bus from "@/utils/bus";
+import { throttle } from "@/utils";
 
 const { componentId } = defineProps(["componentId", "moveState"]);
 const compConfigStore = useComponentConfigStore();
@@ -66,25 +67,7 @@ const calcAxisHelperStyle = (
     existItem!.distance + "px";
   existItem!.style[direction] = -existItem!.distance + "px";
 };
-const handleSnap = (
-  currentPos: number,
-  targetPos: number,
-  threshold: number,
-  property: string
-) => {
-  const distance = Math.abs(currentPos - targetPos);
-  if (distance < threshold) {
-    // 计算吸附强度（越近吸附越强）
-    const snapStrength = 1 - distance / threshold;
-    // 使用缓动函数使吸附更自然
-    const easedValue = targetPos + (currentPos - targetPos) * (1 - snapStrength);
-    console.log(easedValue);
 
-    compConfigStore.activeComponent!.style[property] = easedValue + "px";
-    return true;
-  }
-  return false;
-};
 const handleHorizontalAxis = (
   compList: IComponentType[],
   direction: "left" | "right",
@@ -100,6 +83,18 @@ const handleHorizontalAxis = (
       Math.abs(otherStyle.top + otherStyle.height - (style.top + style.height / 2)) <
         threshold
     ) {
+      if (
+        Math.abs(
+          otherStyle.top + otherStyle.height / 2 - (style.top + style.height / 2)
+        ) < threshold
+      ) {
+        throttle(() => {
+          compConfigStore.activeComponent!.style.top =
+            otherStyle.top +
+            otherStyle.height / 2 -
+            (compConfigStore.activeComponent!.style.height as number) / 2;
+        }, 50);
+      }
       calcAxisHelperStyle(
         direction === "right" ? 4 : 1,
         position,
@@ -117,6 +112,17 @@ const handleHorizontalAxis = (
         threshold ||
       Math.abs(otherStyle.top - (style.top + style.height)) < threshold
     ) {
+      if (
+        Math.abs(otherStyle.top + otherStyle.height - (style.top + style.height)) <
+        threshold
+      ) {
+        throttle(() => {
+          compConfigStore.activeComponent!.style.top =
+            otherStyle.top +
+            otherStyle.height -
+            (compConfigStore.activeComponent!.style.height as number);
+        }, 50);
+      }
       calcAxisHelperStyle(
         direction === "right" ? 6 : 3,
         position,
@@ -132,6 +138,11 @@ const handleHorizontalAxis = (
       Math.abs(otherStyle.top + otherStyle.height - style.top) < threshold ||
       Math.abs(otherStyle.top - style.top) < threshold
     ) {
+      if (Math.abs(otherStyle.top - style.top) < threshold) {
+        throttle(() => {
+          compConfigStore.activeComponent!.style.top = otherStyle.top;
+        }, 50);
+      }
       calcAxisHelperStyle(
         direction === "right" ? 5 : 2,
         position,
@@ -159,6 +170,18 @@ const handleVerticalAxis = (
       Math.abs(otherStyle.left + otherStyle.width - (style.left + style.width / 2)) <
         threshold
     ) {
+      if (
+        Math.abs(
+          otherStyle.left + otherStyle.width / 2 - (style.left + style.width / 2)
+        ) < threshold
+      ) {
+        throttle(() => {
+          compConfigStore.activeComponent!.style.left =
+            otherStyle.left +
+            otherStyle.width / 2 -
+            (compConfigStore.activeComponent!.style.width as number) / 2;
+        }, 50);
+      }
       calcAxisHelperStyle(
         direction === "top" ? 7 : 10,
         position,
@@ -176,6 +199,17 @@ const handleVerticalAxis = (
         threshold ||
       Math.abs(otherStyle.left - (style.left + style.width)) < threshold
     ) {
+      if (
+        Math.abs(otherStyle.left + otherStyle.width - (style.left + style.width)) <
+        threshold
+      ) {
+        throttle(() => {
+          compConfigStore.activeComponent!.style.left =
+            otherStyle.left +
+            otherStyle.width -
+            (compConfigStore.activeComponent!.style.width as number);
+        }, 50);
+      }
       calcAxisHelperStyle(
         direction === "top" ? 9 : 12,
         position,
@@ -191,6 +225,11 @@ const handleVerticalAxis = (
       Math.abs(otherStyle.left + otherStyle.width - style.left) < threshold ||
       Math.abs(otherStyle.left - style.left) < threshold
     ) {
+      if (Math.abs(otherStyle.left - style.left) < threshold) {
+        throttle(() => {
+          compConfigStore.activeComponent!.style.left = otherStyle.left;
+        }, 50);
+      }
       calcAxisHelperStyle(
         direction === "top" ? 8 : 11,
         position,
@@ -258,6 +297,9 @@ const makeAxisHelper = () => {
 };
 onMounted(() => {
   bus.on("compMove", makeAxisHelper);
+  bus.on("clearAxis", () => {
+    makeAxisHelper();
+  });
 });
 </script>
 

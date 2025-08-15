@@ -24,6 +24,7 @@ import { useVariableStore } from "@/stores/useVariableStore";
 import CanvasBox from "./components/CanvasBox.vue";
 import { cloneDeep } from "lodash-es";
 import useHotKeys from "@/hooks/useHotKeys";
+import AxisHelper from "./components/AxisHelper.vue";
 
 const variableConfStore = useVariableStore();
 const { panelDropdownOptions, mousePosition } = useLayers();
@@ -62,8 +63,7 @@ const onComponentDrop = (event: DragEvent) => {
         variableConfStore
       );
     } else {
-      (componentInfo.props as ChartIProps).option.dataset.source =
-        (componentInfo.props as ChartIProps).render?.defaultValue;
+      (componentInfo.props as ChartIProps).option.dataset.source = (componentInfo.props as ChartIProps).render?.defaultValue;
     }
   }
   compConfigStore.setActiveComponent(componentInfo);
@@ -134,7 +134,7 @@ const onComponentMousedown = (
   }
   setMoveState({ startX: event.x, startY: event.y, type: "move", componentType: type });
   bus.emit("openPage", false);
-  bus.emit("clearAxis");
+  bus.emit("resetAxis");
 };
 // 画板鼠标按下事件
 const onPanelMousedown = (event: MouseEvent) => {
@@ -206,7 +206,7 @@ const onPanelMousemove = (event: MouseEvent) => {
     // 拖拽移动组件
     handleMoveComponent(moveX, moveY);
     setMoveState({ moveX, moveY });
-    bus.emit('compMove')
+    bus.emit("compMove");
   } else if (moveState.type === "resize") {
     // 拖拽进行放大缩小组件
     handleResizeComponent(moveX, moveY);
@@ -294,6 +294,7 @@ const onPanelMouseup = () => {
       time: dayjs().format("MM-DD HH:mm"),
     });
   }
+  bus.emit("clearAxis");
   setMoveState({ moveX: 0, moveY: 0, type: null });
 };
 
@@ -340,7 +341,10 @@ onMounted(async () => {
   await projectStore.getProjectData();
   await pageConfigStore.getPageData();
   panelConfigStore.updatePanelSetting(true);
-  panelConfigStore.canvasSetting = {...panelConfigStore.canvasSetting, ...pageConfigStore.currentPage?.style};
+  panelConfigStore.canvasSetting = {
+    ...panelConfigStore.canvasSetting,
+    ...pageConfigStore.currentPage?.style,
+  };
   window.addEventListener("resize", () => panelConfigStore.updatePanelSetting(), {
     signal: controller.signal,
   });
@@ -384,57 +388,70 @@ onUnmounted(() => {
           </DropdownItem>
         </template>
         <CanvasBox>
-          <template
-            v-for="item in pageConfigStore.currentPage?.componentList as IComponentType[]"
-            :key="item.id"
-          >
-            <GroupEditBox
-              :componentInfo="item"
-              :moveState="moveState"
-              @mousedown.left.prevent="onComponentMousedown($event, item, item.type!)"
-              @onResizeMouseEvent="onResizeMouseEvent"
+          <div>
+            <template
+              v-for="item in pageConfigStore.currentPage?.componentList as IComponentType[]"
+              :key="item.id"
             >
-              <template v-if="item.type === 'component'">
-                <component
-                  :is="componentMap[item?.componentName]"
-                  v-bind="item.props"
-                  :width="item.style.width"
-                  :height="item.style.height"
-                  class="cursor-pointer"
-                  v-show="compVisible(item.props)"
-                  :props="item.props"
-                ></component>
-              </template>
-              <template
-                v-for="child in item.children"
-                :key="child.id"
-                v-if="item.type === 'group'"
+              <GroupEditBox
+                :componentInfo="item"
+                :moveState="moveState"
+                @mousedown.left.prevent="onComponentMousedown($event, item, item.type!)"
+                @onResizeMouseEvent="onResizeMouseEvent"
               >
-                <div
-                  class="absolute"
-                  :style="{
+                <template v-if="item.type === 'component'">
+                  <component
+                    :is="componentMap[item?.componentName]"
+                    v-bind="item.props"
+                    :width="item.style.width"
+                    :height="item.style.height"
+                    class="cursor-pointer"
+                    v-show="compVisible(item.props)"
+                    :props="item.props"
+                  ></component>
+                </template>
+                <template
+                  v-for="child in item.children"
+                  :key="child.id"
+                  v-if="item.type === 'group'"
+                >
+                  <div
+                    class="absolute"
+                    :style="{
                     zIndex: child.style.zIndex,
                     top: (child.style.top as number) - (item.style.top as number) + 'px',
                     left: (child.style.left as number) - (item.style.left as number) + 'px',
                     width: child.style.width + 'px',
                     height: child.style.height + 'px',
                   }"
-                >
-                  <EditBox :componentInfo="child" :moveState="moveState">
-                    <component
-                      :is="componentMap[child?.componentName]"
-                      v-bind="child.props"
-                      :width="child.style.width"
-                      :height="child.style.height"
-                      class="cursor-pointer"
-                      v-show="compVisible(item.props)"
-                      :props="item.props"
-                    ></component>
-                  </EditBox>
-                </div>
-              </template>
-            </GroupEditBox>
-          </template>
+                  >
+                    <EditBox :componentInfo="child" :moveState="moveState">
+                      <component
+                        :is="componentMap[child?.componentName]"
+                        v-bind="child.props"
+                        :width="child.style.width"
+                        :height="child.style.height"
+                        class="cursor-pointer"
+                        v-show="compVisible(item.props)"
+                        :props="item.props"
+                      ></component>
+                    </EditBox>
+                  </div>
+                </template>
+              </GroupEditBox>
+            </template>
+            <AxisHelper
+              v-if="compConfigStore.activeComponent?.style"
+              :style="{
+                top: (compConfigStore.activeComponent!.style.top as number)  + 'px',
+                left: (compConfigStore.activeComponent!.style.left as number)  + 'px',
+                width: compConfigStore.activeComponent!.style.width + 'px',
+                height: compConfigStore.activeComponent!.style.height + 'px',
+                cursor: 'pointer',
+                zIndex: moveState.type? 9999999: -1
+              }"
+            />
+          </div>
           <div
             v-show="moveState.type === 'frameSelect'"
             :style="{

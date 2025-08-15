@@ -8,7 +8,6 @@ import type { IComponentType } from "@/types/component";
 import bus from "@/utils/bus";
 import { throttle } from "@/utils";
 
-const { componentId } = defineProps(["componentId", "moveState"]);
 const compConfigStore = useComponentConfigStore();
 const pageConfigStore = usePageConfigStore();
 const axisHelperList = ref<AxisHelperType[]>(axisHelperConfigList);
@@ -297,41 +296,46 @@ const makeAxisHelper = () => {
 };
 onMounted(() => {
   bus.on("compMove", makeAxisHelper);
-  bus.on("clearAxis", () => {
+  bus.on("resetAxis", () => {
     makeAxisHelper();
+  });
+  bus.on("clearAxis", () => {
+    axisHelperList.value.forEach((item) => {
+      item.visible = false;
+    });
   });
 });
 </script>
 
 <template>
-  <div
-    class="axis-helper-item absolute"
-    v-for="item in axisHelperList"
-    :key="item.name"
-    :style="item.style"
-  >
-    <template v-if="item.visible && compConfigStore.activeComponent?.id === componentId">
-      <div
-        class="horizontal absolute h-full w-full"
-        v-if="item.direction === AxisHelperDirectionEnum.HORIZONTAL"
-      >
-        <span class="text absolute left-1/2 translate-x-1/2">{{
-          Math.abs(item.distance)
-        }}</span>
-        <div class="line h-full w-full"></div>
-      </div>
-      <div class="vertical absolute h-full w-full" v-else>
-        <span class="text absolute">{{ Math.abs(item.distance) }}</span>
-        <div class="line h-full w-full"></div>
-      </div>
-    </template>
+  <div class="axis-helper-wrapper absolute">
+    <div
+      class="axis-helper-item absolute"
+      v-for="item in axisHelperList"
+      :key="item.name"
+      :style="item.style"
+    >
+      <template v-if="item.visible">
+        <div
+          class="horizontal absolute h-full w-full"
+          v-if="item.direction === AxisHelperDirectionEnum.HORIZONTAL"
+        >
+          <span class="text absolute left-1/2 translate-x-1/2">{{
+            Math.abs(item.distance)
+          }}</span>
+          <div class="line h-full w-full"></div>
+        </div>
+        <div class="vertical absolute h-full w-full" v-else>
+          <span class="text absolute">{{ Math.abs(item.distance) }}</span>
+          <div class="line h-full w-full"></div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
 <style scoped lang="less">
 .axis-helper-item {
-  position: absolute;
-
   .vertical {
     .text {
       left: 50%;

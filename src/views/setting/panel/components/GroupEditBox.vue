@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useComponentConfigStore } from "@/stores/useComponentConfigStore";
-import AxisHelper from "./AxisHelper.vue";
 import type { IComponentType } from "@/types/component.d";
 import type { DirectionLabelType, MoveStateType } from "@/types/panel";
 import useLayers from "@/hooks/useLayers";
@@ -229,7 +228,7 @@ const onResizeMousedown = (event: MouseEvent, data: any) => {
         :data-comp-id="componentInfo.id"
       ></div>
     </div>
-    <AxisHelper :componentId="componentInfo.id"/>
+
   </div>
 </template>
 

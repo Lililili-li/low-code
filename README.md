@@ -32,7 +32,50 @@ pnpm dev
 pnpm build
 ```
 
-## 大致流程已完成，组件较少
+## 用户指引
 
-### 已知bug
-    1. 组件间拖拽辅助线未完成，没有好的想法
+<img src="./operate/1.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+
+<img src="./operate/2.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/3.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+
+<img src="./operate/4.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/4.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/5.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/6.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/7.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/8.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/9.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
+
+<img src="./operate/10.png"
+     alt="图片描述"
+     style="width: 100%; border: 1px solid #eee; border-radius: 4px;">

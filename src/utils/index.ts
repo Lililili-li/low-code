@@ -95,8 +95,6 @@ export function throttle(fn: Function, delay) {
   const now = Date.now();
   if (now - last >= delay) {
     fn(arguments);
-    console.log(12312312);
-
     last = now;
   }
 }

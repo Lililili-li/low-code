@@ -11,10 +11,14 @@ import { Material } from './components'
 import { usePanelConfigStore } from '@/stores/usePanelConfigStore'
 import { BracesVariable24Regular, DatabaseLink20Regular } from '@vicons/fluent'
 import { renderIcon } from '@/utils'
+import { storeToRefs } from 'pinia'
+import { usePageConfigStore } from '@/stores/usePageConfigStore'
 
 const Layer = defineAsyncComponent(() => import('./components/layers/index.vue'))
 const Variable = defineAsyncComponent(() => import('./components/variable/index.vue'))
 const DataSource = defineAsyncComponent(() => import('./components/dataSource/index.vue'))
+const { currentPage } = storeToRefs(usePageConfigStore());
+
 const panelConfigStore = usePanelConfigStore()
 
 enum MenuTypeEnum {
@@ -93,7 +97,7 @@ const onCloseAside = () => {
         <div class="aside-menu-component h-full" :style="asideMenuStyle">
           <div class="title flex justify-between pb-3 items-center">
             <span style="font-size: 16px">{{
-              menuOptions.find((item) => item.key === activeKey)?.label
+              menuOptions.find((item) => item.key === activeKey)?.label + (activeKey === MenuTypeEnum.LAYER ? `(${currentPage.componentList.length})` : '')
             }}</span>
             <icon-menu-fold
               class="cursor-pointer close"

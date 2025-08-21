@@ -217,7 +217,7 @@ const onResizeMousedown = (event: MouseEvent, data: any) => {
         data-type="component"
         :data-comp-id="componentInfo.id"
       ></div>
-      <div
+      <!-- <div
         class="direction-box absolute"
         v-for="item in directionList"
         :key="item.direction"
@@ -226,7 +226,7 @@ const onResizeMousedown = (event: MouseEvent, data: any) => {
         @mousedown.stop.left="onResizeMousedown($event, item)"
         data-type="component"
         :data-comp-id="componentInfo.id"
-      ></div>
+      ></div> -->
     </div>
 
   </div>

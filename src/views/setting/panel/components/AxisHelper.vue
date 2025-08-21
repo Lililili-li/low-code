@@ -13,292 +13,270 @@ const pageConfigStore = usePageConfigStore();
 const axisHelperList = ref<AxisHelperType[]>(axisHelperConfigList);
 const threshold = 5;
 
-const calcLeftDistance = (
-  style: Record<string, number>,
-  otherStyle: Record<string, number>
-) => {
-  return Math.abs(style.left - (otherStyle.left + otherStyle.width));
-};
-const calcRightDistance = (
-  style: Record<string, number>,
-  otherStyle: Record<string, number>
-) => {
-  return Math.abs(otherStyle.left - (style.left + style.width));
-};
-const calcTopDistance = (
-  style: Record<string, number>,
-  otherStyle: Record<string, number>
-) => {
-  return Math.abs(style.top - (otherStyle.top + otherStyle.height));
-};
-const calcBottomDistance = (
-  style: Record<string, number>,
-  otherStyle: Record<string, number>
-) => {
-  return Math.abs(otherStyle.top - (style.top + style.height));
-};
-const directionMethodMap = {
-  left: calcLeftDistance,
-  right: calcRightDistance,
-  top: calcTopDistance,
-  bottom: calcBottomDistance,
+// 优化：预计算组件的关键坐标点，减少重复计算
+interface ComponentBounds {
+  id: string;
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  centerX: number;
+  centerY: number;
+  width: number;
+  height: number;
+}
+
+const getComponentBounds = (comp: IComponentType): ComponentBounds => {
+  const style = comp.style as Record<string, number>;
+  return {
+    id: comp.id,
+    left: style.left,
+    right: style.left + style.width,
+    top: style.top,
+    bottom: style.top + style.height,
+    centerX: style.left + style.width / 2,
+    centerY: style.top + style.height / 2,
+    width: style.width,
+    height: style.height,
+  };
 };
 
-const calcAxisHelperStyle = (
-  label: number,
-  positionData,
-  direction: "left" | "right" | "top" | "bottom",
-  axisPosition: "middle" | "bottom" | "top",
-  style,
-  otherStyle,
-  position: AxisHelperDirectionEnum
-) => {
-  const existItem = axisHelperList.value.find(
-    (item) => item.direction === position && item.label === label
-  );
-  positionData[axisPosition] = Math.min(
-    directionMethodMap[direction](style, otherStyle),
-    positionData[axisPosition]
-  );
-  existItem!.visible = true;
-  existItem!.distance = positionData[axisPosition];
-  existItem!.style[position === AxisHelperDirectionEnum.HORIZONTAL ? "width" : "height"] =
-    existItem!.distance + "px";
-  existItem!.style[direction] = -existItem!.distance + "px";
+// 优化：使用更高效的距离计算
+const calcDistance = (
+  currentBounds: ComponentBounds,
+  otherBounds: ComponentBounds,
+  direction: "left" | "right" | "top" | "bottom"
+): number => {
+  switch (direction) {
+    case "left":
+      return Math.abs(currentBounds.left - otherBounds.right);
+    case "right":
+      return Math.abs(otherBounds.left - currentBounds.right);
+    case "top":
+      return Math.abs(currentBounds.top - otherBounds.bottom);
+    case "bottom":
+      return Math.abs(otherBounds.top - currentBounds.bottom);
+    default:
+      return Infinity;
+  }
 };
 
-const handleHorizontalAxis = (
-  compList: IComponentType[],
-  direction: "left" | "right",
-  style: Record<string, number>,
-  position
+// 优化：统一的对齐检测函数，减少代码重复
+interface AlignmentCheck {
+  condition: boolean;
+  snapPosition?: number;
+  distance: number;
+  label: number;
+  direction: AxisHelperDirectionEnum;
+  axisPosition: "top" | "middle" | "bottom";
+}
+
+const checkAlignment = (
+  currentBounds: ComponentBounds,
+  otherBounds: ComponentBounds,
+  direction: "left" | "right" | "top" | "bottom"
+): AlignmentCheck[] => {
+  const alignments: AlignmentCheck[] = [];
+
+  if (direction === "left" || direction === "right") {
+    // 水平方向检测垂直对齐
+    const labelBase = direction === "right" ? 4 : 1;
+    const distance = calcDistance(currentBounds, otherBounds, direction);
+
+    // 中心对齐
+    const centerDiff = Math.abs(otherBounds.centerY - currentBounds.centerY);
+    if (centerDiff < threshold) {
+      alignments.push({
+        condition: true,
+        snapPosition: otherBounds.centerY - currentBounds.height / 2,
+        distance,
+        label: labelBase,
+        direction: AxisHelperDirectionEnum.HORIZONTAL,
+        axisPosition: "middle"
+      });
+    }
+
+    // 顶边对齐
+    const topDiff = Math.abs(otherBounds.top - currentBounds.top);
+    if (topDiff < threshold) {
+      alignments.push({
+        condition: true,
+        snapPosition: otherBounds.top,
+        distance,
+        label: labelBase + 1,
+        direction: AxisHelperDirectionEnum.HORIZONTAL,
+        axisPosition: "top"
+      });
+    }
+
+    // 底边对齐
+    const bottomDiff = Math.abs(otherBounds.bottom - currentBounds.bottom);
+    if (bottomDiff < threshold) {
+      alignments.push({
+        condition: true,
+        snapPosition: otherBounds.bottom - currentBounds.height,
+        distance,
+        label: labelBase + 2,
+        direction: AxisHelperDirectionEnum.HORIZONTAL,
+        axisPosition: "bottom"
+      });
+    }
+  } else {
+    // 垂直方向检测水平对齐
+    const labelBase = direction === "top" ? 7 : 10;
+    const distance = calcDistance(currentBounds, otherBounds, direction);
+
+    // 中心对齐
+    const centerDiff = Math.abs(otherBounds.centerX - currentBounds.centerX);
+    if (centerDiff < threshold) {
+      alignments.push({
+        condition: true,
+        snapPosition: otherBounds.centerX - currentBounds.width / 2,
+        distance,
+        label: labelBase,
+        direction: AxisHelperDirectionEnum.VERTICAL,
+        axisPosition: "middle"
+      });
+    }
+
+    // 左边对齐
+    const leftDiff = Math.abs(otherBounds.left - currentBounds.left);
+    if (leftDiff < threshold) {
+      alignments.push({
+        condition: true,
+        snapPosition: otherBounds.left,
+        distance,
+        label: labelBase + 1,
+        direction: AxisHelperDirectionEnum.VERTICAL,
+        axisPosition: "top"
+      });
+    }
+
+    // 右边对齐
+    const rightDiff = Math.abs(otherBounds.right - currentBounds.right);
+    if (rightDiff < threshold) {
+      alignments.push({
+        condition: true,
+        snapPosition: otherBounds.right - currentBounds.width,
+        distance,
+        label: labelBase + 2,
+        direction: AxisHelperDirectionEnum.VERTICAL,
+        axisPosition: "bottom"
+      });
+    }
+  }
+
+  return alignments.filter(a => a.condition);
+};
+
+// 优化：批量处理对齐检测，避免嵌套循环
+const processAlignments = (
+  currentBounds: ComponentBounds,
+  componentBounds: ComponentBounds[],
+  direction: "left" | "right" | "top" | "bottom"
 ) => {
-  compList.forEach((item) => {
-    const otherStyle = item.style as Record<string, number>;
-    if (
-      Math.abs(otherStyle.top + otherStyle.height / 2 - (style.top + style.height / 2)) <
-        threshold ||
-      Math.abs(otherStyle.top - (style.top + style.height / 2)) < threshold ||
-      Math.abs(otherStyle.top + otherStyle.height - (style.top + style.height / 2)) <
-        threshold
-    ) {
-      if (
-        Math.abs(
-          otherStyle.top + otherStyle.height / 2 - (style.top + style.height / 2)
-        ) < threshold
-      ) {
-        throttle(() => {
-          compConfigStore.activeComponent!.style.top =
-            otherStyle.top +
-            otherStyle.height / 2 -
-            (compConfigStore.activeComponent!.style.height as number) / 2;
-        }, 50);
-      }
-      calcAxisHelperStyle(
-        direction === "right" ? 4 : 1,
-        position,
-        direction,
-        "middle",
-        style,
-        otherStyle,
-        AxisHelperDirectionEnum.HORIZONTAL
-      );
+  // 过滤相关组件
+  const relevantComponents = componentBounds.filter(bounds => {
+    switch (direction) {
+      case "left":
+        return bounds.right < currentBounds.left;
+      case "right":
+        return bounds.left > currentBounds.right;
+      case "top":
+        return bounds.bottom < currentBounds.top;
+      case "bottom":
+        return bounds.top > currentBounds.bottom;
+      default:
+        return false;
     }
-    if (
-      Math.abs(otherStyle.top + otherStyle.height / 2 - (style.top + style.height)) <
-        threshold ||
-      Math.abs(otherStyle.top + otherStyle.height - (style.top + style.height)) <
-        threshold ||
-      Math.abs(otherStyle.top - (style.top + style.height)) < threshold
-    ) {
-      if (
-        Math.abs(otherStyle.top + otherStyle.height - (style.top + style.height)) <
-        threshold
-      ) {
-        throttle(() => {
-          compConfigStore.activeComponent!.style.top =
-            otherStyle.top +
-            otherStyle.height -
-            (compConfigStore.activeComponent!.style.height as number);
-        }, 50);
-      }
-      calcAxisHelperStyle(
-        direction === "right" ? 6 : 3,
-        position,
-        direction,
-        "bottom",
-        style,
-        otherStyle,
-        AxisHelperDirectionEnum.HORIZONTAL
-      );
+  });
+
+  // 收集所有对齐信息
+  const allAlignments: AlignmentCheck[] = [];
+  relevantComponents.forEach(bounds => {
+    const alignments = checkAlignment(currentBounds, bounds, direction);
+    allAlignments.push(...alignments);
+  });
+
+  // 按距离分组，找到最近的对齐
+  const alignmentGroups = new Map<string, AlignmentCheck[]>();
+  allAlignments.forEach(alignment => {
+    const key = `${alignment.label}-${alignment.axisPosition}`;
+    if (!alignmentGroups.has(key)) {
+      alignmentGroups.set(key, []);
     }
-    if (
-      Math.abs(otherStyle.top + otherStyle.height / 2 - style.top) < threshold ||
-      Math.abs(otherStyle.top + otherStyle.height - style.top) < threshold ||
-      Math.abs(otherStyle.top - style.top) < threshold
-    ) {
-      if (Math.abs(otherStyle.top - style.top) < threshold) {
-        throttle(() => {
-          compConfigStore.activeComponent!.style.top = otherStyle.top;
-        }, 50);
+    alignmentGroups.get(key)!.push(alignment);
+  });
+  // 处理每组对齐，选择最近的
+  alignmentGroups.forEach((group) => {
+    const closest = group.reduce((min, current) =>
+      current.distance < min.distance ? current : min
+    );
+    // 更新辅助线
+    const existItem = axisHelperList.value.find(
+      item => item.direction === closest.direction && item.label === closest.label
+    );
+
+    if (existItem) {
+      existItem.visible = true;
+      existItem.distance = closest.distance;
+      existItem.style[closest.direction === AxisHelperDirectionEnum.HORIZONTAL ? "width" : "height"] =
+        closest.distance + "px";
+      existItem.style[direction] = -closest.distance + "px";
+
+      // 执行自动吸附 (保持与原代码相似的方式)
+      if (closest.snapPosition !== undefined) {
+        if (direction === "left" || direction === "right") {
+          throttle(() => {
+            compConfigStore.activeComponent!.style.top = closest.snapPosition!;
+          }, 50);
+        } else {
+          throttle(() => {
+            compConfigStore.activeComponent!.style.left = closest.snapPosition!;
+          }, 50);
+        }
       }
-      calcAxisHelperStyle(
-        direction === "right" ? 5 : 2,
-        position,
-        direction,
-        "top",
-        style,
-        otherStyle,
-        AxisHelperDirectionEnum.HORIZONTAL
-      );
     }
   });
 };
-const handleVerticalAxis = (
-  compList: IComponentType[],
-  direction: "top" | "bottom",
-  style: Record<string, number>,
-  position
-) => {
-  compList.forEach((item) => {
-    const otherStyle = item.style as Record<string, number>;
-    if (
-      Math.abs(otherStyle.left + otherStyle.width / 2 - (style.left + style.width / 2)) <
-        threshold ||
-      Math.abs(otherStyle.left - (style.left + style.width / 2)) < threshold ||
-      Math.abs(otherStyle.left + otherStyle.width - (style.left + style.width / 2)) <
-        threshold
-    ) {
-      if (
-        Math.abs(
-          otherStyle.left + otherStyle.width / 2 - (style.left + style.width / 2)
-        ) < threshold
-      ) {
-        throttle(() => {
-          compConfigStore.activeComponent!.style.left =
-            otherStyle.left +
-            otherStyle.width / 2 -
-            (compConfigStore.activeComponent!.style.width as number) / 2;
-        }, 50);
-      }
-      calcAxisHelperStyle(
-        direction === "top" ? 7 : 10,
-        position,
-        direction,
-        "middle",
-        style,
-        otherStyle,
-        AxisHelperDirectionEnum.VERTICAL
-      );
-    }
-    if (
-      Math.abs(otherStyle.left + otherStyle.width / 2 - (style.left + style.width)) <
-        threshold ||
-      Math.abs(otherStyle.left + otherStyle.width - (style.left + style.width)) <
-        threshold ||
-      Math.abs(otherStyle.left - (style.left + style.width)) < threshold
-    ) {
-      if (
-        Math.abs(otherStyle.left + otherStyle.width - (style.left + style.width)) <
-        threshold
-      ) {
-        throttle(() => {
-          compConfigStore.activeComponent!.style.left =
-            otherStyle.left +
-            otherStyle.width -
-            (compConfigStore.activeComponent!.style.width as number);
-        }, 50);
-      }
-      calcAxisHelperStyle(
-        direction === "top" ? 9 : 12,
-        position,
-        direction,
-        "bottom",
-        style,
-        otherStyle,
-        AxisHelperDirectionEnum.VERTICAL
-      );
-    }
-    if (
-      Math.abs(otherStyle.left + otherStyle.width / 2 - style.left) < threshold ||
-      Math.abs(otherStyle.left + otherStyle.width - style.left) < threshold ||
-      Math.abs(otherStyle.left - style.left) < threshold
-    ) {
-      if (Math.abs(otherStyle.left - style.left) < threshold) {
-        throttle(() => {
-          compConfigStore.activeComponent!.style.left = otherStyle.left;
-        }, 50);
-      }
-      calcAxisHelperStyle(
-        direction === "top" ? 8 : 11,
-        position,
-        direction,
-        "top",
-        style,
-        otherStyle,
-        AxisHelperDirectionEnum.VERTICAL
-      );
-    }
-  });
-};
 
+// 优化后的主要处理函数
 const handleAxisHelper = (style: Record<string, number>) => {
   const componentList = pageConfigStore
     .getCurrentPage()
     .componentList.filter((item) => item.id !== compConfigStore.activeComponent?.id)
     ?.map(toRaw);
-  const leftCompList = componentList.filter(
-    (item) => (item.style.left as number) + (item.style.width as number) < style.left
-  );
-  const rightCompList = componentList.filter(
-    (item) => (item.style.left as number) > style.left + style.width
-  );
-  const topCompList = componentList.filter(
-    (item) => (item.style.top as number) + (item.style.height as number) < style.top
-  );
-  const bottomCompList = componentList.filter(
-    (item) => (item.style.top as number) > style.top + style.height
-  );
-  const leftPosition = {
-    middle: 99999999,
-    bottom: 99999999,
-    top: 99999999,
-  };
-  const topPosition = {
-    middle: 99999999,
-    bottom: 99999999,
-    top: 99999999,
-  };
-  const rightPosition = {
-    middle: 99999999,
-    bottom: 99999999,
-    top: 99999999,
-  };
-  const bottomPosition = {
-    middle: 99999999,
-    bottom: 99999999,
-    top: 99999999,
-  };
-  handleHorizontalAxis(leftCompList, "left", style, leftPosition);
-  handleHorizontalAxis(rightCompList, "right", style, rightPosition);
-  handleVerticalAxis(topCompList, "top", style, topPosition);
-  handleVerticalAxis(bottomCompList, "bottom", style, bottomPosition);
+
+  // 预计算所有组件的边界信息
+  const componentBounds = componentList.map(getComponentBounds);
+  const currentBounds = getComponentBounds({
+    id: compConfigStore.activeComponent?.id || "",
+    style
+  } as IComponentType);
+
+  // 批量处理四个方向的对齐检测
+  ["left", "right", "top", "bottom"].forEach(direction => {
+    processAlignments(currentBounds, componentBounds, direction as any);
+  });
 };
 
 const makeAxisHelper = () => {
   if (compConfigStore.selectIds.length > 1 && compConfigStore.activeComponent) {
     return;
   }
+
+  // 重置所有辅助线
   axisHelperList.value.forEach((item) => {
     item.visible = false;
   });
-  handleAxisHelper(compConfigStore.activeComponent?.style as Record<string, number>);
+  if (compConfigStore.activeComponent?.style) {
+    handleAxisHelper(compConfigStore.activeComponent.style as Record<string, number>);
+  }
 };
+
 onMounted(() => {
   bus.on("compMove", makeAxisHelper);
-  bus.on("resetAxis", () => {
-    makeAxisHelper();
-  });
+  bus.on("resetAxis", makeAxisHelper);
   bus.on("clearAxis", () => {
     axisHelperList.value.forEach((item) => {
       item.visible = false;
@@ -347,7 +325,6 @@ onMounted(() => {
     }
 
     .line {
-      // background-color: red;
       background: repeating-linear-gradient(
         to top,
         red 0,
@@ -368,8 +345,6 @@ onMounted(() => {
     }
 
     .line {
-      // background-color: red;
-      // background-color: red;
       background: repeating-linear-gradient(
         to right,
         red 0,

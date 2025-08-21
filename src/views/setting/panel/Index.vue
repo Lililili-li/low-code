@@ -161,6 +161,8 @@ const handleMoveComponent = (moveX: number, moveY: number) => {
     (compConfigStore.activeComponent!.style!.top as number) += formatNumber(
       moveY - moveState.moveY
     );
+    console.log(compConfigStore.activeComponent!.style!.left);
+
   } else {
     compConfigStore.selectIds.forEach((id) => {
       const item = pageConfigStore.currentPage?.componentList?.find(
@@ -440,7 +442,7 @@ onUnmounted(() => {
                 </template>
               </GroupEditBox>
             </template>
-            <AxisHelper
+            <!-- <AxisHelper
               v-if="compConfigStore.activeComponent?.style"
               :style="{
                 top: (compConfigStore.activeComponent!.style.top as number)  + 'px',
@@ -450,7 +452,7 @@ onUnmounted(() => {
                 cursor: 'pointer',
                 zIndex: moveState.type? 9999999: -1
               }"
-            />
+            /> -->
           </div>
           <div
             v-show="moveState.type === 'frameSelect'"

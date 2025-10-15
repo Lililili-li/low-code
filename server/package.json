@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "main": "dist/main.js",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -28,6 +29,8 @@
     "@nestjs/typeorm": "^11.0.0",
     "class-transformer": "^0.5.1",
     "cross-env": "^10.0.0",
+    "crypto": "^1.0.1",
+    "fork-ts-checker-webpack-plugin": "^9.1.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "mysql2": "^3.14.3",

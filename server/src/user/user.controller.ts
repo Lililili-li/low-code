@@ -19,10 +19,7 @@ export class UserController {
 
   @Get()
   findAll() {
-    const user = {
-      admin: false
-    }
-    if (!user.admin) throw new HttpException('Method Not Allowed', HttpStatus.METHOD_NOT_ALLOWED);
+    this.logger.log('findAll', '接口查询');
     return this.userService.findAll();
   }
 

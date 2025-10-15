@@ -5,3 +5,10 @@ db:
   password: 123456
   synchronize: true
   database: test_db
+
+app:
+  port: 3000
+
+log:
+  on: true
+  level: info

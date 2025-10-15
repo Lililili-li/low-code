@@ -2,5 +2,12 @@ db:
   url: 39.106.20.75
   port: 3306
   userName: root
-  password: '123456'
+  password: "123456"
   synchronize: true
+
+app:
+  port: 13000
+
+log:
+  on: true
+  level: info

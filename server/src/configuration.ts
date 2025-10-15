@@ -4,7 +4,8 @@ import { join } from "node:path";
 import * as _ from 'lodash'
 
 const commonFilePath = join(__dirname, '../config', `config.yaml`)
-const envFilePath = join(__dirname, '../config', `config.${process.env.NODE_ENV}.yaml`)
+const envFilePath = join(__dirname, '../config', `config.${process.env.NODE_ENV || 'dev'}.yaml`)
+console.log(envFilePath);
 
 const commonConfig = yaml.load(readFileSync(commonFilePath, 'utf-8'))
 

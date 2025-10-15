@@ -1,0 +1,148 @@
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:06:53"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:06:53"}
+{"context":"RoutesResolver","level":"info","message":"UserController {/api/user}:","timestamp":"2025-08-22 17:06:53"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, POST} route","timestamp":"2025-08-22 17:06:53"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, GET} route","timestamp":"2025-08-22 17:06:53"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, GET} route","timestamp":"2025-08-22 17:06:53"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, PATCH} route","timestamp":"2025-08-22 17:06:53"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, DELETE} route","timestamp":"2025-08-22 17:06:53"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/profile/:id, GET} route","timestamp":"2025-08-22 17:06:53"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-22 17:06:53"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"LogsModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"LoggerModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2025-08-22 17:09:13"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2025-08-22 17:09:15"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:09:15"}
+{"context":"InstanceLoader","level":"info","message":"UserModule dependencies initialized","timestamp":"2025-08-22 17:09:15"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:09:15"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:09:15"}
+{"context":"RoutesResolver","level":"info","message":"UserController {/api/user}:","timestamp":"2025-08-22 17:09:15"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, POST} route","timestamp":"2025-08-22 17:09:15"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, GET} route","timestamp":"2025-08-22 17:09:15"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, GET} route","timestamp":"2025-08-22 17:09:15"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, PATCH} route","timestamp":"2025-08-22 17:09:15"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, DELETE} route","timestamp":"2025-08-22 17:09:15"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/profile/:id, GET} route","timestamp":"2025-08-22 17:09:15"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-22 17:09:15"}
+{"level":"info","message":"findAll","timestamp":"2025-08-22 17:09:43"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"LogsModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"LoggerModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2025-08-22 17:10:35"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2025-08-22 17:10:36"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:10:36"}
+{"context":"InstanceLoader","level":"info","message":"UserModule dependencies initialized","timestamp":"2025-08-22 17:10:36"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:10:36"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:10:36"}
+{"context":"RoutesResolver","level":"info","message":"UserController {/api/user}:","timestamp":"2025-08-22 17:10:36"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, POST} route","timestamp":"2025-08-22 17:10:36"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, GET} route","timestamp":"2025-08-22 17:10:36"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, GET} route","timestamp":"2025-08-22 17:10:36"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, PATCH} route","timestamp":"2025-08-22 17:10:36"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, DELETE} route","timestamp":"2025-08-22 17:10:36"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/profile/:id, GET} route","timestamp":"2025-08-22 17:10:36"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-22 17:10:36"}
+{"context":{"context":"UserController","level":"info","message":"findAll","timestamp":"2025-08-22T09:10:39.679Z"},"level":"info","message":"findAll","timestamp":"2025-08-22 17:10:39"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"LogsModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"LoggerModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"InstanceLoader","level":"info","message":"UserModule dependencies initialized","timestamp":"2025-08-22 17:11:45"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:11:45"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:11:45"}
+{"context":"RoutesResolver","level":"info","message":"UserController {/api/user}:","timestamp":"2025-08-22 17:11:45"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, POST} route","timestamp":"2025-08-22 17:11:45"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, GET} route","timestamp":"2025-08-22 17:11:45"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, GET} route","timestamp":"2025-08-22 17:11:45"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, PATCH} route","timestamp":"2025-08-22 17:11:45"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, DELETE} route","timestamp":"2025-08-22 17:11:45"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/profile/:id, GET} route","timestamp":"2025-08-22 17:11:46"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-22 17:11:46"}
+{"context":{"context":"接口查询","level":"info","message":"findAll","timestamp":"2025-08-22T09:11:50.772Z"},"level":"info","message":"findAll","timestamp":"2025-08-22 17:11:50"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"LogsModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"LoggerModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2025-08-22 17:12:34"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2025-08-22 17:12:35"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:12:35"}
+{"context":"InstanceLoader","level":"info","message":"UserModule dependencies initialized","timestamp":"2025-08-22 17:12:35"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:12:35"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:12:35"}
+{"context":"RoutesResolver","level":"info","message":"UserController {/api/user}:","timestamp":"2025-08-22 17:12:35"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, POST} route","timestamp":"2025-08-22 17:12:35"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, GET} route","timestamp":"2025-08-22 17:12:35"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, GET} route","timestamp":"2025-08-22 17:12:35"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, PATCH} route","timestamp":"2025-08-22 17:12:35"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, DELETE} route","timestamp":"2025-08-22 17:12:35"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/profile/:id, GET} route","timestamp":"2025-08-22 17:12:35"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-22 17:12:35"}
+{"context":["findAll","接口查询","2025-08-22T09:12:38.060Z","info"],"level":"info","message":"findAll","timestamp":"2025-08-22 17:12:38"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"LogsModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"LoggerModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"InstanceLoader","level":"info","message":"UserModule dependencies initialized","timestamp":"2025-08-22 17:13:03"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:13:03"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:13:03"}
+{"context":"RoutesResolver","level":"info","message":"UserController {/api/user}:","timestamp":"2025-08-22 17:13:03"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, POST} route","timestamp":"2025-08-22 17:13:03"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, GET} route","timestamp":"2025-08-22 17:13:03"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, GET} route","timestamp":"2025-08-22 17:13:03"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, PATCH} route","timestamp":"2025-08-22 17:13:03"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, DELETE} route","timestamp":"2025-08-22 17:13:03"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/profile/:id, GET} route","timestamp":"2025-08-22 17:13:03"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-22 17:13:03"}
+{"context":123123123,"level":"info","message":"findAll","timestamp":"2025-08-22 17:13:06"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"LogsModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"LoggerModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"InstanceLoader","level":"info","message":"UserModule dependencies initialized","timestamp":"2025-08-22 17:16:32"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:16:32"}
+{"context":"LegacyRouteConverter","level":"warn","message":"Unsupported route path: \"/api/*\". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of \"path-to-regexp\" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with \"/users\", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...","timestamp":"2025-08-22 17:16:32"}
+{"context":"RoutesResolver","level":"info","message":"UserController {/api/user}:","timestamp":"2025-08-22 17:16:32"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, POST} route","timestamp":"2025-08-22 17:16:32"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user, GET} route","timestamp":"2025-08-22 17:16:32"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, GET} route","timestamp":"2025-08-22 17:16:32"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, PATCH} route","timestamp":"2025-08-22 17:16:32"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/:id, DELETE} route","timestamp":"2025-08-22 17:16:32"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/user/profile/:id, GET} route","timestamp":"2025-08-22 17:16:32"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2025-08-22 17:16:32"}
+{"context":"接口查询","level":"info","message":"findAll","timestamp":"2025-08-22 17:16:37"}

@@ -10,9 +10,6 @@ import autoprefixer from 'autoprefixer'
 import viteCompression from 'vite-plugin-compression'
 import { visualizer } from 'rollup-plugin-visualizer'
 import vueDevTools from 'vite-plugin-vue-devtools'
-const os = require('os')
-
-console.log(os.cpus().length);
 
 // https://vite.dev/config/
 export default defineConfig({

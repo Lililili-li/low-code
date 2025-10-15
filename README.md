@@ -34,56 +34,56 @@ pnpm build
 
 ## 用户指引
     1.整体概览
-<img src="./operate/1.png"
+<img src="./fronted/operate/1.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     2.辅助线功能
-<img src="./operate/11.png"
+<img src="./fronted/operate/11.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     3.操作记录
-<img src="./operate/2.png"
+<img src="./fronted/operate/2.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     4.快捷键
-<img src="./operate/3.png"
+<img src="./fronted/operate/3.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     5.图层管理
-<img src="./operate/4.png"
+<img src="./fronted/operate/4.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     6.变量管理
-<img src="./operate/5.png"
+<img src="./fronted/operate/5.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     7.接口数据源管理
-<img src="./operate/6.png"
+<img src="./fronted/operate/6.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     8.组件属性配置，变量如何绑定
-<img src="./operate/7.png"
+<img src="./fronted/operate/7.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     9.自定义配置组件属性
-<img src="./operate/8.png"
+<img src="./fronted/operate/8.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
 
     10.组件样式管理
-<img src="./operate/9.png"
+<img src="./fronted/operate/9.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
     
     11.组件高级设置，绑定事件
-<img src="./operate/10.png"
+<img src="./fronted/operate/10.png"
      alt="图片描述"
      style="width: 100%; border: 1px solid #eee; border-radius: 4px;">
